@@ -1,114 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>TWO ACID HOUSES</title>
-
-    <link rel="preload" href="fonts/Wavehaus-158ExtraBold.otf" as="font" type="font/otf" crossorigin="anonymous" />
-    <link rel="preload" href="fonts/Wavehaus-42Light.otf" as="font" type="font/otf" crossorigin="anonymous" />
-    <link rel="preload" href="fonts/Wavehaus-28Thin.otf" as="font" type="font/otf" crossorigin="anonymous" />
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
-
-    <style>
-      body, html {
-        margin: 0;
-        overscroll-behavior: none;
-        touch-action: none;
-        height: 100%;
-        width: 100%;
-        position: fixed;
-        background-color: #fff;
-        font-family: 'WavehausLight', Arial, sans-serif;
-      }
-      
-      #interactive-container-home, #interactive-container-gallery {
-        touch-action: auto;
-      }
-
-      .fadeable {
-        transition: opacity 0.8s ease;
-      }
-      .hidden {
-        display: none;
-      }
-      .invisible {
-        opacity: 0;
-        pointer-events: none;
-      }
-      .page-container {
-        position: relative;
-        width: 100%;
-        height: 100vh;
-        overflow: hidden;
-      }
-      
-      .nav-button {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 48px;
-        color: black;
-        cursor: pointer;
-        z-index: 300;
-        user-select: none;
-        padding: 10px;
-        background: transparent;
-      }
-      #nav-left {
-        left: 10px;
-      }
-      #nav-right {
-        right: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="home-page" class="page-container fadeable"></div>
-    <div id="gallery-page" class="page-container fadeable invisible hidden"></div>
-    
-    <div id="nav-left" class="nav-button">&lt;</div>
-    <div id="nav-right" class="nav-button">&gt;</div>
-    
-    <script>
-      const navLeft = document.getElementById("nav-left");
-      const navRight = document.getElementById("nav-right");
-      
-      navLeft.addEventListener("click", () => {
-          window.switchMuralLeft();
-          resizeCanvasOnMuralChange();
-      });
-      navRight.addEventListener("click", () => {
-          window.switchMuralRight();
-          resizeCanvasOnMuralChange();
-      });
-      
-      navLeft.addEventListener("touchend", (e) => {
-          e.preventDefault();
-          window.switchMuralLeft();
-          resizeCanvasOnMuralChange();
-      });
-      navRight.addEventListener("touchend", (e) => {
-          e.preventDefault();
-          window.switchMuralRight();
-          resizeCanvasOnMuralChange();
-      });
-      
-      function resizeCanvasOnMuralChange() {
-          if (galleryP5) {
-              galleryP5.resizeCanvas(window.innerWidth, window.innerHeight);
-          }
-      }
-    </script>
-  </body>
-</html>
+<!-- FIXED CODE (Single HTML document, no duplication, with lines 75–76 and further issues resolved) -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <!-- Ensures mobile browsers scale properly -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>TWO ACID HOUSES</title>
 
     <!-- Preload fonts (only done once) -->
@@ -138,30 +34,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 
     <style>
-      /* ----- FONTS ----- */
-      @font-face {
-        font-family: 'Wavehaus';
-        src: url('fonts/Wavehaus-158ExtraBold.otf') format('opentype');
-        font-display: swap;
-      }
-      @font-face {
-        font-family: 'WavehausLight';
-        src: url('fonts/Wavehaus-42Light.otf') format('opentype');
-        font-display: swap;
-      }
-      @font-face {
-        font-family: 'Wavehaus28Thin';
-        src: url('fonts/Wavehaus-28Thin.otf') format('opentype');
-        font-display: swap;
-      }
-
-      /* ----- PAGE-WIDE STYLES & TRANSITIONS ----- */
-      body {
+      /* ----- PREVENT PAGE FROM MOVING ON MOBILE ----- */
+      html, body {
         margin: 0;
-        /* Removed overflow: hidden so mobile can scroll if needed */
+        overscroll-behavior: none; /* Prevents iOS overscroll bounce */
+        touch-action: none;        /* Disable default touch scrolling */
+        height: 100%;
+        width: 100%;
+        position: fixed;          /* Prevent page movement on scroll/touch */
         background-color: #fff;
         font-family: 'WavehausLight', Arial, sans-serif;
       }
+      /* Let the p5 containers still receive touch events for painting etc. */
+      #interactive-container-home,
+      #interactive-container-gallery {
+        touch-action: auto;
+      }
+
       .fadeable {
         transition: opacity 0.8s ease;
       }
@@ -178,21 +67,12 @@
         height: 100vh;
         overflow: hidden;
       }
-      #home-page,
-      #gallery-page {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: transparent;
-      }
 
       /* LOADING OVERLAY */
       #loader {
-        display: none; /* Hidden by default */
+        display: none;
         position: fixed;
-        z-index: 9999; /* Sit on top of everything else */
+        z-index: 9999;
         left: 0;
         top: 0;
         width: 100%;
@@ -223,26 +103,7 @@
         text-align: center;
       }
 
-      /*---- Password Modal Styling ----- */
-      #update-text {
-        font-size: 20px;
-        font-family: 'WavehausLight', Arial, sans-serif;
-        margin-bottom: 15px;
-      }
-      #blinking-dot {
-        animation: blink 1s steps(2, start) infinite;
-      }
-      @keyframes blink {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0;
-        }
-      }
-
-      /* ----- HOME PAGE STYLES ----- */
+      /* HOME PAGE STYLES */
       #interactive-container-home {
         position: absolute;
         top: 0;
@@ -268,34 +129,33 @@
       #static-bottom {
         top: 65%;
       }
+
+      /* TICKERS */
       #home-ticker-top,
-  #home-ticker-bottom,
-  #gallery-ticker-top,
-  #gallery-ticker-bottom {
-    position: absolute;
-    width: 100%;
-    background-color: black;
-    overflow: hidden;
-    white-space: nowrap;
-    cursor: pointer;
-    padding: calc(10px * var(--ticker-scale, 1)) 0;
-    z-index: 250;
-    color: white;
-    font-size: calc(20px * var(--ticker-scale, 1));
-  }
-
-  @media screen and (max-width: 600px) {
-    :root {
-      --ticker-scale: 0.8;
-    }
-  }
-
-  @media screen and (max-width: 400px) {
-    :root {
-      --ticker-scale: 0.6;
-    }
-  }
-
+      #home-ticker-bottom,
+      #gallery-ticker-top,
+      #gallery-ticker-bottom {
+        position: absolute;
+        width: 100%;
+        background-color: black;
+        overflow: hidden;
+        white-space: nowrap;
+        cursor: pointer;
+        padding: calc(10px * var(--ticker-scale, 1)) 0;
+        z-index: 250;
+        color: white;
+        font-size: calc(20px * var(--ticker-scale, 1));
+      }
+      @media screen and (max-width: 600px) {
+        :root {
+          --ticker-scale: 0.8;
+        }
+      }
+      @media screen and (max-width: 400px) {
+        :root {
+          --ticker-scale: 0.6;
+        }
+      }
       #home-ticker-top {
         top: 0;
       }
@@ -315,7 +175,7 @@
         animation: marquee 100s linear infinite reverse;
       }
 
-      /* ----- GALLERY PAGE STYLES ----- */
+      /* GALLERY PAGE STYLES */
       body #gallery-page {
         background: #fff;
         color: black;
@@ -346,6 +206,8 @@
       #gallery-ticker-top .ticker__wrap {
         animation: marquee 100s linear infinite reverse;
       }
+
+      /* NAV BUTTONS */
       .nav-button {
         position: absolute;
         top: 50%;
@@ -364,6 +226,7 @@
       #nav-right {
         right: 10px;
       }
+
       #interactive-container-gallery {
         position: absolute;
         top: 0;
@@ -372,10 +235,12 @@
         height: 100%;
         z-index: 100;
       }
+
+      /* AUDIO PLAYER */
       #audio-player {
         position: absolute;
         left: 50%;
-        transform: translate(-50%, -15px); 
+        transform: translate(-50%, -15px);
         z-index: 200;
         color: black;
         background: transparent;
@@ -422,7 +287,7 @@
         border-radius: 50%;
       }
 
-      /* ----- MODAL (Password) & Additional Modals ----- */
+      /* MODALS */
       .modal {
         display: none;
         position: fixed;
@@ -478,6 +343,7 @@
         color: #fff;
         cursor: pointer;
       }
+
       @keyframes marquee {
         0% {
           transform: translateX(0%);
@@ -487,17 +353,16 @@
         }
       }
 
-      /* ----- Mobile Responsiveness ----- */
+      /* MOBILE RESPONSIVENESS */
       @media screen and (max-width: 600px) {
         body {
-          overflow-x: hidden;
+          overflow-x: hidden; /* Allow no horizontal scroll on small screens */
         }
         .page-container {
           height: auto;
           min-height: 100vh;
           overflow: visible;
         }
-
         #static-top,
         #static-bottom {
           font-size: 32px;
@@ -524,7 +389,7 @@
         }
       }
 
-      /* --- Additional Styles for Audio Player Buttons --- */
+      /* AUDIO PLAYER BUTTONS */
       .button-group {
         display: flex;
         gap: 10px;
@@ -564,65 +429,26 @@
       }
     </style>
   </head>
+
   <body>
-    <!-- LOADING OVERLAY -->
+    <!-- LOADER OVERLAY -->
     <div id="loader">
       <div class="loading-text">Loading...</div>
     </div>
 
     <!-- ============ HOME PAGE ============ -->
     <div id="home-page" class="page-container fadeable">
-      <!-- Tickers (Safe Trip?) -->
+      <!-- Tickers ("Safe Trip?") -->
       <div id="home-ticker-top">
         <div class="ticker__wrap">
-          <span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span>
-          <span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span>
+          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
+          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
         </div>
       </div>
       <div id="home-ticker-bottom">
         <div class="ticker__wrap">
-          <span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span
-          ><span>Safe Trip?</span>
-          <span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span
-            ><span>Safe Trip?</span>
+          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
+          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
         </div>
       </div>
 
@@ -652,29 +478,19 @@
 
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
-      <!-- Tickers (Level out?) -->
+      <!-- Tickers ("Level out?") -->
       <div id="gallery-ticker-top">
         <div class="ticker__wrap">
-          <span>Level out?</span
-          ><span>Level out?</span
-          ><span>Level out?</span
-          ><span>Level out?</span
-          ><span>Level out?</span
-          ><span>Level out?</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
         </div>
       </div>
       <div id="gallery-ticker-bottom">
         <div class="ticker__wrap">
-          <span>Level out?</span
-          ><span>Level out?</span
-          ><span>Level out?</span
-          ><span>Level out?</span
-          ><span>Level out?</span
-          ><span>Level out?</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
         </div>
       </div>
 
-      <!-- Gallery navigation arrows -->
+      <!-- Navigation Arrows -->
       <div id="nav-left" class="nav-button">&lt;</div>
       <div id="nav-right" class="nav-button">&gt;</div>
 
@@ -682,22 +498,12 @@
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
-          <!-- Play/Pause button -->
           <button id="play-pause" class="square-button">►</button>
-          <!-- Centre button: opens download modal -->
           <button id="download-90" class="square-button rotate-90">►</button>
-          <!-- Third button: opens placeholder modal -->
           <button id="download-180" class="square-button rotate-180">►</button>
         </div>
         <br />
-        <input
-          type="range"
-          id="volume-control"
-          min="0"
-          max="1"
-          step="0.01"
-          value="1"
-        />
+        <input type="range" id="volume-control" min="0" max="1" step="0.01" value="1" />
       </div>
 
       <!-- Gallery p5 canvas -->
@@ -826,20 +632,20 @@
       let homeP5 = new p5(homeSketch);
     </script>
 
-    <!-- ============ GALLERY PAGE P5 SKETCH (Mural #1 original; Mural #2 responsive) ============ -->
+    <!-- ============ GALLERY PAGE P5 SKETCH ============ -->
     <script>
       let gallerySketch = function (p) {
         let currentMural = 1;
         let boxX, boxY, boxW, boxH;
         let scaleFactor = 1; // Used only for Mural #2
 
-        // Mural #1 variables (original behavior)
+        // Mural #1 variables (original)
         let letters1 = [];
         const fullText1 = "TWO ACID HOUSES";
         let alignmentActive = false;
         let nextSwitchTime = 0;
 
-        // Mural #2 variables (responsive scaling)
+        // Mural #2 variables (responsive)
         let letters2 = [];
         const fullText2 = "TWO ACID HOUSES";
 
@@ -850,8 +656,8 @@
           p.textSize(64);
           p.textAlign(p.CENTER, p.CENTER);
           updateBox();
-          initMural1(); // original mural #1 initialization
-          initMural2(); // responsive mural #2 initialization
+          initMural1();
+          initMural2();
           nextSwitchTime = p.millis() + 8000;
         };
 
@@ -871,7 +677,7 @@
           p.rect(boxX, boxY, boxW, boxH);
 
           if (currentMural === 1) {
-            // Mural #1: original behavior (fixed sizes)
+            // Mural #1: original behavior
             if (p.millis() > nextSwitchTime) {
               alignmentActive = !alignmentActive;
               if (alignmentActive) {
@@ -912,14 +718,14 @@
               p.noStroke();
               p.text(obj.letter, obj.x, obj.y);
             }
-            // Label for Mural #1 (fixed text size)
+            // Label for Mural #1
             p.fill(0);
             p.noStroke();
             p.textSize(28);
             p.textAlign(p.CENTER, p.BOTTOM);
             p.text("MURAL001", boxX + boxW / 2, boxY - 10);
           } else if (currentMural === 2) {
-            // Mural #2: responsive scaling using scaleFactor
+            // Mural #2: responsive scaling
             let driftActivated = false;
             if (
               p.mouseX >= boxX &&
@@ -949,21 +755,20 @@
               p.noStroke();
               p.text(obj.letter, obj.x, obj.y);
             }
-            // Label for Mural #2 (scaled text size)
+            // Label for Mural #2 (scaled)
             p.fill(0);
             p.noStroke();
             p.textSize(28 * scaleFactor);
             p.textAlign(p.CENTER, p.BOTTOM);
             p.text("MURAL002", boxX + boxW / 2, boxY - 10 * scaleFactor);
           }
+
           positionAudioPlayer();
         };
 
         p.windowResized = function () {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
-          // Recalculate scale factor only for Mural #2
           scaleFactor = p.windowWidth / 1200;
-          // For Mural #1, text size remains fixed
           updateBox();
           initMural1();
           initMural2();
@@ -977,7 +782,6 @@
         }
 
         function initMural1() {
-          // Original initialization for Mural #1
           letters1 = [];
           for (let char of fullText1) {
             if (char === " ") continue;
@@ -1016,7 +820,6 @@
         }
 
         function initMural2() {
-          // Responsive initialization for Mural #2
           letters2 = [];
           let totalW = 0;
           for (let ch of fullText2) {
@@ -1051,7 +854,7 @@
           audioPlayer.style.top = verticalPos + "px";
         }
 
-        // Navigation: When switching, reinitialize the corresponding mural.
+        // Switch murals
         window.switchMuralLeft = function () {
           if (currentMural === 1) {
             currentMural = 2;
@@ -1140,7 +943,7 @@
         }
       }
 
-      // NEW MODAL LOGIC FOR DOWNLOAD AND PLACEHOLDER
+      // Download & Placeholder modals
       const downloadModal = document.getElementById("download-modal");
       const placeholderModal = document.getElementById("placeholder-modal");
       const downloadButton = document.getElementById("download-90");
@@ -1176,7 +979,7 @@
       const loader = document.getElementById("loader");
       const loaderText = document.querySelector("#loader .loading-text");
 
-      // Function to show/hide the loader with a given message
+      // Functions to manage the loader
       function showLoading(message) {
         if (loader && loaderText) {
           loaderText.innerHTML = message;
@@ -1189,7 +992,7 @@
         }
       }
 
-      // Button click for password
+      // Handle password logic
       modalSubmit.addEventListener("click", () => {
         const enteredPassword = modalPassword.value;
         const correctPassword = "acid";
@@ -1197,13 +1000,9 @@
           modal.style.display = "none";
           showGallery();
         } else {
-          alert(
-            "ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation."
-          );
+          alert("ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation.");
         }
       });
-
-      // Also allow pressing Enter in the password field
       modalPassword.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           event.preventDefault();
@@ -1212,9 +1011,7 @@
       });
 
       function showGallery() {
-        showLoading(
-          "TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY"
-        );
+        showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
         homePage.classList.remove("invisible");
         homePage.offsetWidth;
         homePage.classList.add("invisible");
