@@ -1,4 +1,3 @@
-<!-- FIXED CODE (Single HTML document, no duplication, with lines 75–76 and further issues resolved) -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -45,7 +44,8 @@
         background-color: #fff;
         font-family: 'WavehausLight', Arial, sans-serif;
       }
-      /* Let the p5 containers still receive touch events for painting etc. */
+
+      /* Let the p5 containers still receive touch events */
       #interactive-container-home,
       #interactive-container-gallery {
         touch-action: auto;
@@ -112,6 +112,7 @@
         height: 100%;
         z-index: 100;
         background: transparent;
+        touch-action: auto;
       }
       #static-top,
       #static-bottom {
@@ -142,9 +143,12 @@
         white-space: nowrap;
         cursor: pointer;
         padding: calc(10px * var(--ticker-scale, 1)) 0;
-        z-index: 250;
+        z-index: 300;
         color: white;
         font-size: calc(20px * var(--ticker-scale, 1));
+        /* ensure pointer events are not blocked */
+        pointer-events: auto;
+        touch-action: auto;
       }
       @media screen and (max-width: 600px) {
         :root {
@@ -193,6 +197,8 @@
         z-index: 250;
         font-size: 20px;
         color: white;
+        pointer-events: auto;
+        touch-action: auto;
       }
       #gallery-ticker-top {
         top: 0;
@@ -234,6 +240,7 @@
         width: 100%;
         height: 100%;
         z-index: 100;
+        touch-action: auto;
       }
 
       /* AUDIO PLAYER */
@@ -887,14 +894,24 @@
       const modalSubmit = document.getElementById("modal-submit");
       const modalPassword = document.getElementById("modal-password");
 
+      // Ensure the Safe Trip banners open the password modal (click + touch)
       homeTickerTop.addEventListener("click", openModal);
       homeTickerBottom.addEventListener("click", openModal);
+      homeTickerTop.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        openModal();
+      });
+      homeTickerBottom.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        openModal();
+      });
 
       function openModal() {
         modal.style.display = "flex";
         modalPassword.value = "";
         modalPassword.focus();
       }
+
       modalClose.addEventListener("click", () => {
         modal.style.display = "none";
       });
@@ -917,14 +934,18 @@
       navRight.addEventListener("click", () => {
         window.switchMuralRight();
       });
-      // Add touch support for mobile devices
-      navLeft.addEventListener("touchstart", () => {
+
+      // Add touch support for mobile devices on nav arrows
+      navLeft.addEventListener("touchstart", (e) => {
+        e.preventDefault();
         window.switchMuralLeft();
       });
-      navRight.addEventListener("touchstart", () => {
+      navRight.addEventListener("touchstart", (e) => {
+        e.preventDefault();
         window.switchMuralRight();
       });
 
+      // Audio
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const volumeControl = document.getElementById("volume-control");
@@ -974,12 +995,12 @@
         }
       });
 
+      // Pages and loader
       const homePage = document.getElementById("home-page");
       const galleryPage = document.getElementById("gallery-page");
       const loader = document.getElementById("loader");
       const loaderText = document.querySelector("#loader .loading-text");
 
-      // Functions to manage the loader
       function showLoading(message) {
         if (loader && loaderText) {
           loaderText.innerHTML = message;
