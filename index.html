@@ -29,7 +29,7 @@
       crossorigin="anonymous"
     />
 
-    <!-- Load p5.js once -->
+    <!-- Load p5.js only for home page sketch -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 
     <style>
@@ -46,8 +46,7 @@
       }
 
       /* Let the p5 containers still receive touch events */
-      #interactive-container-home,
-      #interactive-container-gallery {
+      #interactive-container-home {
         touch-action: auto;
       }
 
@@ -146,7 +145,6 @@
         z-index: 300;
         color: white;
         font-size: calc(20px * var(--ticker-scale, 1));
-        /* ensure pointer events are not blocked */
         pointer-events: auto;
         touch-action: auto;
       }
@@ -213,35 +211,7 @@
         animation: marquee 100s linear infinite reverse;
       }
 
-      /* NAV BUTTONS */
-      .nav-button {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 48px;
-        color: black;
-        cursor: pointer;
-        z-index: 300;
-        user-select: none;
-        padding: 10px;
-        background: transparent;
-      }
-      #nav-left {
-        left: 10px;
-      }
-      #nav-right {
-        right: 10px;
-      }
-
-      #interactive-container-gallery {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 100;
-        touch-action: auto;
-      }
+      /* (Removed nav-button styles since no longer used) */
 
       /* AUDIO PLAYER */
       #audio-player {
@@ -390,10 +360,6 @@
           font-size: 14px;
           padding: 8px 12px;
         }
-        .nav-button {
-          font-size: 36px;
-          padding: 8px;
-        }
       }
 
       /* AUDIO PLAYER BUTTONS */
@@ -434,6 +400,23 @@
         color: black;
         border: 2px solid black;
       }
+
+      /* VIDEO CONTAINER (replacing the gallery sketches) */
+      #video-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        overflow: hidden;
+      }
+      #video-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* No controls, continual loop */
+      }
     </style>
   </head>
 
@@ -448,14 +431,14 @@
       <!-- Tickers ("Safe Trip?") -->
       <div id="home-ticker-top">
         <div class="ticker__wrap">
-          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
-          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
+          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
+          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
         </div>
       </div>
       <div id="home-ticker-bottom">
         <div class="ticker__wrap">
-          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
-          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
+          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
+          <span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span><span>Safe Trip?</span>
         </div>
       </div>
 
@@ -483,23 +466,19 @@
       </div>
     </div>
 
-    <!-- ============ GALLERY PAGE ============ -->
+    <!-- ============ GALLERY PAGE (NOW VIDEO PAGE) ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
       <!-- Tickers ("Level out?") -->
       <div id="gallery-ticker-top">
         <div class="ticker__wrap">
-          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
         </div>
       </div>
       <div id="gallery-ticker-bottom">
         <div class="ticker__wrap">
-          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
         </div>
       </div>
-
-      <!-- Navigation Arrows -->
-      <div id="nav-left" class="nav-button">&lt;</div>
-      <div id="nav-right" class="nav-button">&gt;</div>
 
       <!-- Audio player -->
       <div id="audio-player">
@@ -513,8 +492,19 @@
         <input type="range" id="volume-control" min="0" max="1" step="0.01" value="1" />
       </div>
 
-      <!-- Gallery p5 canvas -->
-      <div id="interactive-container-gallery"></div>
+      <!-- Looping video container (replaces old gallery p5) -->
+      <div id="video-container">
+        <video
+          id="loop-video"
+          autoplay
+          loop
+          muted
+          playsinline
+        >
+          <source src="assets/loop.mp4" type="video/mp4" />
+          <!-- Add more sources or fallback text as needed -->
+        </video>
+      </div>
     </div>
 
     <!-- ============ NEW MODALS ============ -->
@@ -639,252 +629,6 @@
       let homeP5 = new p5(homeSketch);
     </script>
 
-    <!-- ============ GALLERY PAGE P5 SKETCH ============ -->
-    <script>
-      let gallerySketch = function (p) {
-        let currentMural = 1;
-        let boxX, boxY, boxW, boxH;
-        let scaleFactor = 1; // Used only for Mural #2
-
-        // Mural #1 variables (original)
-        let letters1 = [];
-        const fullText1 = "TWO ACID HOUSES";
-        let alignmentActive = false;
-        let nextSwitchTime = 0;
-
-        // Mural #2 variables (responsive)
-        let letters2 = [];
-        const fullText2 = "TWO ACID HOUSES";
-
-        p.setup = function () {
-          p.createCanvas(p.windowWidth, p.windowHeight).parent("interactive-container-gallery");
-          p.textFont("WavehausLight");
-          // For Mural #1, use fixed text size
-          p.textSize(64);
-          p.textAlign(p.CENTER, p.CENTER);
-          updateBox();
-          initMural1();
-          initMural2();
-          nextSwitchTime = p.millis() + 8000;
-        };
-
-        p.draw = function () {
-          p.background(255);
-          p.noStroke();
-          p.fill(0);
-          p.rect(boxX, boxY, boxW, boxH);
-          p.stroke(255);
-          // Use fixed stroke weight for Mural #1; scaled for Mural #2
-          if (currentMural === 1) {
-            p.strokeWeight(2);
-          } else {
-            p.strokeWeight(2 * scaleFactor);
-          }
-          p.noFill();
-          p.rect(boxX, boxY, boxW, boxH);
-
-          if (currentMural === 1) {
-            // Mural #1: original behavior
-            if (p.millis() > nextSwitchTime) {
-              alignmentActive = !alignmentActive;
-              if (alignmentActive) {
-                computeAlignmentTargets();
-              } else {
-                for (let i = 0; i < letters1.length; i++) {
-                  letters1[i].dx = p.random(-1, 1);
-                  letters1[i].dy = p.random(-1, 1);
-                }
-              }
-              nextSwitchTime = p.millis() + (alignmentActive ? 20000 : 10000);
-            }
-            for (let obj of letters1) {
-              if (alignmentActive) {
-                obj.x = p.lerp(obj.x, obj.targetX, 0.006);
-                obj.y = p.lerp(obj.y, obj.targetY, 0.006);
-              } else {
-                obj.x += obj.dx;
-                obj.y += obj.dy;
-                if (obj.x < boxX) {
-                  obj.x = boxX;
-                  obj.dx *= -1;
-                }
-                if (obj.x > boxX + boxW) {
-                  obj.x = boxX + boxW;
-                  obj.dx *= -1;
-                }
-                if (obj.y < boxY) {
-                  obj.y = boxY;
-                  obj.dy *= -1;
-                }
-                if (obj.y > boxY + boxH) {
-                  obj.y = boxY + boxH;
-                  obj.dy *= -1;
-                }
-              }
-              p.fill(255);
-              p.noStroke();
-              p.text(obj.letter, obj.x, obj.y);
-            }
-            // Label for Mural #1
-            p.fill(0);
-            p.noStroke();
-            p.textSize(28);
-            p.textAlign(p.CENTER, p.BOTTOM);
-            p.text("MURAL001", boxX + boxW / 2, boxY - 10);
-          } else if (currentMural === 2) {
-            // Mural #2: responsive scaling
-            let driftActivated = false;
-            if (
-              p.mouseX >= boxX &&
-              p.mouseX <= boxX + boxW &&
-              p.mouseY >= boxY &&
-              p.mouseY <= boxY + boxH
-            ) {
-              driftActivated = true;
-            }
-            for (let obj of letters2) {
-              if (driftActivated && p.abs(p.mouseX - obj.x) < 50 * scaleFactor) {
-                if (p.mouseY > obj.y) {
-                  obj.vOffset += 0.03;
-                } else if (p.mouseY < obj.y) {
-                  obj.vOffset -= 0.03;
-                }
-              } else {
-                obj.vOffset *= 0.98;
-                obj.offsetY = p.lerp(obj.offsetY, 0, 0.05);
-              }
-              obj.offsetY += obj.vOffset;
-              let upMax = obj.originalY - boxY;
-              let downMax = boxY + boxH - obj.originalY;
-              obj.offsetY = p.constrain(obj.offsetY, -upMax, downMax);
-              obj.y = obj.originalY + obj.offsetY;
-              p.fill(255);
-              p.noStroke();
-              p.text(obj.letter, obj.x, obj.y);
-            }
-            // Label for Mural #2 (scaled)
-            p.fill(0);
-            p.noStroke();
-            p.textSize(28 * scaleFactor);
-            p.textAlign(p.CENTER, p.BOTTOM);
-            p.text("MURAL002", boxX + boxW / 2, boxY - 10 * scaleFactor);
-          }
-
-          positionAudioPlayer();
-        };
-
-        p.windowResized = function () {
-          p.resizeCanvas(p.windowWidth, p.windowHeight);
-          scaleFactor = p.windowWidth / 1200;
-          updateBox();
-          initMural1();
-          initMural2();
-        };
-
-        function updateBox() {
-          boxW = p.width * 0.6;
-          boxH = p.height * 0.6;
-          boxX = (p.width - boxW) / 2;
-          boxY = (p.height - boxH) / 2;
-        }
-
-        function initMural1() {
-          letters1 = [];
-          for (let char of fullText1) {
-            if (char === " ") continue;
-            letters1.push({
-              letter: char,
-              x: p.random(boxX, boxX + boxW),
-              y: p.random(boxY, boxY + boxH),
-              dx: p.random(-2, 2),
-              dy: p.random(-2, 2),
-              targetX: 0,
-              targetY: 0,
-            });
-          }
-        }
-
-        function computeAlignmentTargets() {
-          let words = [
-            { word: "TWO", startIndex: 0, targetY: boxY + boxH * 0.35 },
-            { word: "ACID", startIndex: 3, targetY: boxY + boxH * 0.5 },
-            { word: "HOUSES", startIndex: 7, targetY: boxY + boxH * 0.65 },
-          ];
-          for (let entry of words) {
-            let wordWidth = p.textWidth(entry.word);
-            let startX = boxX + (boxW - wordWidth) / 2;
-            let currentX = startX;
-            for (let i = 0; i < entry.word.length; i++) {
-              let letterWidth = p.textWidth(entry.word[i]);
-              let letterIndex = entry.startIndex + i;
-              if (letterIndex < letters1.length) {
-                letters1[letterIndex].targetX = currentX + letterWidth / 2;
-                letters1[letterIndex].targetY = entry.targetY;
-              }
-              currentX += letterWidth;
-            }
-          }
-        }
-
-        function initMural2() {
-          letters2 = [];
-          let totalW = 0;
-          for (let ch of fullText2) {
-            totalW += p.textWidth(ch) * scaleFactor;
-          }
-          let staticY = boxY + boxH / 2;
-          let startX = boxX + (boxW - totalW) / 2;
-          let currentX = startX;
-          for (let i = 0; i < fullText2.length; i++) {
-            let ch = fullText2[i];
-            let w = p.textWidth(ch) * scaleFactor;
-            letters2.push({
-              letter: ch,
-              originalX: currentX + w / 2,
-              originalY: staticY,
-              offsetY: 0,
-              vOffset: 0,
-              x: currentX + w / 2,
-              y: staticY,
-            });
-            currentX += w;
-          }
-        }
-
-        function positionAudioPlayer() {
-          const ticker = document.getElementById("gallery-ticker-bottom");
-          const tickerHeight = ticker.offsetHeight;
-          const audioPlayer = document.getElementById("audio-player");
-          const bottomBlackBox = boxY + boxH;
-          const tickerTop = window.innerHeight - tickerHeight;
-          const verticalPos = (bottomBlackBox + tickerTop) / 2 - 30;
-          audioPlayer.style.top = verticalPos + "px";
-        }
-
-        // Switch murals
-        window.switchMuralLeft = function () {
-          if (currentMural === 1) {
-            currentMural = 2;
-            initMural2();
-          } else {
-            currentMural = 1;
-            initMural1();
-          }
-        };
-        window.switchMuralRight = function () {
-          if (currentMural === 1) {
-            currentMural = 2;
-            initMural2();
-          } else {
-            currentMural = 1;
-            initMural1();
-          }
-        };
-      };
-
-      let galleryP5;
-    </script>
-
     <!-- ============ SHARED JS LOGIC ============ -->
     <script>
       const homeTickerTop = document.getElementById("home-ticker-top");
@@ -925,25 +669,6 @@
       const galleryTickerBottom = document.getElementById("gallery-ticker-bottom");
       galleryTickerTop.addEventListener("click", showHome);
       galleryTickerBottom.addEventListener("click", showHome);
-
-      const navLeft = document.getElementById("nav-left");
-      const navRight = document.getElementById("nav-right");
-      navLeft.addEventListener("click", () => {
-        window.switchMuralLeft();
-      });
-      navRight.addEventListener("click", () => {
-        window.switchMuralRight();
-      });
-
-      // Add touch support for mobile devices on nav arrows
-      navLeft.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        window.switchMuralLeft();
-      });
-      navRight.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        window.switchMuralRight();
-      });
 
       // Audio
       const audio = document.getElementById("my-audio");
@@ -1044,13 +769,6 @@
             galleryPage.classList.remove("hidden");
             galleryPage.offsetWidth;
             galleryPage.classList.remove("invisible");
-
-            if (!galleryP5) {
-              galleryP5 = new p5(gallerySketch);
-            } else {
-              galleryP5.resizeCanvas(window.innerWidth, window.innerHeight);
-            }
-
             hideLoading();
           }, 2000);
         }, 3000);
