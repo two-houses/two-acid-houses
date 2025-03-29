@@ -6,34 +6,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>TWO ACID HOUSES</title>
 
-    <!-- Preload fonts (only done once) -->
-    <link
-      rel="preload"
-      href="fonts/Wavehaus-158ExtraBold.otf"
-      as="font"
-      type="font/otf"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="fonts/Wavehaus-42Light.otf"
-      as="font"
-      type="font/otf"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="fonts/Wavehaus-28Thin.otf"
-      as="font"
-      type="font/otf"
-      crossorigin="anonymous"
-    />
+    <!-- ================= FONT DECLARATIONS ================== -->
+    <!-- You mentioned these files exist in your fonts/ folder. -->
+    <!-- Adjust filenames / paths if yours differ. -->
+    <style>
+      @font-face {
+        font-family: 'NeckynDemoRegular';
+        src: url('fonts/NeckynDemoRegular-x36AK.otf') format('opentype');
+      }
+      @font-face {
+        font-family: 'Wavehaus-28Thin';
+        src: url('fonts/Wavehaus-28Thin.otf') format('opentype');
+      }
+      @font-face {
+        font-family: 'Wavehaus-42Light';
+        src: url('fonts/Wavehaus-42Light.otf') format('opentype');
+      }
+      @font-face {
+        font-family: 'Wavehaus-66Book';
+        src: url('fonts/Wavehaus-66Book.otf') format('opentype');
+      }
+      @font-face {
+        font-family: 'Wavehaus-95SemiBold';
+        src: url('fonts/Wavehaus-95SemiBold.otf') format('opentype');
+      }
+      @font-face {
+        font-family: 'Wavehaus-128Bold';
+        src: url('fonts/Wavehaus-128Bold.otf') format('opentype');
+      }
+      @font-face {
+        font-family: 'Wavehaus-158ExtraBold';
+        src: url('fonts/Wavehaus-158ExtraBold.otf') format('opentype');
+      }
+    </style>
 
     <!-- Load p5.js only for home page sketch -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 
     <style>
-      /* ----- PREVENT PAGE FROM MOVING ON MOBILE ----- */
+      /* ====== GLOBAL / RESET ===== */
       html, body {
         margin: 0;
         overscroll-behavior: none; /* Prevents iOS overscroll bounce */
@@ -42,10 +53,12 @@
         width: 100%;
         position: fixed;          /* Prevent page movement on scroll/touch */
         background-color: #fff;
-        font-family: 'WavehausLight', Arial, sans-serif;
+
+        /* Choose your default font: here we pick Wavehaus-42Light */
+        font-family: 'Wavehaus-42Light', sans-serif;
       }
 
-      /* Let the p5 containers still receive touch events */
+      /* Let the p5 container still receive touch events */
       #interactive-container-home {
         touch-action: auto;
       }
@@ -67,7 +80,7 @@
         overflow: hidden;
       }
 
-      /* LOADING OVERLAY */
+      /* ====== LOADING OVERLAY ===== */
       #loader {
         display: none;
         position: fixed;
@@ -98,11 +111,11 @@
         font-size: 24px;
         color: #000;
         animation: gentlePulse 5s infinite ease-in-out;
-        font-family: 'WavehausLight', Arial, sans-serif;
         text-align: center;
+        font-family: 'Wavehaus-42Light', sans-serif; /* or whichever you like */
       }
 
-      /* HOME PAGE STYLES */
+      /* ====== HOME PAGE STYLES ===== */
       #interactive-container-home {
         position: absolute;
         top: 0;
@@ -111,7 +124,6 @@
         height: 100%;
         z-index: 100;
         background: transparent;
-        touch-action: auto;
       }
       #static-top,
       #static-bottom {
@@ -130,7 +142,7 @@
         top: 65%;
       }
 
-      /* TICKERS */
+      /* ====== TICKERS ===== */
       #home-ticker-top,
       #home-ticker-bottom,
       #gallery-ticker-top,
@@ -141,7 +153,8 @@
         overflow: hidden;
         white-space: nowrap;
         cursor: pointer;
-        padding: calc(10px * var(--ticker-scale, 1)) 0;
+        /* Increased padding from 10px to 20px for easier tapping */
+        padding: calc(20px * var(--ticker-scale, 1)) 0;
         z-index: 300;
         color: white;
         font-size: calc(20px * var(--ticker-scale, 1));
@@ -176,28 +189,6 @@
       #home-ticker-top .ticker__wrap {
         animation: marquee 100s linear infinite reverse;
       }
-
-      /* GALLERY PAGE STYLES */
-      body #gallery-page {
-        background: #fff;
-        color: black;
-        font-family: 'WavehausLight', sans-serif;
-      }
-      #gallery-ticker-top,
-      #gallery-ticker-bottom {
-        position: absolute;
-        width: 100%;
-        background-color: black;
-        overflow: hidden;
-        white-space: nowrap;
-        cursor: pointer;
-        padding: 10px 0;
-        z-index: 250;
-        font-size: 20px;
-        color: white;
-        pointer-events: auto;
-        touch-action: auto;
-      }
       #gallery-ticker-top {
         top: 0;
       }
@@ -211,61 +202,60 @@
         animation: marquee 100s linear infinite reverse;
       }
 
-      /* AUDIO PLAYER */
+      /* ====== GALLERY (VIDEO) PAGE STYLES ===== */
+      body #gallery-page {
+        background: #fff;
+        color: black;
+      }
+
+      /* ====== AUDIO PLAYER ===== */
+      /* We want a white media player with thicker outlines, no volume control */
       #audio-player {
-        /* Increase z-index so it’s above the 300-level tickers */
-        z-index: 350;
+        z-index: 350; /* above the tickers */
         position: absolute;
-        /* Adjust top so it’s no longer hidden behind the top ticker */
         top: 15%;
         left: 50%;
         transform: translate(-50%, 0);
         color: black;
-        background: transparent;
+        background: white; /* changed to white */
         text-align: center;
-        padding: 5px;
+        padding: 10px;
+        border: 3px solid black; /* slightly thicker border */
+        box-sizing: border-box;
       }
       #audio-player button {
-        font-size: 24px;
+        font-size: 28px; /* larger triangles for better mobile scaling */
         color: black;
         background: transparent;
-        border: 2px solid black;
+        border: 3px solid black; /* thicker outline */
         border-radius: 5px;
         padding: 5px 10px;
         cursor: pointer;
       }
-      #audio-player input[type='range'] {
-        width: 100px;
-        margin-top: 5px;
-        background: transparent;
-        appearance: none;
-        -webkit-appearance: none;
+      .button-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
       }
-      #audio-player input[type='range']::-webkit-slider-runnable-track {
-        height: 8px;
-        background: grey;
+      .square-button {
+        width: 60px;  /* slightly bigger to maintain triangle size */
+        height: 60px; /* for mobile consistency */
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      #audio-player input[type='range']::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 16px;
-        height: 16px;
-        background: black;
-        border-radius: 50%;
-        margin-top: -4px;
+      .rotate-90 {
+        transform: rotate(90deg);
       }
-      #audio-player input[type='range']::-moz-range-track {
-        height: 8px;
-        background: grey;
-      }
-      #audio-player input[type='range']::-moz-range-thumb {
-        width: 16px;
-        height: 16px;
-        background: black;
-        border: none;
-        border-radius: 50%;
+      .rotate-180 {
+        transform: rotate(180deg);
       }
 
-      /* MODALS */
+      /* Removed volume control entirely, so no styles needed. */
+
+      /* ====== MODALS ===== */
       .modal {
         display: none;
         position: fixed;
@@ -275,7 +265,7 @@
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.7);
-        align-items: center;
+        align-items: flex-start; /* so it appears higher on screen */
         justify-content: center;
       }
       .modal-content {
@@ -284,14 +274,15 @@
         min-height: 250px;
         padding: 40px 15px;
         text-align: center;
-        font-family: 'WavehausLight', Arial, sans-serif;
         background: black;
         color: white;
-        border-radius: 0;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        margin-top: 10%; /* shift modal content higher for mobile keyboards */
+        border-radius: 0;
+        font-family: 'Wavehaus-42Light', sans-serif;
       }
       .modal-content input[type='password'] {
         padding: 10px;
@@ -304,88 +295,20 @@
       .modal-content button {
         padding: 10px 20px;
         font-size: 16px;
-        font-family: 'Wavehaus28Thin', Arial, sans-serif;
         cursor: pointer;
         border: none;
         border-radius: 0;
         background: white;
         color: #333;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       }
       .close {
         position: absolute;
         top: 10px;
         right: 10px;
         font-size: 20px;
-        font-weight: thin;
+        font-weight: normal;
         color: #fff;
         cursor: pointer;
-      }
-
-      @keyframes marquee {
-        0% {
-          transform: translateX(0%);
-        }
-        100% {
-          transform: translateX(-50%);
-        }
-      }
-
-      /* MOBILE RESPONSIVENESS */
-      @media screen and (max-width: 600px) {
-        body {
-          overflow-x: hidden; /* No horizontal scroll on small screens */
-        }
-        .page-container {
-          height: auto;
-          min-height: 100vh;
-          overflow: visible;
-        }
-        #static-top,
-        #static-bottom {
-          font-size: 32px;
-        }
-        #home-ticker-top,
-        #home-ticker-bottom,
-        #gallery-ticker-top,
-        #gallery-ticker-bottom {
-          font-size: 16px;
-          padding: 5px 0;
-        }
-        .modal-content {
-          max-width: 90%;
-          padding: 20px;
-        }
-        .modal-content input[type='password'],
-        .modal-content button {
-          font-size: 14px;
-          padding: 8px 12px;
-        }
-      }
-
-      /* AUDIO PLAYER BUTTONS */
-      .button-group {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        align-items: center;
-      }
-      .square-button {
-        width: 50px;
-        height: 50px;
-        padding: 0;
-        border: 2px solid black;
-        background: transparent;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .rotate-90 {
-        transform: rotate(90deg);
-      }
-      .rotate-180 {
-        transform: rotate(180deg);
       }
       .modal-content.inverse {
         background: white;
@@ -402,7 +325,53 @@
         border: 2px solid black;
       }
 
-      /* VIDEO CONTAINER (replacing the gallery sketches) */
+      @keyframes marquee {
+        0% {
+          transform: translateX(0%);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+
+      /* ====== MOBILE RESPONSIVENESS ===== */
+      @media screen and (max-width: 600px) {
+        body {
+          overflow-x: hidden;
+        }
+        .page-container {
+          height: auto;
+          min-height: 100vh;
+          overflow: visible;
+        }
+        #static-top,
+        #static-bottom {
+          font-size: 32px;
+        }
+        .modal-content {
+          max-width: 90%;
+          padding: 20px;
+          margin-top: 20%; /* shift even higher for smaller screens */
+        }
+        .modal-content input[type='password'],
+        .modal-content button {
+          font-size: 14px;
+          padding: 8px 12px;
+        }
+        #audio-player {
+          top: 20%;
+        }
+        #audio-player button {
+          font-size: 24px; /* smaller but still large enough for a big triangle */
+          border: 3px solid black;
+        }
+        .square-button {
+          width: 50px;
+          height: 50px;
+        }
+      }
+
+      /* ====== VIDEO CONTAINER (REPLACES OLD GALLERY P5) ===== */
       #video-container {
         position: absolute;
         top: 0;
@@ -412,7 +381,7 @@
         z-index: 100;
         overflow: hidden;
       }
-      #video-container video {
+      #loop-video {
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -480,7 +449,7 @@
         </div>
       </div>
 
-      <!-- Audio player -->
+      <!-- Audio player (now white, no volume, thicker outline) -->
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
@@ -488,11 +457,9 @@
           <button id="download-90" class="square-button rotate-90">►</button>
           <button id="download-180" class="square-button rotate-180">►</button>
         </div>
-        <br />
-        <input type="range" id="volume-control" min="0" max="1" step="0.01" value="1" />
       </div>
 
-      <!-- Looping video container (replaces old gallery p5) -->
+      <!-- Looping video container -->
       <div id="video-container">
         <video
           id="loop-video"
@@ -501,9 +468,9 @@
           muted
           playsinline
         >
-          <!-- Make sure bug.mp4 is actually in your assets folder -->
-          <source src="assets/bug.mp4" type="video/mp4" />
-          <!-- Add more sources or fallback text as needed -->
+          <!-- We set src dynamically from JS, so this can remain empty or fallback -->
+          <source src="" type="video/mp4" />
+          <!-- fallback text if needed -->
         </video>
       </div>
     </div>
@@ -540,6 +507,8 @@
           spacing = 120;
 
         p.preload = function () {
+          /* We could switch to another font if you prefer:
+             customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf"); */
           customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf");
         };
 
@@ -561,9 +530,9 @@
           }
           if (customFont && p.textFont() !== customFont) {
             p.textFont(customFont);
-          } else if (!customFont) {
-            p.textFont("Arial");
           }
+
+          // Draw existing trails
           for (let trail of trails) {
             drawWavyText(
               trail.x,
@@ -572,6 +541,8 @@
               trail.letter
             );
           }
+
+          // Animate letters
           for (let i = 0; i < letters.length; i++) {
             let letter = textInput[i];
             let letterPos = letters[i];
@@ -584,6 +555,8 @@
             }
             letterPos.x += (letterPos.originalX - letterPos.x) * 0.02;
             letterPos.y += (letterPos.originalY - letterPos.y) * 0.02;
+
+            // Add colored offset trails
             trails.push({
               x: letterPos.x - 10,
               y: letterPos.y,
@@ -596,9 +569,12 @@
               color: [0, 0, 255],
               letter,
             });
+
+            // Limit total trail length
             if (trails.length > maxTrailLength) {
               trails.splice(0, trails.length - maxTrailLength);
             }
+
             p.fill(0);
             p.noStroke();
             p.text(letter, letterPos.x, letterPos.y);
@@ -626,12 +602,27 @@
           initializeLetters();
         };
       };
-
       let homeP5 = new p5(homeSketch);
     </script>
 
     <!-- ============ SHARED JS LOGIC ============ -->
     <script>
+      // Array of possible videos to choose from at random
+      const videoSources = [
+       // "assets/video1.mp4",
+       // "assets/video2.mp4",
+        "assets/bug.mp4"
+        // Add or remove your own MP4 files here
+      ];
+
+      // Password we expect
+      const correctPassword = "acid";
+
+      // Check if user has already entered the password successfully
+      // If so, skip the modal
+      const hasAccess = localStorage.getItem("acid-access-granted") === "true";
+
+      // DOM references
       const homeTickerTop = document.getElementById("home-ticker-top");
       const homeTickerBottom = document.getElementById("home-ticker-bottom");
       const modal = document.getElementById("password-modal");
@@ -639,24 +630,50 @@
       const modalSubmit = document.getElementById("modal-submit");
       const modalPassword = document.getElementById("modal-password");
 
-      // Ensure the Safe Trip banners open the password modal (click + touch)
-      homeTickerTop.addEventListener("click", openModal);
-      homeTickerBottom.addEventListener("click", openModal);
+      const galleryTickerTop = document.getElementById("gallery-ticker-top");
+      const galleryTickerBottom = document.getElementById("gallery-ticker-bottom");
+
+      const downloadModal = document.getElementById("download-modal");
+      const placeholderModal = document.getElementById("placeholder-modal");
+      const downloadButton = document.getElementById("download-90");
+      const placeholderButton = document.getElementById("download-180");
+      const downloadModalClose = document.getElementById("download-modal-close");
+      const placeholderModalClose = document.getElementById("placeholder-modal-close");
+
+      const homePage = document.getElementById("home-page");
+      const galleryPage = document.getElementById("gallery-page");
+      const loader = document.getElementById("loader");
+      const loaderText = document.querySelector("#loader .loading-text");
+
+      const audio = document.getElementById("my-audio");
+      const playPauseBtn = document.getElementById("play-pause");
+      const loopVideo = document.getElementById("loop-video");
+
+      // ========== TICKERS CLICK EVENTS (Open modal or go home) ==========
+      homeTickerTop.addEventListener("click", onHomeTickerClick);
+      homeTickerBottom.addEventListener("click", onHomeTickerClick);
       homeTickerTop.addEventListener("touchstart", (e) => {
         e.preventDefault();
-        openModal();
+        onHomeTickerClick();
       });
       homeTickerBottom.addEventListener("touchstart", (e) => {
         e.preventDefault();
-        openModal();
+        onHomeTickerClick();
       });
 
-      function openModal() {
-        modal.style.display = "flex";
-        modalPassword.value = "";
-        modalPassword.focus();
+      galleryTickerTop.addEventListener("click", showHome);
+      galleryTickerBottom.addEventListener("click", showHome);
+
+      function onHomeTickerClick() {
+        // If already hasAccess, go straight to gallery; else show modal
+        if (hasAccess) {
+          showGallery();
+        } else {
+          openModal();
+        }
       }
 
+      // ========== MODAL (PASSWORD) ==========
       modalClose.addEventListener("click", () => {
         modal.style.display = "none";
       });
@@ -666,19 +683,32 @@
         }
       });
 
-      const galleryTickerTop = document.getElementById("gallery-ticker-top");
-      const galleryTickerBottom = document.getElementById("gallery-ticker-bottom");
-      galleryTickerTop.addEventListener("click", showHome);
-      galleryTickerBottom.addEventListener("click", showHome);
-
-      // Audio
-      const audio = document.getElementById("my-audio");
-      const playPauseBtn = document.getElementById("play-pause");
-      const volumeControl = document.getElementById("volume-control");
-      playPauseBtn.addEventListener("click", togglePlay);
-      volumeControl.addEventListener("input", function () {
-        audio.volume = this.value;
+      function openModal() {
+        modal.style.display = "flex";
+        modalPassword.value = "";
+        modalPassword.focus();
+      }
+      modalSubmit.addEventListener("click", checkPassword);
+      modalPassword.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          checkPassword();
+        }
       });
+
+      function checkPassword() {
+        const enteredPassword = modalPassword.value;
+        if (enteredPassword === correctPassword) {
+          localStorage.setItem("acid-access-granted", "true");
+          modal.style.display = "none";
+          showGallery();
+        } else {
+          alert("ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation.");
+        }
+      }
+
+      // ========== AUDIO ==========
+      playPauseBtn.addEventListener("click", togglePlay);
 
       function togglePlay() {
         if (audio.paused) {
@@ -690,28 +720,19 @@
         }
       }
 
-      // Download & Placeholder modals
-      const downloadModal = document.getElementById("download-modal");
-      const placeholderModal = document.getElementById("placeholder-modal");
-      const downloadButton = document.getElementById("download-90");
-      const placeholderButton = document.getElementById("download-180");
-      const downloadModalClose = document.getElementById("download-modal-close");
-      const placeholderModalClose = document.getElementById("placeholder-modal-close");
-
+      // ========== DOWNLOAD & PLACEHOLDER MODALS ==========
       downloadButton.addEventListener("click", () => {
         downloadModal.style.display = "flex";
       });
       placeholderButton.addEventListener("click", () => {
         placeholderModal.style.display = "flex";
       });
-
       downloadModalClose.addEventListener("click", () => {
         downloadModal.style.display = "none";
       });
       placeholderModalClose.addEventListener("click", () => {
         placeholderModal.style.display = "none";
       });
-
       window.addEventListener("click", (e) => {
         if (e.target === downloadModal) {
           downloadModal.style.display = "none";
@@ -721,12 +742,7 @@
         }
       });
 
-      // Pages and loader
-      const homePage = document.getElementById("home-page");
-      const galleryPage = document.getElementById("gallery-page");
-      const loader = document.getElementById("loader");
-      const loaderText = document.querySelector("#loader .loading-text");
-
+      // ========== PAGE TRANSITIONS & LOADER ==========
       function showLoading(message) {
         if (loader && loaderText) {
           loaderText.innerHTML = message;
@@ -739,28 +755,14 @@
         }
       }
 
-      // Handle password logic
-      modalSubmit.addEventListener("click", () => {
-        const enteredPassword = modalPassword.value;
-        const correctPassword = "acid";
-        if (enteredPassword === correctPassword) {
-          modal.style.display = "none";
-          showGallery();
-        } else {
-          alert("ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation.");
-        }
-      });
-      modalPassword.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          modalSubmit.click();
-        }
-      });
-
       function showGallery() {
+        // Before showing the gallery, pick a random video from array
+        const randomIndex = Math.floor(Math.random() * videoSources.length);
+        loopVideo.src = videoSources[randomIndex];
+
         showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
         homePage.classList.remove("invisible");
-        homePage.offsetWidth;
+        homePage.offsetWidth; // force reflow
         homePage.classList.add("invisible");
 
         setTimeout(() => {
@@ -778,7 +780,7 @@
       function showHome() {
         showLoading("Bringing you back down....");
         galleryPage.classList.remove("invisible");
-        galleryPage.offsetWidth;
+        galleryPage.offsetWidth; // force reflow
         galleryPage.classList.add("invisible");
 
         setTimeout(() => {
@@ -788,6 +790,12 @@
           homePage.classList.remove("invisible");
           hideLoading();
         }, 3000);
+      }
+
+      // If user already had access, skip modal
+      if (hasAccess) {
+        // Optionally, we can go directly to gallery on page load if desired
+        // But currently, we do nothing special here. The user can tap the ticker to open the gallery
       }
     </script>
   </body>
