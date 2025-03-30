@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <!-- Ensures mobile browsers scale properly -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>TWO ACID HOUSES - Organic Redesign (No Tickers)</title>
+    <title>TWO ACID HOUSES - No LocalStorage Password</title>
 
-    <!-- FONT DEFINITIONS (Same as before) -->
+    <!-- FONT DEFINITIONS -->
     <style>
       @font-face {
         font-family: 'NeckynDemoRegular';
@@ -44,13 +44,11 @@
       }
     </style>
 
-    <!-- Load p5.js for the home page sketch -->
+    <!-- p5.js for the home page sketch -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 
     <style>
-      /* ------------------------------------------------------------------
-         GLOBAL & BACKGROUND STYLES
-      ------------------------------------------------------------------ */
+      /* =============== GLOBAL / BACKGROUND =============== */
       html, body {
         margin: 0;
         overscroll-behavior: none;
@@ -60,10 +58,10 @@
         position: fixed;
         font-family: 'Wavehaus42Light', Arial, sans-serif;
         color: #000;
-        background-color: #f3f3f3; /* Light grey + static overlay below */
+        background-color: #f3f3f3;
       }
+      /* Subtle static overlay using repeating linear gradient */
       body::before {
-        /* Subtle repeating static overlay */
         content: "";
         pointer-events: none;
         position: fixed;
@@ -95,7 +93,7 @@
         width: 100%;
         height: 100vh;
         overflow: hidden;
-        z-index: 2; /* above the static overlay */
+        z-index: 2;
       }
 
       /* LOADER OVERLAY */
@@ -120,9 +118,7 @@
         font-family: 'Wavehaus28Thin', Arial, sans-serif;
       }
 
-      /* ------------------------------------------------------------------
-         HOME PAGE
-      ------------------------------------------------------------------ */
+      /* =============== HOME PAGE =============== */
       #interactive-container-home {
         position: absolute;
         top: 0; left: 0;
@@ -137,7 +133,6 @@
         text-align: center;
         font-size: 48px;
         pointer-events: none;
-        color: black;
       }
       #static-top {
         top: 10%; line-height: 1.2;
@@ -146,10 +141,7 @@
         top: 65%;
       }
 
-      /* 
-         A single button on the landing page to enter the transmission code 
-         We'll style it in a similar vintage/glitch style as the control panel 
-      */
+      /* Single button on the landing page to open password modal */
       #enter-code-btn {
         position: absolute;
         left: 50%; top: 80%;
@@ -162,20 +154,13 @@
         border-radius: 6px;
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
-        font-family: 'Wavehaus42Light', Arial, sans-serif;
       }
       #enter-code-btn:hover {
         background-color: #ddd;
         transform: scale(1.03);
       }
 
-      /* ------------------------------------------------------------------
-         GALLERY PAGE / MEDIA PLAYER
-      ------------------------------------------------------------------ */
-      body #gallery-page {
-        background: #fff;
-        color: black;
-      }
+      /* =============== GALLERY PAGE / MEDIA PLAYER =============== */
       #audio-player {
         z-index: 350;
         position: absolute;
@@ -183,15 +168,16 @@
         left: 50%;
         transform: translate(-50%, 0);
         text-align: center;
-        width: 320px; 
+        width: 320px;
         padding: 20px;
         box-sizing: border-box;
-        background-color: #f7f7f7; 
+        background-color: #f7f7f7;
         border: 2px solid #333;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
         position: relative;
       }
+      /* Subtle wiggly shape overlay */
       #audio-player::before {
         content: "";
         position: absolute;
@@ -209,7 +195,6 @@
         );
         opacity: 0.3;
       }
-
       .button-group {
         display: flex;
         flex-direction: column;
@@ -218,7 +203,6 @@
         position: relative;
         z-index: 2;
       }
-
       .control-panel-button {
         width: 280px;
         padding: 15px;
@@ -240,7 +224,6 @@
         background-color: #ddd;
         transform: scale(1.02);
       }
-
       .indicator {
         width: 15px; 
         height: 15px;
@@ -255,7 +238,7 @@
         animation: none;
       }
       .light-active {
-        background-color: #e70000; 
+        background-color: #e70000;
         animation: ledPulse 1.5s infinite;
       }
       @keyframes ledPulse {
@@ -263,7 +246,7 @@
         50%      { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
 
-      /* VIDEO CONTAINER */
+      /* VIDEO BACKGROUND */
       #video-container {
         position: absolute;
         top: 0; left: 0;
@@ -285,7 +268,7 @@
         z-index: 3000;
         left: 0; top: 0;
         width: 100%; height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
+        background-color: rgba(0,0,0,0.7);
         align-items: center;
         justify-content: center;
       }
@@ -327,6 +310,7 @@
         color: #fff;
         cursor: pointer;
       }
+
       @media screen and (max-width: 600px) {
         body {
           overflow-x: hidden;
@@ -353,7 +337,6 @@
           padding: 8px 12px;
         }
       }
-
       .modal-content.inverse {
         background: white; color: black;
       }
@@ -374,16 +357,15 @@
       <div class="loading-text">Loading...</div>
     </div>
 
-    <!-- ================= HOME PAGE ================ -->
+    <!-- ============ HOME PAGE ============ -->
     <div id="home-page" class="page-container fadeable">
-      <!-- The p5 canvas background -->
+      <!-- p5 background -->
       <div id="interactive-container-home"></div>
 
-      <!-- Page Title / Text -->
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
 
-      <!-- Single button to open or skip password modal -->
+      <!-- Single Button => Always open the password modal -->
       <button id="enter-code-btn">Enter Transmission Code</button>
 
       <!-- Password Modal -->
@@ -403,17 +385,17 @@
 
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
-      <!-- Audio player / control panel -->
+      <!-- Control Panel -->
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
-          <!-- Button 1: Play/Pause with indicator -->
+          <!-- Button 1: Play/Pause with LED -->
           <button id="play-pause" class="control-panel-button">
             <span id="play-pause-text">Lock into detected signal</span>
             <span id="play-pause-indicator" class="indicator light-off"></span>
           </button>
 
-          <!-- Button 2: Download -->
+          <!-- Button 2: Download Modal -->
           <button id="download-btn" class="control-panel-button">
             Download 16-bit Audio Manifest
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
@@ -425,7 +407,7 @@
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
 
-          <!-- Button 4: "Disconnect From Relay Station" (replaces ticker) -->
+          <!-- Button 4: "Disconnect From Relay Station" => Return Home -->
           <button id="disconnect-btn" class="control-panel-button">
             Disconnect From Relay Station
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
@@ -433,7 +415,7 @@
         </div>
       </div>
 
-      <!-- Looping video container -->
+      <!-- Video background -->
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
           <source id="video-source" src="" type="video/mp4" />
@@ -442,7 +424,6 @@
     </div>
 
     <!-- ============ EXTRA MODALS ============ -->
-    <!-- Download Modal -->
     <div id="download-modal" class="modal">
       <div class="modal-content inverse">
         <span class="close" id="download-modal-close">&times;</span>
@@ -453,7 +434,6 @@
       </div>
     </div>
 
-    <!-- Placeholder Modal -->
     <div id="placeholder-modal" class="modal">
       <div class="modal-content inverse">
         <span class="close" id="placeholder-modal-close">&times;</span>
@@ -486,17 +466,21 @@
 
         p.draw = function () {
           p.clear();
+          // Frame rate logic
           if (p.millis() - lastFrameRateCheck > 1000) {
             let fps = p.frameRate();
             if (fps < 30) maxTrailLength = 300;
             else if (fps > 50) maxTrailLength = 600;
             lastFrameRateCheck = p.millis();
           }
+          // Font
           if (customFont && p.textFont() !== customFont) {
             p.textFont(customFont);
           } else if (!customFont) {
             p.textFont("Arial");
           }
+
+          // Draw existing trails
           for (let trail of trails) {
             drawWavyText(
               trail.x,
@@ -505,6 +489,8 @@
               trail.letter
             );
           }
+
+          // Draw & animate each letter
           for (let i = 0; i < letters.length; i++) {
             let letter = textInput[i];
             let letterPos = letters[i];
@@ -517,6 +503,8 @@
             }
             letterPos.x += (letterPos.originalX - letterPos.x) * 0.02;
             letterPos.y += (letterPos.originalY - letterPos.y) * 0.02;
+
+            // Add colored trails
             trails.push({
               x: letterPos.x - 10,
               y: letterPos.y,
@@ -529,9 +517,13 @@
               color: [0, 0, 255],
               letter,
             });
+
+            // Trim old trails
             if (trails.length > maxTrailLength) {
               trails.splice(0, trails.length - maxTrailLength);
             }
+
+            // Main letter
             p.fill(0);
             p.noStroke();
             p.text(letter, letterPos.x, letterPos.y);
@@ -565,33 +557,26 @@
 
     <!-- ============ JS LOGIC (PASSWORD, VIDEO, MODALS, ETC.) ============ -->
     <script>
-      /* ========================================
-         1) Single button on Home: "Enter Transmission Code"
-      ======================================== */
+      /* ------------------------
+         1) "Enter Transmission Code" => ALWAYS open password modal
+      ------------------------ */
       const enterCodeBtn = document.getElementById("enter-code-btn");
       const passwordModal = document.getElementById("password-modal");
       const modalClose = document.getElementById("modal-close");
       const modalSubmit = document.getElementById("modal-submit");
       const modalPassword = document.getElementById("modal-password");
 
-      // If user has previously entered password, skip the modal
-      const passwordAccepted = localStorage.getItem("passwordAccepted") === "true";
-
-      function openModalIfNeeded() {
-        if (passwordAccepted) {
-          showGallery();
-        } else {
-          passwordModal.style.display = "flex";
-          modalPassword.value = "";
-          modalPassword.focus();
-        }
-      }
-
-      enterCodeBtn.addEventListener("click", openModalIfNeeded);
+      enterCodeBtn.addEventListener("click", () => {
+        // Show password modal (no localStorage check)
+        passwordModal.style.display = "flex";
+        modalPassword.value = "";
+        modalPassword.focus();
+      });
 
       modalClose.addEventListener("click", () => {
         passwordModal.style.display = "none";
       });
+
       window.addEventListener("click", (e) => {
         if (e.target === passwordModal) {
           passwordModal.style.display = "none";
@@ -610,28 +595,27 @@
         const enteredPassword = modalPassword.value;
         const correctPassword = "qwerty";
         if (enteredPassword === correctPassword) {
-          localStorage.setItem("passwordAccepted", "true");
           passwordModal.style.display = "none";
-          showGallery();
+          showGallery();  // Load the gallery
         } else {
           alert("ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation.");
         }
       }
 
-      /* ========================================
-         2) Audio Player (Play/Pause + new Disconnect button)
-      ======================================== */
+      /* ------------------------
+         2) Audio Player
+      ------------------------ */
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
       const playPauseIndicator = document.getElementById("play-pause-indicator");
 
-      // Additional control panel buttons
+      // Additional control buttons
       const downloadButton = document.getElementById("download-btn");
       const placeholderButton = document.getElementById("placeholder-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
 
-      // Initialize audio button states
+      // Initialize
       playPauseText.textContent = "Lock into detected signal";
       playPauseIndicator.classList.add("light-off");
 
@@ -650,12 +634,12 @@
         }
       }
 
-      // "Disconnect From Relay Station" -> same as returning home
+      // "Disconnect From Relay Station" => Return to home
       disconnectBtn.addEventListener("click", showHome);
 
-      /* ========================================
+      /* ------------------------
          3) Download & Placeholder Modals
-      ======================================== */
+      ------------------------ */
       const downloadModal = document.getElementById("download-modal");
       const placeholderModal = document.getElementById("placeholder-modal");
       const downloadModalClose = document.getElementById("download-modal-close");
@@ -684,9 +668,9 @@
         }
       });
 
-      /* ========================================
-         4) Loading Overlay, Page Switchers
-      ======================================== */
+      /* ------------------------
+         4) Page Switchers + Loader
+      ------------------------ */
       const homePage = document.getElementById("home-page");
       const galleryPage = document.getElementById("gallery-page");
       const loader = document.getElementById("loader");
@@ -705,12 +689,15 @@
       }
 
       function showGallery() {
+        // Show initial loading message
         showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
+
+        // Fade out home page
         homePage.classList.remove("invisible");
         homePage.offsetWidth;
         homePage.classList.add("invisible");
 
-        /* Randomly pick from multiple looping videos */
+        // Load random looping video
         const videoSources = [
           "assets/sand_1_loop.mp4",
           "assets/sand_2_loop.mp4",
@@ -723,6 +710,7 @@
         videoSourceElem.src = chosenSource;
         document.getElementById("loop-video").load();
 
+        // Sequence the loading messages and final reveal
         setTimeout(() => {
           showLoading("ACCESS GRANTED");
           setTimeout(() => {
@@ -736,7 +724,7 @@
       }
 
       function showHome() {
-        // Pause the audio if it's playing 
+        // Pause audio if playing
         if (!audio.paused) {
           audio.pause();
           playPauseText.textContent = "Lock into detected signal";
@@ -744,6 +732,8 @@
           playPauseIndicator.classList.add("light-off");
         }
         showLoading("Bringing you back down....");
+
+        // Fade out gallery page
         galleryPage.classList.remove("invisible");
         galleryPage.offsetWidth;
         galleryPage.classList.add("invisible");
