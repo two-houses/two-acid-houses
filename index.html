@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <!-- Ensures mobile browsers scale properly -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>TWO ACID HOUSES - No LocalStorage Password</title>
+    <title>TWO ACID HOUSES - Button Z-Index Fix</title>
 
     <!-- FONT DEFINITIONS -->
     <style>
@@ -44,11 +44,11 @@
       }
     </style>
 
-    <!-- p5.js for the home page sketch -->
+    <!-- p5.js for home page sketch -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 
     <style>
-      /* =============== GLOBAL / BACKGROUND =============== */
+      /* =============== GLOBAL/BACKGROUND =============== */
       html, body {
         margin: 0;
         overscroll-behavior: none;
@@ -60,7 +60,6 @@
         color: #000;
         background-color: #f3f3f3;
       }
-      /* Subtle static overlay using repeating linear gradient */
       body::before {
         content: "";
         pointer-events: none;
@@ -93,7 +92,7 @@
         width: 100%;
         height: 100vh;
         overflow: hidden;
-        z-index: 2;
+        z-index: 2; /* above the static overlay */
       }
 
       /* LOADER OVERLAY */
@@ -141,7 +140,7 @@
         top: 65%;
       }
 
-      /* Single button on the landing page to open password modal */
+      /* The home button, with a higher z-index than the p5 canvas */
       #enter-code-btn {
         position: absolute;
         left: 50%; top: 80%;
@@ -154,6 +153,7 @@
         border-radius: 6px;
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
+        z-index: 2000; /* ensures it's above #interactive-container-home's z-index:100 */
       }
       #enter-code-btn:hover {
         background-color: #ddd;
@@ -177,7 +177,6 @@
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
         position: relative;
       }
-      /* Subtle wiggly shape overlay */
       #audio-player::before {
         content: "";
         position: absolute;
@@ -224,6 +223,7 @@
         background-color: #ddd;
         transform: scale(1.02);
       }
+
       .indicator {
         width: 15px; 
         height: 15px;
@@ -231,7 +231,6 @@
         border: 1px solid #333;
         border-radius: 2px;
         box-shadow: 0 0 3px rgba(0,0,0,0.2);
-        position: relative;
       }
       .light-off {
         background-color: #777;
@@ -246,7 +245,6 @@
         50%      { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
 
-      /* VIDEO BACKGROUND */
       #video-container {
         position: absolute;
         top: 0; left: 0;
@@ -365,7 +363,7 @@
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
 
-      <!-- Single Button => Always open the password modal -->
+      <!-- Single Button => Always open password modal -->
       <button id="enter-code-btn">Enter Transmission Code</button>
 
       <!-- Password Modal -->
@@ -473,7 +471,7 @@
             else if (fps > 50) maxTrailLength = 600;
             lastFrameRateCheck = p.millis();
           }
-          // Font
+          // Set font
           if (customFont && p.textFont() !== customFont) {
             p.textFont(customFont);
           } else if (!customFont) {
@@ -490,7 +488,7 @@
             );
           }
 
-          // Draw & animate each letter
+          // Animate letters
           for (let i = 0; i < letters.length; i++) {
             let letter = textInput[i];
             let letterPos = letters[i];
@@ -518,7 +516,7 @@
               letter,
             });
 
-            // Trim old trails
+            // Trim trails
             if (trails.length > maxTrailLength) {
               trails.splice(0, trails.length - maxTrailLength);
             }
@@ -555,11 +553,9 @@
       let homeP5 = new p5(homeSketch);
     </script>
 
-    <!-- ============ JS LOGIC (PASSWORD, VIDEO, MODALS, ETC.) ============ -->
+    <!-- ============ JS LOGIC (PASSWORD, PAGE SWITCHERS, ETC.) ============ -->
     <script>
-      /* ------------------------
-         1) "Enter Transmission Code" => ALWAYS open password modal
-      ------------------------ */
+      // 1) Enter Transmission Code => Always show modal
       const enterCodeBtn = document.getElementById("enter-code-btn");
       const passwordModal = document.getElementById("password-modal");
       const modalClose = document.getElementById("modal-close");
@@ -567,7 +563,6 @@
       const modalPassword = document.getElementById("modal-password");
 
       enterCodeBtn.addEventListener("click", () => {
-        // Show password modal (no localStorage check)
         passwordModal.style.display = "flex";
         modalPassword.value = "";
         modalPassword.focus();
@@ -596,21 +591,18 @@
         const correctPassword = "qwerty";
         if (enteredPassword === correctPassword) {
           passwordModal.style.display = "none";
-          showGallery();  // Load the gallery
+          showGallery();
         } else {
           alert("ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation.");
         }
       }
 
-      /* ------------------------
-         2) Audio Player
-      ------------------------ */
+      // 2) Audio Player
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
       const playPauseIndicator = document.getElementById("play-pause-indicator");
 
-      // Additional control buttons
       const downloadButton = document.getElementById("download-btn");
       const placeholderButton = document.getElementById("placeholder-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
@@ -634,12 +626,10 @@
         }
       }
 
-      // "Disconnect From Relay Station" => Return to home
+      // Disconnect => Return Home
       disconnectBtn.addEventListener("click", showHome);
 
-      /* ------------------------
-         3) Download & Placeholder Modals
-      ------------------------ */
+      // 3) Download & Placeholder Modals
       const downloadModal = document.getElementById("download-modal");
       const placeholderModal = document.getElementById("placeholder-modal");
       const downloadModalClose = document.getElementById("download-modal-close");
@@ -668,9 +658,7 @@
         }
       });
 
-      /* ------------------------
-         4) Page Switchers + Loader
-      ------------------------ */
+      // 4) Page Switchers + Loader
       const homePage = document.getElementById("home-page");
       const galleryPage = document.getElementById("gallery-page");
       const loader = document.getElementById("loader");
@@ -689,10 +677,7 @@
       }
 
       function showGallery() {
-        // Show initial loading message
         showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
-
-        // Fade out home page
         homePage.classList.remove("invisible");
         homePage.offsetWidth;
         homePage.classList.add("invisible");
@@ -710,7 +695,6 @@
         videoSourceElem.src = chosenSource;
         document.getElementById("loop-video").load();
 
-        // Sequence the loading messages and final reveal
         setTimeout(() => {
           showLoading("ACCESS GRANTED");
           setTimeout(() => {
@@ -732,8 +716,6 @@
           playPauseIndicator.classList.add("light-off");
         }
         showLoading("Bringing you back down....");
-
-        // Fade out gallery page
         galleryPage.classList.remove("invisible");
         galleryPage.offsetWidth;
         galleryPage.classList.add("invisible");
