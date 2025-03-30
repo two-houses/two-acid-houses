@@ -101,14 +101,15 @@
         display: none;
         position: fixed;
         z-index: 9999;
-        top: 0; left: 0; width: 100%; height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         background-color: rgba(255, 255, 255, 0.9);
         align-items: center;
         justify-content: center;
       }
       @keyframes gentlePulse {
-        0%,100% { opacity: 1; transform: scale(1);}
-        50%     { opacity: 0.85; transform: scale(1.02);}
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.85; transform: scale(1.02); }
       }
       .loading-text {
         font-size: 24px;
@@ -129,13 +130,14 @@
         background: transparent;
         touch-action: auto;
       }
-      /* Text at top/bottom for styling */
+      /* Static text for styling */
       #static-top, #static-bottom {
         position: absolute;
         width: 100%;
         text-align: center;
         font-size: 48px;
         pointer-events: none;
+        color: #000;
       }
       #static-top {
         top: 10%; line-height: 1.2;
@@ -143,10 +145,10 @@
       #static-bottom {
         top: 65%;
       }
-      /* The button pinned at bottom center, above everything else */
+      /* The button pinned at the bottom center */
       #enter-code-btn {
         position: absolute;
-        bottom: 60px;           /* pinned near bottom */
+        bottom: 30px;           /* pinned near bottom */
         left: 50%;
         transform: translateX(-50%);
         padding: 15px 20px;
@@ -159,9 +161,16 @@
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
       }
+      /* Preserve centering on hover by combining translation with scaling */
       #enter-code-btn:hover {
         background-color: #ddd;
-        transform: scale(1.03);
+        transform: translateX(-50%) scale(1.03);
+      }
+      /* On mobile, increase bottom spacing so it’s not cut off */
+      @media screen and (max-width: 600px) {
+        #enter-code-btn {
+          bottom: 50px;
+        }
       }
 
       /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
@@ -184,7 +193,7 @@
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
         position: relative;
       }
-      /* Subtle wiggly shape overlay for #audio-player */
+      /* Subtle wiggly overlay for #audio-player */
       #audio-player::before {
         content: "";
         position: absolute;
@@ -231,9 +240,9 @@
         background-color: #ddd;
         transform: scale(1.02);
       }
-      /* LED indicator */
+      /* LED indicator styling */
       .indicator {
-        width: 15px; 
+        width: 15px;
         height: 15px;
         margin-left: 10px;
         border: 1px solid #333;
@@ -250,10 +259,10 @@
       }
       @keyframes ledPulse {
         0%, 100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
-        50%      { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
+        50% { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
 
-      /* VIDEO BACKGROUND */
+      /* ---------------- VIDEO BACKGROUND --------------- */
       #video-container {
         position: absolute;
         top: 0; left: 0;
@@ -268,12 +277,13 @@
         filter: grayscale(100%);
       }
 
-      /* ---------------- MODALS (PASSWORD, DOWNLOAD, PLACEHOLDER) --------------- */
+      /* ---------------- MODALS --------------- */
       .modal {
         display: none;
         position: fixed;
         z-index: 3000;
-        top: 0; left: 0; width: 100%; height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.7);
         align-items: center;
         justify-content: center;
@@ -293,10 +303,13 @@
         transform: translateY(-10%);
       }
       .modal-content input[type='password'] {
-        padding: 10px; font-size: 16px; width: 80%; margin-bottom: 10px;
+        padding: 10px;
+        font-size: 16px;
+        width: 80%;
+        margin-bottom: 10px;
       }
       .modal-content button {
-        padding: 10px 20px; 
+        padding: 10px 20px;
         font-size: 16px;
         font-family: 'Wavehaus28Thin', Arial, sans-serif;
         cursor: pointer;
@@ -313,12 +326,12 @@
         color: #fff;
         cursor: pointer;
       }
-
       @media screen and (max-width: 600px) {
         body {
           overflow-x: hidden;
         }
         .page-container {
+          height: auto;
           min-height: 100vh;
           overflow: visible;
         }
@@ -327,6 +340,7 @@
         }
         #enter-code-btn {
           font-size: 16px;
+          bottom: 50px; /* Increased bottom spacing on mobile */
         }
         .modal-content {
           transform: translateY(-20%);
@@ -335,11 +349,13 @@
         }
         .modal-content input[type='password'],
         .modal-content button {
-          font-size: 14px; padding: 8px 12px;
+          font-size: 14px;
+          padding: 8px 12px;
         }
       }
       .modal-content.inverse {
-        background: white; color: black;
+        background: white;
+        color: black;
       }
       .modal-content.inverse p,
       .modal-content.inverse a,
@@ -347,7 +363,9 @@
         color: black;
       }
       .modal-content.inverse button {
-        background: white; color: black; border: 2px solid black;
+        background: white;
+        color: black;
+        border: 2px solid black;
       }
     </style>
   </head>
@@ -360,14 +378,14 @@
 
     <!-- ============ HOME PAGE ============ -->
     <div id="home-page" class="page-container fadeable">
-      <!-- p5 container behind the button and text -->
+      <!-- p5 Canvas container (behind the button) -->
       <div id="interactive-container-home"></div>
 
-      <!-- Some static text in the middle -->
+      <!-- Static text -->
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
 
-      <!-- The crucial button pinned at bottom center, high z-index -->
+      <!-- "Enter Transmission Code" button pinned at bottom center -->
       <button id="enter-code-btn">Enter Transmission Code</button>
 
       <!-- Password Modal -->
@@ -391,7 +409,7 @@
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
-          <!-- Button 1: Play/Pause with LED -->
+          <!-- Button 1: Play/Pause with LED indicator -->
           <button id="play-pause" class="control-panel-button">
             <span id="play-pause-text">Lock into detected signal</span>
             <span id="play-pause-indicator" class="indicator light-off"></span>
@@ -409,7 +427,7 @@
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
 
-          <!-- Button 4: "Disconnect From Relay Station" => Return Home -->
+          <!-- Button 4: Disconnect (returns to home) -->
           <button id="disconnect-btn" class="control-panel-button">
             Disconnect From Relay Station
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
@@ -417,7 +435,7 @@
         </div>
       </div>
 
-      <!-- Looping video container -->
+      <!-- Video Background -->
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
           <source id="video-source" src="" type="video/mp4" />
@@ -469,7 +487,6 @@
         p.draw = function () {
           p.clear();
 
-          // If FPS is too low or high, adjust trail length
           if (p.millis() - lastFrameRateCheck > 1000) {
             let fps = p.frameRate();
             if (fps < 30) maxTrailLength = 300;
@@ -477,26 +494,21 @@
             lastFrameRateCheck = p.millis();
           }
 
-          // Use loaded font
           if (customFont && p.textFont() !== customFont) {
             p.textFont(customFont);
           } else if (!customFont) {
             p.textFont("Arial");
           }
 
-          // Draw existing trails
           for (let trail of trails) {
             p.fill(trail.color);
             p.noStroke();
             p.text(trail.letter, trail.x, trail.y);
           }
 
-          // Animate letters
           for (let i = 0; i < letters.length; i++) {
             let letter = textInput[i];
             let letterPos = letters[i];
-
-            // Repel from mouse if within 200px
             let distance = p.dist(p.mouseX, p.mouseY, letterPos.x, letterPos.y);
             if (distance < 200) {
               let angle = p.atan2(letterPos.y - p.mouseY, letterPos.x - p.mouseX);
@@ -504,29 +516,23 @@
               letterPos.x += p.cos(angle) * force;
               letterPos.y += p.sin(angle) * force;
             }
-
-            // Snap back to original
             letterPos.x += (letterPos.originalX - letterPos.x) * 0.02;
             letterPos.y += (letterPos.originalY - letterPos.y) * 0.02;
-
-            // Add trail
             trails.push({
               x: letterPos.x - 10,
               y: letterPos.y,
-              color: [0,255,0],
+              color: [0, 255, 0],
               letter
             });
             trails.push({
               x: letterPos.x + 10,
               y: letterPos.y,
-              color: [0,0,255],
+              color: [0, 0, 255],
               letter
             });
             if (trails.length > maxTrailLength) {
               trails.splice(0, trails.length - maxTrailLength);
             }
-
-            // Draw the main letter
             p.fill(0);
             p.noStroke();
             p.text(letter, letterPos.x, letterPos.y);
@@ -554,7 +560,7 @@
 
     <!-- ============ JS LOGIC (PASSWORD, PAGE SWITCHERS, ETC.) ============ -->
     <script>
-      /* 1) HOME PAGE BUTTON => Password Modal (always) */
+      // 1) Home Page: "Enter Transmission Code" button shows password modal.
       const enterCodeBtn = document.getElementById("enter-code-btn");
       const passwordModal = document.getElementById("password-modal");
       const modalClose = document.getElementById("modal-close");
@@ -596,7 +602,7 @@
         }
       }
 
-      /* 2) AUDIO PLAYER + CONTROL PANEL */
+      // 2) Audio Player + Control Panel
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
@@ -606,7 +612,6 @@
       const placeholderButton = document.getElementById("placeholder-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
 
-      // Initialize LED and text
       playPauseText.textContent = "Lock into detected signal";
       playPauseIndicator.classList.add("light-off");
 
@@ -625,10 +630,9 @@
         }
       }
 
-      // "Disconnect From Relay Station" => Return to home
       disconnectBtn.addEventListener("click", showHome);
 
-      /* 3) Download & Placeholder Modals */
+      // 3) Download & Placeholder Modals
       const downloadModal = document.getElementById("download-modal");
       const placeholderModal = document.getElementById("placeholder-modal");
       const downloadModalClose = document.getElementById("download-modal-close");
@@ -657,7 +661,7 @@
         }
       });
 
-      /* 4) LOADING + PAGE SWITCHES */
+      // 4) Loading Overlay & Page Switchers
       const homePage = document.getElementById("home-page");
       const galleryPage = document.getElementById("gallery-page");
       const loader = document.getElementById("loader");
@@ -676,13 +680,11 @@
       }
 
       function showGallery() {
-        /* Always show the loading messages, then reveal the gallery page */
         showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
         homePage.classList.remove("invisible");
         homePage.offsetWidth;
         homePage.classList.add("invisible");
 
-        /* Random looping video pick */
         const videoSources = [
           "assets/sand_1_loop.mp4",
           "assets/sand_2_loop.mp4",
@@ -708,7 +710,6 @@
       }
 
       function showHome() {
-        /* Pause audio if playing */
         if (!audio.paused) {
           audio.pause();
           playPauseText.textContent = "Lock into detected signal";
