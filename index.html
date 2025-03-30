@@ -65,7 +65,6 @@
         width: 100%;
         position: fixed;           /* Prevent page movement on scroll/touch */
         background-color: #fff;
-        /* Default font family */
         font-family: 'Wavehaus42Light', Arial, sans-serif;
       }
 
@@ -168,7 +167,6 @@
         overflow: hidden;
         white-space: nowrap;
         cursor: pointer;
-        /* Increase padding to make ticker easier to tap on mobile */
         padding: calc(20px * var(--ticker-scale, 1)) 0;
         z-index: 300;
         color: white;
@@ -238,7 +236,7 @@
         animation: marquee 100s linear infinite reverse;
       }
 
-      /* AUDIO PLAYER – now uses vertical buttons with an old control-panel style */
+      /* AUDIO PLAYER – vertical “control panel” style */
       #audio-player {
         z-index: 350;
         position: absolute;
@@ -263,6 +261,31 @@
         font-family: 'Wavehaus42Light', Arial, sans-serif;
         font-size: 18px;
         cursor: pointer;
+        display: inline-flex; /* so we can have text + indicator side-by-side */
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      /* Indicator light to the right of the button text */
+      .indicator {
+        width: 15px;
+        height: 15px;
+        margin-left: 10px;
+        border: 1px solid #000;
+        border-radius: 2px;
+      }
+      .light-off {
+        background-color: #888; /* grey for “paused” */
+        animation: none;
+      }
+      .light-active {
+        background-color: red; /* red for “playing” */
+        animation: ledPulse 1.5s infinite;
+      }
+      @keyframes ledPulse {
+        0%, 100% { opacity: 1; }
+        50%      { opacity: 0.4; }
       }
 
       /* MODALS */
@@ -291,7 +314,6 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        /* Slightly higher by default for better mobile view */
         transform: translateY(-10%);
       }
       .modal-content input[type='password'] {
@@ -445,21 +467,28 @@
         </div>
       </div>
 
-      <!-- Audio player -->
+      <!-- Audio player / control panel -->
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
-          <!-- Button 1: Play/Pause -->
-          <button id="play-pause" class="control-panel-button">Lock into detected signal</button>
+          <!-- Button 1: Play/Pause with indicator -->
+          <button id="play-pause" class="control-panel-button">
+            <span id="play-pause-text">Lock into detected signal</span>
+            <span id="play-pause-indicator" class="indicator light-off"></span>
+          </button>
 
           <!-- Button 2: Download -->
           <button id="download-btn" class="control-panel-button">
             Download 16-bit Audio Manifest
+            <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
+            <!-- If you want no indicator for these, keep a placeholder indicator with 0 opacity
+                 just to maintain consistent button sizes -->
           </button>
 
           <!-- Button 3: Placeholder Modal -->
           <button id="placeholder-btn" class="control-panel-button">
             Consult Training Manual
+            <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
         </div>
       </div>
@@ -511,7 +540,6 @@
           spacing = 120;
 
         p.preload = function () {
-          /* Use the extra bold variant for the home effect, or adjust as you like */
           customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf");
         };
 
@@ -680,20 +708,28 @@
       ======================================== */
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
+      const playPauseText = document.getElementById("play-pause-text");
+      const playPauseIndicator = document.getElementById("play-pause-indicator");
+
       const downloadButton = document.getElementById("download-btn");
       const placeholderButton = document.getElementById("placeholder-btn");
 
-      // Initial label for the play/pause button
-      playPauseBtn.textContent = "Lock into detected signal";
+      // Initial label & indicator state
+      playPauseText.textContent = "Lock into detected signal";
+      playPauseIndicator.classList.add("light-off");
 
       playPauseBtn.addEventListener("click", togglePlay);
       function togglePlay() {
         if (audio.paused) {
           audio.play();
-          playPauseBtn.textContent = "Halt signal detection protocol";
+          playPauseText.textContent = "Halt signal detection protocol";
+          playPauseIndicator.classList.remove("light-off");
+          playPauseIndicator.classList.add("light-active");
         } else {
           audio.pause();
-          playPauseBtn.textContent = "Lock into detected signal";
+          playPauseText.textContent = "Lock into detected signal";
+          playPauseIndicator.classList.remove("light-active");
+          playPauseIndicator.classList.add("light-off");
         }
       }
 
@@ -756,9 +792,9 @@
 
         /* Randomly pick from multiple looping videos */
         const videoSources = [
-          "assets/sand_1_loop.mp4",
-          "assets/sand_2_loop.mp4",
-          "assets/sand_3_loop.mp4",
+          //"assets/sand_1_loop.mp4",
+          //"assets/sand_2_loop.mp4",
+          //"assets/sand_3_loop.mp4",
           "assets/sand_4_loop.mp4"
         ];
         const randomIndex = Math.floor(Math.random() * videoSources.length);
@@ -783,7 +819,9 @@
         // Pause the audio if it's playing when returning home
         if (!audio.paused) {
           audio.pause();
-          playPauseBtn.textContent = "Lock into detected signal";
+          playPauseText.textContent = "Lock into detected signal";
+          playPauseIndicator.classList.remove("light-active");
+          playPauseIndicator.classList.add("light-off");
         }
         showLoading("Bringing you back down....");
         galleryPage.classList.remove("invisible");
