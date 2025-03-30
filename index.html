@@ -4,51 +4,43 @@
     <meta charset="UTF-8" />
     <!-- Ensures mobile browsers scale properly -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>TWO ACID HOUSES</title>
+    <title>TWO ACID HOUSES - Organic Redesign</title>
 
-    <!-- FONT DEFINITIONS -->
+    <!-- FONT DEFINITIONS (Same as before) -->
     <style>
       @font-face {
         font-family: 'NeckynDemoRegular';
         src: url('fonts/NeckynDemoRegular-x36AK.otf') format('opentype');
-        font-weight: normal;
-        font-style: normal;
       }
       @font-face {
         font-family: 'Wavehaus28Thin';
         src: url('fonts/Wavehaus-28Thin.otf') format('opentype');
         font-weight: 300;
-        font-style: normal;
       }
       @font-face {
         font-family: 'Wavehaus42Light';
         src: url('fonts/Wavehaus-42Light.otf') format('opentype');
         font-weight: 400;
-        font-style: normal;
       }
       @font-face {
         font-family: 'Wavehaus66Book';
         src: url('fonts/Wavehaus-66Book.otf') format('opentype');
         font-weight: 500;
-        font-style: normal;
       }
       @font-face {
         font-family: 'Wavehaus95SemiBold';
         src: url('fonts/Wavehaus-95SemiBold.otf') format('opentype');
         font-weight: 600;
-        font-style: normal;
       }
       @font-face {
         font-family: 'Wavehaus128Bold';
         src: url('fonts/Wavehaus-128Bold.otf') format('opentype');
         font-weight: 700;
-        font-style: normal;
       }
       @font-face {
         font-family: 'Wavehaus158ExtraBold';
         src: url('fonts/Wavehaus-158ExtraBold.otf') format('opentype');
         font-weight: 800;
-        font-style: normal;
       }
     </style>
 
@@ -56,23 +48,45 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 
     <style>
-      /* ----- DEFAULTS / GLOBALS ----- */
+      /* ------------------------------------------------------------------
+         GLOBAL & BACKGROUND STYLES
+      ------------------------------------------------------------------ */
       html, body {
         margin: 0;
-        overscroll-behavior: none; /* Prevents iOS overscroll bounce */
-        touch-action: none;        /* Disable default touch scrolling */
+        overscroll-behavior: none;
+        touch-action: none;
         height: 100%;
         width: 100%;
-        position: fixed;           /* Prevent page movement on scroll/touch */
-        background-color: #fff;
+        position: fixed;
         font-family: 'Wavehaus42Light', Arial, sans-serif;
+        color: #000;
+        background-color: #f3f3f3; /* Light grey, but we add static overlay below */
       }
 
-      /* Let the p5 container still receive touch events */
-      #interactive-container-home {
-        touch-action: auto;
+      /* 
+        Static / grain effect over entire screen using a repeating noise pattern.
+        If you want a real static image, you could do something like:
+        background: url('path/to/static.png') repeat;
+        Or a base64 data URI pattern. For brevity, let's do a subtle box-shadow trick.
+      */
+      body::before {
+        content: "";
+        pointer-events: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 1;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0,0,0,0.01),
+          rgba(0,0,0,0.01) 1px,
+          rgba(255,255,255,0.01) 1px,
+          rgba(255,255,255,0.01) 2px
+        );
+        opacity: 0.3;
+        mix-blend-mode: multiply;
       }
 
+      /* Smooth fade transitions for pages */
       .fadeable {
         transition: opacity 0.8s ease;
       }
@@ -88,9 +102,10 @@
         width: 100%;
         height: 100vh;
         overflow: hidden;
+        z-index: 2; /* above the static overlay */
       }
 
-      /* LOADER OVERLAY */
+      /* LOADER OVERLAY (kept the same logic) */
       #loader {
         display: none;
         position: fixed;
@@ -104,43 +119,28 @@
         justify-content: center;
       }
       @keyframes gentlePulse {
-        0% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 0.9;
-          transform: scale(1.02);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-      @keyframes marquee {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-100%); }
+        0%, 100% { opacity: 1; transform: scale(1);}
+        50% { opacity: 0.85; transform: scale(1.02);}
       }
       .loading-text {
         font-size: 24px;
-        color: #000;
         animation: gentlePulse 5s infinite ease-in-out;
-        font-family: 'Wavehaus28Thin', Arial, sans-serif;
         text-align: center;
+        font-family: 'Wavehaus28Thin', Arial, sans-serif;
       }
 
-      /* HOME PAGE STYLES */
+      /* ------------------------------------------------------------------
+         HOME PAGE
+      ------------------------------------------------------------------ */
       #interactive-container-home {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         z-index: 100;
         background: transparent;
+        touch-action: auto; 
       }
-      #static-top,
-      #static-bottom {
+      #static-top, #static-bottom {
         position: absolute;
         width: 100%;
         text-align: center;
@@ -149,154 +149,215 @@
         color: black;
       }
       #static-top {
-        top: 10%;
-        line-height: 1.2;
+        top: 10%; line-height: 1.2;
       }
       #static-bottom {
         top: 65%;
       }
 
-      /* TICKERS */
+      /* ------------------------------------------------------------------
+         TICKERS
+         We'll add a slight glitch effect on hover for an organic vibe
+      ------------------------------------------------------------------ */
       #home-ticker-top,
       #home-ticker-bottom,
       #gallery-ticker-top,
       #gallery-ticker-bottom {
         position: absolute;
         width: 100%;
-        background-color: black;
+        background-color: #222; /* dark gray instead of pure black */
         overflow: hidden;
         white-space: nowrap;
         cursor: pointer;
-        padding: calc(20px * var(--ticker-scale, 1)) 0;
+        padding: 16px 0; 
         z-index: 300;
-        color: white;
-        font-size: calc(20px * var(--ticker-scale, 1));
+        color: #fff;
+        font-size: 20px;
         pointer-events: auto;
         touch-action: auto;
+        border-top: 2px dashed #444; 
+        border-bottom: 2px dashed #444; 
+        /* Slight rough edges: We can do a wiggly border, but let's keep dashed for retro. */
+        position: relative;
       }
-      @media screen and (max-width: 600px) {
-        :root {
-          --ticker-scale: 0.8;
-        }
+
+      /* Subtle grain on the ticker itself */
+      #home-ticker-top::before,
+      #home-ticker-bottom::before,
+      #gallery-ticker-top::before,
+      #gallery-ticker-bottom::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,0.02),
+          rgba(255,255,255,0.02) 1px,
+          transparent 1px,
+          transparent 2px
+        );
+        opacity: 0.1;
+        z-index: 1;
       }
-      @media screen and (max-width: 400px) {
-        :root {
-          --ticker-scale: 0.6;
-        }
+
+      /* Glitch flicker on hover or focus (for mobile, we rely on press) */
+      @keyframes glitchFlicker {
+        0% { opacity: 1; transform: none; }
+        20% { opacity: 0.9; transform: skewX(5deg);}
+        25% { opacity: 0.7; transform: skewX(-5deg);}
+        30% { opacity: 1; transform: none;}
+        70% { opacity: 1; transform: none;}
+        72% { opacity: 0.85; transform: skewX(3deg);}
+        75% { opacity: 1; transform: none;}
+        100% { opacity: 1; transform: none;}
       }
-      #home-ticker-top {
-        top: 0;
+      #home-ticker-top:hover .ticker__wrap,
+      #home-ticker-bottom:hover .ticker__wrap,
+      #gallery-ticker-top:hover .ticker__wrap,
+      #gallery-ticker-bottom:hover .ticker__wrap {
+        animation: glitchFlicker 1s ease-in-out;
       }
-      #home-ticker-bottom {
-        bottom: 0;
-      }
+
       .ticker__wrap {
         display: inline-block;
+        position: relative;
       }
       .ticker__wrap span {
         margin-right: 50px;
       }
+
+      @keyframes marquee {
+        0% { transform: translateX(0);}
+        100% { transform: translateX(-100%);}
+      }
       #home-ticker-bottom .ticker__wrap {
-        animation: marquee 100s linear infinite;
+        animation: marquee 40s linear infinite; /* faster scroll for a more chaotic vibe */
       }
       #home-ticker-top .ticker__wrap {
-        animation: marquee 100s linear infinite reverse;
+        animation: marquee 40s linear infinite reverse;
+      }
+      #gallery-ticker-bottom .ticker__wrap {
+        animation: marquee 40s linear infinite;
+      }
+      #gallery-ticker-top .ticker__wrap {
+        animation: marquee 40s linear infinite reverse;
       }
 
-      /* GALLERY PAGE STYLES */
+      #home-ticker-top { top: 0; }
+      #home-ticker-bottom { bottom: 0; }
+      #gallery-ticker-top { top: 0; }
+      #gallery-ticker-bottom { bottom: 0; }
+
+      /* ------------------------------------------------------------------
+         GALLERY PAGE
+      ------------------------------------------------------------------ */
       body #gallery-page {
         background: #fff;
         color: black;
       }
-      #gallery-ticker-top,
-      #gallery-ticker-bottom {
-        position: absolute;
-        width: 100%;
-        background-color: black;
-        overflow: hidden;
-        white-space: nowrap;
-        cursor: pointer;
-        padding: 20px 0;
-        z-index: 250;
-        font-size: 20px;
-        color: white;
-        pointer-events: auto;
-        touch-action: auto;
-      }
-      #gallery-ticker-top {
-        top: 0;
-      }
-      #gallery-ticker-bottom {
-        bottom: 0;
-      }
-      #gallery-ticker-bottom .ticker__wrap {
-        animation: marquee 100s linear infinite;
-      }
-      #gallery-ticker-top .ticker__wrap {
-        animation: marquee 100s linear infinite reverse;
-      }
 
-      /* AUDIO PLAYER – vertical “control panel” style */
+      /* 
+         AUDIO PLAYER – vertical “control panel” style
+         We'll make the edges slightly wiggly and add some "grain"
+      */
       #audio-player {
         z-index: 350;
         position: absolute;
         top: 15%;
         left: 50%;
         transform: translate(-50%, 0);
-        background: transparent;
         text-align: center;
+        width: 320px; /* fixed width to show a shape around it */
+        padding: 20px;
+        box-sizing: border-box;
+        background-color: #f7f7f7; 
+        border: 2px solid #333;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        position: relative;
       }
+      #audio-player::before {
+        /* wiggle shape using an SVG path as a background */
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        border-radius: 8px;
+        pointer-events: none;
+        mask-image: url('data:image/svg+xml;utf8,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><path d="M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 L200,190 Q190,200 180,190 T160,190 T140,190 T120,190 T100,190 T80,190 T60,190 T40,190 T20,190 T0,190 Z" fill="white"/></svg>');
+        /* That path creates a subtle wiggly top/bottom edge. */
+        mask-size: 100% 100%;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0,0,0,0.02) 0%,
+          rgba(0,0,0,0.02) 1px,
+          transparent 1px,
+          transparent 2px
+        );
+        opacity: 0.3;
+      }
+
       .button-group {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 20px;
-      }
-      .control-panel-button {
-        width: 300px;
-        padding: 15px;
-        background-color: #fff;
-        border: 2px solid #000;
-        color: #000;
-        font-family: 'Wavehaus42Light', Arial, sans-serif;
-        font-size: 18px;
-        cursor: pointer;
-        display: inline-flex; /* so we can have text + indicator side-by-side */
-        align-items: center;
-        justify-content: center;
         position: relative;
+        z-index: 2; /* above the wiggly mask shape */
       }
 
-      /* Indicator light to the right of the button text */
+      .control-panel-button {
+        width: 280px;
+        padding: 15px;
+        border: none;
+        font-family: 'Wavehaus42Light', Arial, sans-serif;
+        font-size: 16px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #eee;
+        color: #000;
+        position: relative;
+        border: 2px solid #111;
+        border-radius: 4px;
+        transition: background-color 0.3s, transform 0.2s;
+      }
+      .control-panel-button:hover {
+        background-color: #ddd;
+        transform: scale(1.02);
+      }
+
+      /* LED indicator with fuzzier glow for vintage style */
       .indicator {
-        width: 15px;
+        width: 15px; 
         height: 15px;
         margin-left: 10px;
-        border: 1px solid #000;
+        border: 1px solid #333;
         border-radius: 2px;
+        box-shadow: 0 0 3px rgba(0,0,0,0.2);
+        position: relative;
       }
       .light-off {
-        background-color: #888; /* grey for “paused” */
+        background-color: #777;
         animation: none;
       }
       .light-active {
-        background-color: red; /* red for “playing” */
+        background-color: #e70000; /* bright red */
         animation: ledPulse 1.5s infinite;
       }
       @keyframes ledPulse {
-        0%, 100% { opacity: 1; }
-        50%      { opacity: 0.4; }
+        0%, 100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
+        50%      { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
 
-      /* MODALS */
+      /* MODALS, ETC. (mostly unchanged) */
       .modal {
         display: none;
         position: fixed;
         z-index: 3000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
         background-color: rgba(0, 0, 0, 0.7);
         align-items: center;
         justify-content: center;
@@ -309,7 +370,6 @@
         text-align: center;
         background: black;
         color: white;
-        border-radius: 0;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -321,24 +381,21 @@
         font-size: 16px;
         width: 80%;
         margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 0;
       }
       .modal-content button {
         padding: 10px 20px;
         font-size: 16px;
         font-family: 'Wavehaus28Thin', Arial, sans-serif;
         cursor: pointer;
-        border: none;
-        border-radius: 0;
         background: white;
         color: #333;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        border: none;
+        border-radius: 0;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       }
       .close {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 10px; right: 10px;
         font-size: 20px;
         color: #fff;
         cursor: pointer;
@@ -352,14 +409,11 @@
           min-height: 100vh;
           overflow: visible;
         }
-        #static-top,
-        #static-bottom {
+        #static-top, #static-bottom {
           font-size: 32px;
         }
-        #home-ticker-top,
-        #home-ticker-bottom,
-        #gallery-ticker-top,
-        #gallery-ticker-bottom {
+        #home-ticker-top, #home-ticker-bottom,
+        #gallery-ticker-top, #gallery-ticker-bottom {
           font-size: 16px;
         }
         .modal-content {
@@ -375,8 +429,7 @@
       }
 
       .modal-content.inverse {
-        background: white;
-        color: black;
+        background: white; color: black;
       }
       .modal-content.inverse p,
       .modal-content.inverse a,
@@ -384,18 +437,14 @@
         color: black;
       }
       .modal-content.inverse button {
-        background: white;
-        color: black;
-        border: 2px solid black;
+        background: white; color: black; border: 2px solid black;
       }
 
       /* VIDEO CONTAINER */
       #video-container {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         z-index: 100;
         overflow: hidden;
       }
@@ -403,6 +452,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        filter: grayscale(100%); /* to unify with black/white static vibe */
       }
     </style>
   </head>
@@ -413,19 +463,19 @@
       <div class="loading-text">Loading...</div>
     </div>
 
-    <!-- ============ HOME PAGE ============ -->
+    <!-- ================= HOME PAGE ================ -->
     <div id="home-page" class="page-container fadeable">
       <!-- Tickers -->
       <div id="home-ticker-top">
         <div class="ticker__wrap">
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
+          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
+          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
         </div>
       </div>
       <div id="home-ticker-bottom">
         <div class="ticker__wrap">
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
+          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
+          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
         </div>
       </div>
 
@@ -446,9 +496,7 @@
           <br />
           <input type="password" id="modal-password" placeholder="....." />
           <br />
-          <button id="modal-submit">
-            ACTIVATE Transmission RELAY
-          </button>
+          <button id="modal-submit">ACTIVATE Transmission RELAY</button>
         </div>
       </div>
     </div>
@@ -458,12 +506,14 @@
       <!-- Tickers -->
       <div id="gallery-ticker-top">
         <div class="ticker__wrap">
-          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span>
         </div>
       </div>
       <div id="gallery-ticker-bottom">
         <div class="ticker__wrap">
-          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span>
         </div>
       </div>
 
@@ -481,8 +531,6 @@
           <button id="download-btn" class="control-panel-button">
             Download 16-bit Audio Manifest
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
-            <!-- If you want no indicator for these, keep a placeholder indicator with 0 opacity
-                 just to maintain consistent button sizes -->
           </button>
 
           <!-- Button 3: Placeholder Modal -->
@@ -495,14 +543,7 @@
 
       <!-- Looping video container -->
       <div id="video-container">
-        <video
-          id="loop-video"
-          autoplay
-          loop
-          muted
-          playsinline
-        >
-          <!-- We'll dynamically set this via JS. -->
+        <video id="loop-video" autoplay loop muted playsinline>
           <source id="video-source" src="" type="video/mp4" />
         </video>
       </div>
@@ -633,7 +674,7 @@
     <!-- ============ JS LOGIC (PASSWORD, VIDEO, MODALS, ETC.) ============ -->
     <script>
       /* ========================================
-         1) Ticker + Modal for Password
+         1) Password Modal
       ======================================== */
       const homeTickerTop = document.getElementById("home-ticker-top");
       const homeTickerBottom = document.getElementById("home-ticker-bottom");
@@ -696,7 +737,7 @@
       }
 
       /* ========================================
-         2) "Gallery" Tickers -> Return Home
+         2) Tickers -> Return Home
       ======================================== */
       const galleryTickerTop = document.getElementById("gallery-ticker-top");
       const galleryTickerBottom = document.getElementById("gallery-ticker-bottom");
@@ -704,25 +745,27 @@
       galleryTickerBottom.addEventListener("click", showHome);
 
       /* ========================================
-         3) Audio Player (Control Panel Buttons)
+         3) Audio Player
       ======================================== */
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
       const playPauseIndicator = document.getElementById("play-pause-indicator");
 
+      // Buttons for modals
       const downloadButton = document.getElementById("download-btn");
       const placeholderButton = document.getElementById("placeholder-btn");
 
-      // Initial label & indicator state
+      // Initialize audio button states
       playPauseText.textContent = "Lock into detected signal";
       playPauseIndicator.classList.add("light-off");
 
       playPauseBtn.addEventListener("click", togglePlay);
+
       function togglePlay() {
         if (audio.paused) {
           audio.play();
-          playPauseText.textContent = "Halt Connection Protocol";
+          playPauseText.textContent = "Halt signal detection protocol";
           playPauseIndicator.classList.remove("light-off");
           playPauseIndicator.classList.add("light-active");
         } else {
@@ -778,6 +821,7 @@
           loader.style.display = "flex";
         }
       }
+
       function hideLoading() {
         if (loader) {
           loader.style.display = "none";
@@ -792,9 +836,9 @@
 
         /* Randomly pick from multiple looping videos */
         const videoSources = [
-          //"assets/sand_1_loop.mp4",
-          //"assets/sand_2_loop.mp4",
-          //"assets/sand_3_loop.mp4",
+          "assets/sand_1_loop.mp4",
+          "assets/sand_2_loop.mp4",
+          "assets/sand_3_loop.mp4",
           "assets/sand_4_loop.mp4"
         ];
         const randomIndex = Math.floor(Math.random() * videoSources.length);
@@ -816,7 +860,7 @@
       }
 
       function showHome() {
-        // Pause the audio if it's playing when returning home
+        // Pause the audio if it's playing
         if (!audio.paused) {
           audio.pause();
           playPauseText.textContent = "Lock into detected signal";
