@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <!-- Ensures mobile browsers scale properly -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>TWO ACID HOUSES - Button at Page Top</title>
+    <title>TWO ACID HOUSES</title>
 
-    <!-- FONT DEFINITIONS -->
+    <!-- FONT DEFINITIONS (Same as before) -->
     <style>
       @font-face {
         font-family: 'NeckynDemoRegular';
@@ -44,22 +44,23 @@
       }
     </style>
 
-    <!-- p5.js for the home page sketch -->
+    <!-- p5.js for the home page ACID sketch -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 
     <style>
-      /* =============== GLOBAL/BACKGROUND =============== */
+      /* ---------------- GLOBAL / BACKGROUND --------------- */
       html, body {
         margin: 0;
         overscroll-behavior: none;
         touch-action: none;
-        height: 100%;
         width: 100%;
+        height: 100%;
         position: fixed;
         font-family: 'Wavehaus42Light', Arial, sans-serif;
+        background: #f3f3f3;
         color: #000;
-        background-color: #f3f3f3;
       }
+      /* Subtle static overlay using repeating-linear-gradient */
       body::before {
         content: "";
         pointer-events: none;
@@ -95,20 +96,19 @@
         z-index: 2; /* above the static overlay */
       }
 
-      /* LOADER OVERLAY */
+      /* ---------------- LOADER OVERLAY --------------- */
       #loader {
         display: none;
         position: fixed;
         z-index: 9999;
-        left: 0; top: 0;
-        width: 100%; height: 100%;
+        top: 0; left: 0; width: 100%; height: 100%;
         background-color: rgba(255, 255, 255, 0.9);
         align-items: center;
         justify-content: center;
       }
       @keyframes gentlePulse {
-        0%, 100% { opacity: 1; transform: scale(1);}
-        50% { opacity: 0.85; transform: scale(1.02);}
+        0%,100% { opacity: 1; transform: scale(1);}
+        50%     { opacity: 0.85; transform: scale(1.02);}
       }
       .loading-text {
         font-size: 24px;
@@ -117,36 +117,19 @@
         font-family: 'Wavehaus28Thin', Arial, sans-serif;
       }
 
-      /* =============== HOME PAGE =============== */
-      /* Put the "Enter Transmission Code" button at the very top, above everything else */
-      #enter-code-btn {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 15px 20px;
-        font-size: 18px;
-        background-color: #eee;
-        color: #000;
-        border: 2px solid #111;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
-        z-index: 9999; /* Ensure it's above all other elements */
+      /* ---------------- HOME PAGE --------------- */
+      #home-page {
+        /* container for the entire home page */
       }
-      #enter-code-btn:hover {
-        background-color: #ddd;
-        transform: scale(1.03);
-      }
-
       #interactive-container-home {
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        z-index: 100;
+        z-index: 100; /* p5 canvas behind the button */
         background: transparent;
         touch-action: auto;
       }
+      /* Text at top/bottom for styling */
       #static-top, #static-bottom {
         position: absolute;
         width: 100%;
@@ -160,8 +143,31 @@
       #static-bottom {
         top: 65%;
       }
+      /* The button pinned at bottom center, above everything else */
+      #enter-code-btn {
+        position: absolute;
+        bottom: 30px;           /* pinned near bottom */
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 20px;
+        font-size: 18px;
+        background-color: #eee;
+        color: #000;
+        border: 2px solid #111;
+        border-radius: 6px;
+        z-index: 9999;         /* highest so it's guaranteed clickable */
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+      }
+      #enter-code-btn:hover {
+        background-color: #ddd;
+        transform: scale(1.03);
+      }
 
-      /* =============== GALLERY PAGE / MEDIA PLAYER =============== */
+      /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
+      #gallery-page {
+        /* container for entire gallery page */
+      }
       #audio-player {
         z-index: 350;
         position: absolute;
@@ -178,6 +184,7 @@
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
         position: relative;
       }
+      /* Subtle wiggly shape overlay for #audio-player */
       #audio-player::before {
         content: "";
         position: absolute;
@@ -224,6 +231,7 @@
         background-color: #ddd;
         transform: scale(1.02);
       }
+      /* LED indicator */
       .indicator {
         width: 15px; 
         height: 15px;
@@ -245,6 +253,7 @@
         50%      { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
 
+      /* VIDEO BACKGROUND */
       #video-container {
         position: absolute;
         top: 0; left: 0;
@@ -259,13 +268,12 @@
         filter: grayscale(100%);
       }
 
-      /* MODALS */
+      /* ---------------- MODALS (PASSWORD, DOWNLOAD, PLACEHOLDER) --------------- */
       .modal {
         display: none;
         position: fixed;
         z-index: 3000;
-        left: 0; top: 0;
-        width: 100%; height: 100%;
+        top: 0; left: 0; width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.7);
         align-items: center;
         justify-content: center;
@@ -285,13 +293,10 @@
         transform: translateY(-10%);
       }
       .modal-content input[type='password'] {
-        padding: 10px;
-        font-size: 16px;
-        width: 80%;
-        margin-bottom: 10px;
+        padding: 10px; font-size: 16px; width: 80%; margin-bottom: 10px;
       }
       .modal-content button {
-        padding: 10px 20px;
+        padding: 10px 20px; 
         font-size: 16px;
         font-family: 'Wavehaus28Thin', Arial, sans-serif;
         cursor: pointer;
@@ -314,7 +319,6 @@
           overflow-x: hidden;
         }
         .page-container {
-          height: auto;
           min-height: 100vh;
           overflow: visible;
         }
@@ -331,8 +335,7 @@
         }
         .modal-content input[type='password'],
         .modal-content button {
-          font-size: 14px;
-          padding: 8px 12px;
+          font-size: 14px; padding: 8px 12px;
         }
       }
       .modal-content.inverse {
@@ -357,13 +360,15 @@
 
     <!-- ============ HOME PAGE ============ -->
     <div id="home-page" class="page-container fadeable">
-      <!-- The big button placed at the top -->
-      <button id="enter-code-btn">Enter Transmission Code</button>
-
+      <!-- p5 container behind the button and text -->
       <div id="interactive-container-home"></div>
 
+      <!-- Some static text in the middle -->
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
+
+      <!-- The crucial button pinned at bottom center, high z-index -->
+      <button id="enter-code-btn">Enter Transmission Code</button>
 
       <!-- Password Modal -->
       <div id="password-modal" class="modal">
@@ -382,24 +387,29 @@
 
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
+      <!-- Control Panel -->
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
+          <!-- Button 1: Play/Pause with LED -->
           <button id="play-pause" class="control-panel-button">
             <span id="play-pause-text">Lock into detected signal</span>
             <span id="play-pause-indicator" class="indicator light-off"></span>
           </button>
 
+          <!-- Button 2: Download Modal -->
           <button id="download-btn" class="control-panel-button">
             Download 16-bit Audio Manifest
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
 
+          <!-- Button 3: Placeholder Modal -->
           <button id="placeholder-btn" class="control-panel-button">
             Consult Training Manual
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
 
+          <!-- Button 4: "Disconnect From Relay Station" => Return Home -->
           <button id="disconnect-btn" class="control-panel-button">
             Disconnect From Relay Station
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
@@ -407,6 +417,7 @@
         </div>
       </div>
 
+      <!-- Looping video container -->
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
           <source id="video-source" src="" type="video/mp4" />
@@ -436,12 +447,12 @@
     <script>
       let homeSketch = function (p) {
         let textInput = "ACID",
-          letters = [],
-          trails = [],
-          maxTrailLength = 500,
-          customFont,
-          lastFrameRateCheck = 0,
-          spacing = 120;
+            letters = [],
+            trails = [],
+            maxTrailLength = 500,
+            customFont,
+            spacing = 120,
+            lastFrameRateCheck = 0;
 
         p.preload = function () {
           customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf");
@@ -457,14 +468,16 @@
 
         p.draw = function () {
           p.clear();
-          // Frame rate logic
+
+          // If FPS is too low or high, adjust trail length
           if (p.millis() - lastFrameRateCheck > 1000) {
             let fps = p.frameRate();
             if (fps < 30) maxTrailLength = 300;
             else if (fps > 50) maxTrailLength = 600;
             lastFrameRateCheck = p.millis();
           }
-          // Font
+
+          // Use loaded font
           if (customFont && p.textFont() !== customFont) {
             p.textFont(customFont);
           } else if (!customFont) {
@@ -473,18 +486,17 @@
 
           // Draw existing trails
           for (let trail of trails) {
-            drawWavyText(
-              trail.x,
-              trail.y,
-              p.color(trail.color[0], trail.color[1], trail.color[2]),
-              trail.letter
-            );
+            p.fill(trail.color);
+            p.noStroke();
+            p.text(trail.letter, trail.x, trail.y);
           }
 
           // Animate letters
           for (let i = 0; i < letters.length; i++) {
             let letter = textInput[i];
             let letterPos = letters[i];
+
+            // Repel from mouse if within 200px
             let distance = p.dist(p.mouseX, p.mouseY, letterPos.x, letterPos.y);
             if (distance < 200) {
               let angle = p.atan2(letterPos.y - p.mouseY, letterPos.x - p.mouseX);
@@ -492,40 +504,34 @@
               letterPos.x += p.cos(angle) * force;
               letterPos.y += p.sin(angle) * force;
             }
+
+            // Snap back to original
             letterPos.x += (letterPos.originalX - letterPos.x) * 0.02;
             letterPos.y += (letterPos.originalY - letterPos.y) * 0.02;
 
-            // Colored trails
+            // Add trail
             trails.push({
               x: letterPos.x - 10,
               y: letterPos.y,
-              color: [0, 255, 0],
-              letter,
+              color: [0,255,0],
+              letter
             });
             trails.push({
               x: letterPos.x + 10,
               y: letterPos.y,
-              color: [0, 0, 255],
-              letter,
+              color: [0,0,255],
+              letter
             });
-
-            // Trim old trails
             if (trails.length > maxTrailLength) {
               trails.splice(0, trails.length - maxTrailLength);
             }
 
-            // Main letter
+            // Draw the main letter
             p.fill(0);
             p.noStroke();
             p.text(letter, letterPos.x, letterPos.y);
           }
         };
-
-        function drawWavyText(x, y, col, letter) {
-          p.fill(col);
-          p.noStroke();
-          p.text(letter, x, y);
-        }
 
         function initializeLetters() {
           letters = [];
@@ -543,12 +549,12 @@
         };
       };
 
-      let homeP5 = new p5(homeSketch);
+      new p5(homeSketch);
     </script>
 
     <!-- ============ JS LOGIC (PASSWORD, PAGE SWITCHERS, ETC.) ============ -->
     <script>
-      // 1) Enter Transmission Code => Show password modal
+      /* 1) HOME PAGE BUTTON => Password Modal (always) */
       const enterCodeBtn = document.getElementById("enter-code-btn");
       const passwordModal = document.getElementById("password-modal");
       const modalClose = document.getElementById("modal-close");
@@ -566,7 +572,6 @@
       });
 
       window.addEventListener("click", (e) => {
-        // Close modal if user clicks outside it
         if (e.target === passwordModal) {
           passwordModal.style.display = "none";
         }
@@ -591,7 +596,7 @@
         }
       }
 
-      // 2) Audio Player
+      /* 2) AUDIO PLAYER + CONTROL PANEL */
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
@@ -601,7 +606,7 @@
       const placeholderButton = document.getElementById("placeholder-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
 
-      // Initialize
+      // Initialize LED and text
       playPauseText.textContent = "Lock into detected signal";
       playPauseIndicator.classList.add("light-off");
 
@@ -620,10 +625,10 @@
         }
       }
 
-      // Disconnect => Return Home
+      // "Disconnect From Relay Station" => Return to home
       disconnectBtn.addEventListener("click", showHome);
 
-      // 3) Download & Placeholder Modals
+      /* 3) Download & Placeholder Modals */
       const downloadModal = document.getElementById("download-modal");
       const placeholderModal = document.getElementById("placeholder-modal");
       const downloadModalClose = document.getElementById("download-modal-close");
@@ -652,7 +657,7 @@
         }
       });
 
-      // 4) Page Switchers + Loader
+      /* 4) LOADING + PAGE SWITCHES */
       const homePage = document.getElementById("home-page");
       const galleryPage = document.getElementById("gallery-page");
       const loader = document.getElementById("loader");
@@ -671,12 +676,13 @@
       }
 
       function showGallery() {
+        /* Always show the loading messages, then reveal the gallery page */
         showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
         homePage.classList.remove("invisible");
         homePage.offsetWidth;
         homePage.classList.add("invisible");
 
-        // Load random looping video
+        /* Random looping video pick */
         const videoSources = [
           "assets/sand_1_loop.mp4",
           "assets/sand_2_loop.mp4",
@@ -702,7 +708,7 @@
       }
 
       function showHome() {
-        // Pause audio if playing
+        /* Pause audio if playing */
         if (!audio.paused) {
           audio.pause();
           playPauseText.textContent = "Lock into detected signal";
