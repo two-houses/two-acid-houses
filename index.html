@@ -63,9 +63,9 @@
         touch-action: none;        /* Disable default touch scrolling */
         height: 100%;
         width: 100%;
-        position: fixed;          /* Prevent page movement on scroll/touch */
+        position: fixed;           /* Prevent page movement on scroll/touch */
         background-color: #fff;
-        /* Set a default font family here; choose whichever you prefer: */
+        /* Default font family */
         font-family: 'Wavehaus42Light', Arial, sans-serif;
       }
 
@@ -118,12 +118,10 @@
           transform: scale(1);
         }
       }
-      /* Newly added marquee animation for tickers */
       @keyframes marquee {
         0% { transform: translateX(0); }
         100% { transform: translateX(-100%); }
       }
-
       .loading-text {
         font-size: 24px;
         color: #000;
@@ -240,25 +238,30 @@
         animation: marquee 100s linear infinite reverse;
       }
 
-      /* AUDIO PLAYER */
+      /* AUDIO PLAYER – now uses vertical buttons with an old control-panel style */
       #audio-player {
-        /* Keep it above the 300-level ticker, but behind modal if needed */
         z-index: 350;
         position: absolute;
         top: 15%;
         left: 50%;
         transform: translate(-50%, 0);
-        background: transparent;  /* Transparent background */
+        background: transparent;
         text-align: center;
       }
-      #audio-player button {
-        /* White lines & triangles, slightly thicker outlines */
-        font-size: 42px; /* Larger so it doesn't shrink too small on mobile */
-        color: white;
-        background: transparent;
-        border: 3px solid white;
-        border-radius: 5px;
-        padding: 5px 15px;
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .control-panel-button {
+        width: 300px;
+        padding: 15px;
+        background-color: #fff;
+        border: 2px solid #000;
+        color: #000;
+        font-family: 'Wavehaus42Light', Arial, sans-serif;
+        font-size: 18px;
         cursor: pointer;
       }
 
@@ -318,10 +321,9 @@
         color: #fff;
         cursor: pointer;
       }
-
       @media screen and (max-width: 600px) {
         body {
-          overflow-x: hidden; /* No horizontal scroll on small screens */
+          overflow-x: hidden;
         }
         .page-container {
           height: auto;
@@ -338,7 +340,6 @@
         #gallery-ticker-bottom {
           font-size: 16px;
         }
-        /* Raise the modal more to avoid mobile keyboard overlap */
         .modal-content {
           transform: translateY(-20%);
           max-width: 90%;
@@ -351,30 +352,6 @@
         }
       }
 
-      .button-group {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        align-items: center;
-      }
-      .square-button {
-        width: 60px;
-        height: 60px;
-        border: 3px solid white;
-        background: transparent;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 32px;
-        color: white;
-      }
-      .rotate-90 {
-        transform: rotate(90deg);
-      }
-      .rotate-180 {
-        transform: rotate(180deg);
-      }
       .modal-content.inverse {
         background: white;
         color: black;
@@ -421,12 +398,6 @@
         <div class="ticker__wrap">
           <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
           <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
         </div>
       </div>
       <div id="home-ticker-bottom">
@@ -465,12 +436,12 @@
       <!-- Tickers -->
       <div id="gallery-ticker-top">
         <div class="ticker__wrap">
-          <span>Return To Home Base</span><span>Return To Home Base</span><span>Return To Home Base</span><span>Return To Home Base</span><span>Return To Home Base</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
         </div>
       </div>
       <div id="gallery-ticker-bottom">
         <div class="ticker__wrap">
-          <span>Return To Home Base</span><span>Return To Home Base</span><span>Return To Home Base</span><span>Return To Home Base</span><span>Return To Home Base</span>
+          <span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span><span>Level out?</span>
         </div>
       </div>
 
@@ -478,9 +449,18 @@
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
-          <button id="play-pause" class="square-button">►</button>
-          <button id="download-90" class="square-button rotate-90">►</button>
-          <button id="download-180" class="square-button rotate-180">►</button>
+          <!-- Button 1: Play/Pause -->
+          <button id="play-pause" class="control-panel-button">Lock into detected signal</button>
+
+          <!-- Button 2: Download -->
+          <button id="download-btn" class="control-panel-button">
+            Download 16-bit Audio Manifest
+          </button>
+
+          <!-- Button 3: Placeholder Modal -->
+          <button id="placeholder-btn" class="control-panel-button">
+            Consult Training Manual
+          </button>
         </div>
       </div>
 
@@ -640,10 +620,12 @@
       homeTickerTop.addEventListener("click", openModalIfNeeded);
       homeTickerBottom.addEventListener("click", openModalIfNeeded);
       homeTickerTop.addEventListener("touchstart", (e) => {
-        e.preventDefault(); openModalIfNeeded();
+        e.preventDefault();
+        openModalIfNeeded();
       });
       homeTickerBottom.addEventListener("touchstart", (e) => {
-        e.preventDefault(); openModalIfNeeded();
+        e.preventDefault();
+        openModalIfNeeded();
       });
 
       function openModalIfNeeded() {
@@ -694,19 +676,24 @@
       galleryTickerBottom.addEventListener("click", showHome);
 
       /* ========================================
-         3) Audio Player
+         3) Audio Player (Control Panel Buttons)
       ======================================== */
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
-      playPauseBtn.addEventListener("click", togglePlay);
+      const downloadButton = document.getElementById("download-btn");
+      const placeholderButton = document.getElementById("placeholder-btn");
 
+      // Initial label for the play/pause button
+      playPauseBtn.textContent = "Lock into detected signal";
+
+      playPauseBtn.addEventListener("click", togglePlay);
       function togglePlay() {
         if (audio.paused) {
           audio.play();
-          playPauseBtn.textContent = "❚❚";
+          playPauseBtn.textContent = "Halt signal detection protocol";
         } else {
           audio.pause();
-          playPauseBtn.textContent = "►";
+          playPauseBtn.textContent = "Lock into detected signal";
         }
       }
 
@@ -715,8 +702,6 @@
       ======================================== */
       const downloadModal = document.getElementById("download-modal");
       const placeholderModal = document.getElementById("placeholder-modal");
-      const downloadButton = document.getElementById("download-90");
-      const placeholderButton = document.getElementById("download-180");
       const downloadModalClose = document.getElementById("download-modal-close");
       const placeholderModalClose = document.getElementById("placeholder-modal-close");
 
@@ -775,7 +760,6 @@
           "assets/sand_2_loop.mp4",
           "assets/sand_3_loop.mp4",
           "assets/sand_4_loop.mp4"
-          // ... Add as many as you want
         ];
         const randomIndex = Math.floor(Math.random() * videoSources.length);
         const chosenSource = videoSources[randomIndex];
@@ -796,10 +780,10 @@
       }
 
       function showHome() {
-        // Pause the audio if it's playing when the ticker is clicked
+        // Pause the audio if it's playing when returning home
         if (!audio.paused) {
           audio.pause();
-          playPauseBtn.textContent = "►";
+          playPauseBtn.textContent = "Lock into detected signal";
         }
         showLoading("Bringing you back down....");
         galleryPage.classList.remove("invisible");
