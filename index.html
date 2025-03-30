@@ -790,6 +790,11 @@
       }
 
       function showHome() {
+        // Pause the audio if it's playing when the ticker is clicked
+        if (!audio.paused) {
+          audio.pause();
+          playPauseBtn.textContent = "►";
+        }
         showLoading("Bringing you back down....");
         galleryPage.classList.remove("invisible");
         galleryPage.offsetWidth;
