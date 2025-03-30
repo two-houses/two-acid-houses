@@ -118,6 +118,12 @@
           transform: scale(1);
         }
       }
+      /* Newly added marquee animation for tickers */
+      @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+      }
+
       .loading-text {
         font-size: 24px;
         color: #000;
@@ -425,7 +431,6 @@
       </div>
 
       <!-- Home p5 canvas -->
-        <!-- Home p5 canvas -->
       <div id="interactive-container-home"></div>
 
       <!-- Static text -->
@@ -798,12 +803,6 @@
           hideLoading();
         }, 3000);
       }
-
-      /* If we want to automatically skip password if it was already entered, 
-         we can do so on page load by checking localStorage. 
-         But we only do that if you want to jump straight to the gallery. 
-         For now, the logic only triggers when you click the ticker, 
-         which is usually what's intended. */
     </script>
   </body>
 </html>
