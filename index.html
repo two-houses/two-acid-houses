@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <!-- Ensures mobile browsers scale properly -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>TWO ACID HOUSES - Organic Redesign</title>
+    <title>TWO ACID HOUSES - Organic Redesign (No Tickers)</title>
 
     <!-- FONT DEFINITIONS (Same as before) -->
     <style>
@@ -44,7 +44,7 @@
       }
     </style>
 
-    <!-- Load p5.js only for home page sketch -->
+    <!-- Load p5.js for the home page sketch -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 
     <style>
@@ -60,16 +60,10 @@
         position: fixed;
         font-family: 'Wavehaus42Light', Arial, sans-serif;
         color: #000;
-        background-color: #f3f3f3; /* Light grey, but we add static overlay below */
+        background-color: #f3f3f3; /* Light grey + static overlay below */
       }
-
-      /* 
-        Static / grain effect over entire screen using a repeating noise pattern.
-        If you want a real static image, you could do something like:
-        background: url('path/to/static.png') repeat;
-        Or a base64 data URI pattern. For brevity, let's do a subtle box-shadow trick.
-      */
       body::before {
+        /* Subtle repeating static overlay */
         content: "";
         pointer-events: none;
         position: fixed;
@@ -86,7 +80,6 @@
         mix-blend-mode: multiply;
       }
 
-      /* Smooth fade transitions for pages */
       .fadeable {
         transition: opacity 0.8s ease;
       }
@@ -105,15 +98,13 @@
         z-index: 2; /* above the static overlay */
       }
 
-      /* LOADER OVERLAY (kept the same logic) */
+      /* LOADER OVERLAY */
       #loader {
         display: none;
         position: fixed;
         z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
         background-color: rgba(255, 255, 255, 0.9);
         align-items: center;
         justify-content: center;
@@ -138,7 +129,7 @@
         width: 100%; height: 100%;
         z-index: 100;
         background: transparent;
-        touch-action: auto; 
+        touch-action: auto;
       }
       #static-top, #static-bottom {
         position: absolute;
@@ -155,112 +146,36 @@
         top: 65%;
       }
 
-      /* ------------------------------------------------------------------
-         TICKERS
-         We'll add a slight glitch effect on hover for an organic vibe
-      ------------------------------------------------------------------ */
-      #home-ticker-top,
-      #home-ticker-bottom,
-      #gallery-ticker-top,
-      #gallery-ticker-bottom {
+      /* 
+         A single button on the landing page to enter the transmission code 
+         We'll style it in a similar vintage/glitch style as the control panel 
+      */
+      #enter-code-btn {
         position: absolute;
-        width: 100%;
-        background-color: #222; /* dark gray instead of pure black */
-        overflow: hidden;
-        white-space: nowrap;
+        left: 50%; top: 80%;
+        transform: translateX(-50%);
+        padding: 15px 20px;
+        font-size: 18px;
+        background-color: #eee;
+        color: #000;
+        border: 2px solid #111;
+        border-radius: 6px;
         cursor: pointer;
-        padding: 16px 0; 
-        z-index: 300;
-        color: #fff;
-        font-size: 20px;
-        pointer-events: auto;
-        touch-action: auto;
-        border-top: 2px dashed #444; 
-        border-bottom: 2px dashed #444; 
-        /* Slight rough edges: We can do a wiggly border, but let's keep dashed for retro. */
-        position: relative;
+        transition: background-color 0.3s, transform 0.2s;
+        font-family: 'Wavehaus42Light', Arial, sans-serif;
       }
-
-      /* Subtle grain on the ticker itself */
-      #home-ticker-top::before,
-      #home-ticker-bottom::before,
-      #gallery-ticker-top::before,
-      #gallery-ticker-bottom::before {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        pointer-events: none;
-        background: repeating-linear-gradient(
-          90deg,
-          rgba(255,255,255,0.02),
-          rgba(255,255,255,0.02) 1px,
-          transparent 1px,
-          transparent 2px
-        );
-        opacity: 0.1;
-        z-index: 1;
+      #enter-code-btn:hover {
+        background-color: #ddd;
+        transform: scale(1.03);
       }
-
-      /* Glitch flicker on hover or focus (for mobile, we rely on press) */
-      @keyframes glitchFlicker {
-        0% { opacity: 1; transform: none; }
-        20% { opacity: 0.9; transform: skewX(5deg);}
-        25% { opacity: 0.7; transform: skewX(-5deg);}
-        30% { opacity: 1; transform: none;}
-        70% { opacity: 1; transform: none;}
-        72% { opacity: 0.85; transform: skewX(3deg);}
-        75% { opacity: 1; transform: none;}
-        100% { opacity: 1; transform: none;}
-      }
-      #home-ticker-top:hover .ticker__wrap,
-      #home-ticker-bottom:hover .ticker__wrap,
-      #gallery-ticker-top:hover .ticker__wrap,
-      #gallery-ticker-bottom:hover .ticker__wrap {
-        animation: glitchFlicker 1s ease-in-out;
-      }
-
-      .ticker__wrap {
-        display: inline-block;
-        position: relative;
-      }
-      .ticker__wrap span {
-        margin-right: 50px;
-      }
-
-      @keyframes marquee {
-        0% { transform: translateX(0);}
-        100% { transform: translateX(-100%);}
-      }
-      #home-ticker-bottom .ticker__wrap {
-        animation: marquee 40s linear infinite; /* faster scroll for a more chaotic vibe */
-      }
-      #home-ticker-top .ticker__wrap {
-        animation: marquee 40s linear infinite reverse;
-      }
-      #gallery-ticker-bottom .ticker__wrap {
-        animation: marquee 40s linear infinite;
-      }
-      #gallery-ticker-top .ticker__wrap {
-        animation: marquee 40s linear infinite reverse;
-      }
-
-      #home-ticker-top { top: 0; }
-      #home-ticker-bottom { bottom: 0; }
-      #gallery-ticker-top { top: 0; }
-      #gallery-ticker-bottom { bottom: 0; }
 
       /* ------------------------------------------------------------------
-         GALLERY PAGE
+         GALLERY PAGE / MEDIA PLAYER
       ------------------------------------------------------------------ */
       body #gallery-page {
         background: #fff;
         color: black;
       }
-
-      /* 
-         AUDIO PLAYER – vertical “control panel” style
-         We'll make the edges slightly wiggly and add some "grain"
-      */
       #audio-player {
         z-index: 350;
         position: absolute;
@@ -268,7 +183,7 @@
         left: 50%;
         transform: translate(-50%, 0);
         text-align: center;
-        width: 320px; /* fixed width to show a shape around it */
+        width: 320px; 
         padding: 20px;
         box-sizing: border-box;
         background-color: #f7f7f7; 
@@ -278,14 +193,12 @@
         position: relative;
       }
       #audio-player::before {
-        /* wiggle shape using an SVG path as a background */
         content: "";
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
         border-radius: 8px;
         pointer-events: none;
         mask-image: url('data:image/svg+xml;utf8,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><path d="M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 L200,190 Q190,200 180,190 T160,190 T140,190 T120,190 T100,190 T80,190 T60,190 T40,190 T20,190 T0,190 Z" fill="white"/></svg>');
-        /* That path creates a subtle wiggly top/bottom edge. */
         mask-size: 100% 100%;
         background: repeating-linear-gradient(
           0deg,
@@ -303,7 +216,7 @@
         align-items: center;
         gap: 20px;
         position: relative;
-        z-index: 2; /* above the wiggly mask shape */
+        z-index: 2;
       }
 
       .control-panel-button {
@@ -328,7 +241,6 @@
         transform: scale(1.02);
       }
 
-      /* LED indicator with fuzzier glow for vintage style */
       .indicator {
         width: 15px; 
         height: 15px;
@@ -343,7 +255,7 @@
         animation: none;
       }
       .light-active {
-        background-color: #e70000; /* bright red */
+        background-color: #e70000; 
         animation: ledPulse 1.5s infinite;
       }
       @keyframes ledPulse {
@@ -351,7 +263,22 @@
         50%      { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
 
-      /* MODALS, ETC. (mostly unchanged) */
+      /* VIDEO CONTAINER */
+      #video-container {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 100;
+        overflow: hidden;
+      }
+      #loop-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(100%);
+      }
+
+      /* MODALS */
       .modal {
         display: none;
         position: fixed;
@@ -412,8 +339,7 @@
         #static-top, #static-bottom {
           font-size: 32px;
         }
-        #home-ticker-top, #home-ticker-bottom,
-        #gallery-ticker-top, #gallery-ticker-bottom {
+        #enter-code-btn {
           font-size: 16px;
         }
         .modal-content {
@@ -439,21 +365,6 @@
       .modal-content.inverse button {
         background: white; color: black; border: 2px solid black;
       }
-
-      /* VIDEO CONTAINER */
-      #video-container {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        z-index: 100;
-        overflow: hidden;
-      }
-      #loop-video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: grayscale(100%); /* to unify with black/white static vibe */
-      }
     </style>
   </head>
 
@@ -465,26 +376,15 @@
 
     <!-- ================= HOME PAGE ================ -->
     <div id="home-page" class="page-container fadeable">
-      <!-- Tickers -->
-      <div id="home-ticker-top">
-        <div class="ticker__wrap">
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-        </div>
-      </div>
-      <div id="home-ticker-bottom">
-        <div class="ticker__wrap">
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-          <span>Enter Transmission Code</span><span>Enter Transmission Code</span><span>Enter Transmission Code</span>
-        </div>
-      </div>
-
-      <!-- Home p5 canvas -->
+      <!-- The p5 canvas background -->
       <div id="interactive-container-home"></div>
 
-      <!-- Static text -->
+      <!-- Page Title / Text -->
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
+
+      <!-- Single button to open or skip password modal -->
+      <button id="enter-code-btn">Enter Transmission Code</button>
 
       <!-- Password Modal -->
       <div id="password-modal" class="modal">
@@ -503,20 +403,6 @@
 
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
-      <!-- Tickers -->
-      <div id="gallery-ticker-top">
-        <div class="ticker__wrap">
-          <span>Level out?</span><span>Level out?</span><span>Level out?</span>
-          <span>Level out?</span><span>Level out?</span><span>Level out?</span>
-        </div>
-      </div>
-      <div id="gallery-ticker-bottom">
-        <div class="ticker__wrap">
-          <span>Level out?</span><span>Level out?</span><span>Level out?</span>
-          <span>Level out?</span><span>Level out?</span><span>Level out?</span>
-        </div>
-      </div>
-
       <!-- Audio player / control panel -->
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
@@ -536,6 +422,12 @@
           <!-- Button 3: Placeholder Modal -->
           <button id="placeholder-btn" class="control-panel-button">
             Consult Training Manual
+            <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
+          </button>
+
+          <!-- Button 4: "Disconnect From Relay Station" (replaces ticker) -->
+          <button id="disconnect-btn" class="control-panel-button">
+            Disconnect From Relay Station
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
         </div>
@@ -674,45 +566,35 @@
     <!-- ============ JS LOGIC (PASSWORD, VIDEO, MODALS, ETC.) ============ -->
     <script>
       /* ========================================
-         1) Password Modal
+         1) Single button on Home: "Enter Transmission Code"
       ======================================== */
-      const homeTickerTop = document.getElementById("home-ticker-top");
-      const homeTickerBottom = document.getElementById("home-ticker-bottom");
-      const modal = document.getElementById("password-modal");
+      const enterCodeBtn = document.getElementById("enter-code-btn");
+      const passwordModal = document.getElementById("password-modal");
       const modalClose = document.getElementById("modal-close");
       const modalSubmit = document.getElementById("modal-submit");
       const modalPassword = document.getElementById("modal-password");
 
-      // If user has previously entered password, skip the prompt
+      // If user has previously entered password, skip the modal
       const passwordAccepted = localStorage.getItem("passwordAccepted") === "true";
-
-      homeTickerTop.addEventListener("click", openModalIfNeeded);
-      homeTickerBottom.addEventListener("click", openModalIfNeeded);
-      homeTickerTop.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        openModalIfNeeded();
-      });
-      homeTickerBottom.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        openModalIfNeeded();
-      });
 
       function openModalIfNeeded() {
         if (passwordAccepted) {
           showGallery();
         } else {
-          modal.style.display = "flex";
+          passwordModal.style.display = "flex";
           modalPassword.value = "";
           modalPassword.focus();
         }
       }
 
+      enterCodeBtn.addEventListener("click", openModalIfNeeded);
+
       modalClose.addEventListener("click", () => {
-        modal.style.display = "none";
+        passwordModal.style.display = "none";
       });
       window.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          modal.style.display = "none";
+        if (e.target === passwordModal) {
+          passwordModal.style.display = "none";
         }
       });
 
@@ -729,7 +611,7 @@
         const correctPassword = "qwerty";
         if (enteredPassword === correctPassword) {
           localStorage.setItem("passwordAccepted", "true");
-          modal.style.display = "none";
+          passwordModal.style.display = "none";
           showGallery();
         } else {
           alert("ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation.");
@@ -737,31 +619,23 @@
       }
 
       /* ========================================
-         2) Tickers -> Return Home
-      ======================================== */
-      const galleryTickerTop = document.getElementById("gallery-ticker-top");
-      const galleryTickerBottom = document.getElementById("gallery-ticker-bottom");
-      galleryTickerTop.addEventListener("click", showHome);
-      galleryTickerBottom.addEventListener("click", showHome);
-
-      /* ========================================
-         3) Audio Player
+         2) Audio Player (Play/Pause + new Disconnect button)
       ======================================== */
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
       const playPauseIndicator = document.getElementById("play-pause-indicator");
 
-      // Buttons for modals
+      // Additional control panel buttons
       const downloadButton = document.getElementById("download-btn");
       const placeholderButton = document.getElementById("placeholder-btn");
+      const disconnectBtn = document.getElementById("disconnect-btn");
 
       // Initialize audio button states
       playPauseText.textContent = "Lock into detected signal";
       playPauseIndicator.classList.add("light-off");
 
       playPauseBtn.addEventListener("click", togglePlay);
-
       function togglePlay() {
         if (audio.paused) {
           audio.play();
@@ -776,8 +650,11 @@
         }
       }
 
+      // "Disconnect From Relay Station" -> same as returning home
+      disconnectBtn.addEventListener("click", showHome);
+
       /* ========================================
-         4) Download & Placeholder Modals
+         3) Download & Placeholder Modals
       ======================================== */
       const downloadModal = document.getElementById("download-modal");
       const placeholderModal = document.getElementById("placeholder-modal");
@@ -808,7 +685,7 @@
       });
 
       /* ========================================
-         5) Loading Overlay, Page Switchers
+         4) Loading Overlay, Page Switchers
       ======================================== */
       const homePage = document.getElementById("home-page");
       const galleryPage = document.getElementById("gallery-page");
@@ -821,7 +698,6 @@
           loader.style.display = "flex";
         }
       }
-
       function hideLoading() {
         if (loader) {
           loader.style.display = "none";
@@ -860,7 +736,7 @@
       }
 
       function showHome() {
-        // Pause the audio if it's playing
+        // Pause the audio if it's playing 
         if (!audio.paused) {
           audio.pause();
           playPauseText.textContent = "Lock into detected signal";
