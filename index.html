@@ -87,7 +87,7 @@
         overflow: hidden;
         z-index: 2;
       }
-
+  
       /* ---------------- LOADER OVERLAY --------------- */
       #loader {
         display: none;
@@ -100,7 +100,7 @@
         justify-content: center;
       }
       @keyframes gentlePulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
+        0%,100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.85; transform: scale(1.02); }
       }
       .loading-text {
@@ -109,7 +109,7 @@
         text-align: center;
         font-family: 'Wavehaus28Thin', Arial, sans-serif;
       }
-
+  
       /* ---------------- HOME PAGE --------------- */
       #home-page { }
       #interactive-container-home {
@@ -153,10 +153,10 @@
       @media screen and (max-width: 600px) {
         #enter-code-btn { bottom: 80px; }
       }
-
+  
       /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
       #gallery-page { }
-      /* Fixed black control bar at the bottom */
+      /* Fixed control bar at bottom */
       #media-control-hub {
         position: fixed;
         bottom: 0;
@@ -171,7 +171,7 @@
         align-items: center;
         z-index: 350;
       }
-      /* Left section: Media Controls */
+      /* Left side: Media Controls */
       #media-controls {
         display: flex;
         align-items: center;
@@ -189,7 +189,7 @@
         transition: transform 0.2s;
       }
       .control-button:hover { transform: scale(1.03); }
-      /* Digital counter: styled like an old stopwatch */
+      /* Digital counter styled like an old stopwatch */
       #digital-counter {
         background-color: #fff;
         color: #000;
@@ -201,7 +201,7 @@
         min-width: 180px;
         text-align: center;
       }
-      /* LED indicator: blinking pipe-style */
+      /* LED indicator */
       #led-indicator {
         width: 15px;
         height: 15px;
@@ -213,15 +213,13 @@
       .light-off { background-color: #777; animation: none; }
       .light-active { background-color: #e70000; animation: ledPulse 1.5s infinite; }
       @keyframes ledPulse {
-        0%, 100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
+        0%,100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
         50% { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
       /* Divider */
       #divider { font-size: 24px; margin: 0 20px; }
-      /* Right section: Settings Cog */
-      #settings-section {
-        position: relative;
-      }
+      /* Right side: Settings Cog */
+      #settings-section { position: relative; }
       #settings-btn {
         background: transparent;
         border: none;
@@ -358,7 +356,7 @@
       <!-- p5 Canvas Background -->
       <div id="interactive-container-home"></div>
   
-      <!-- Static Text -->
+      <!-- Static text -->
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
   
@@ -382,7 +380,7 @@
   
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
-      <!-- Fixed Control Bar at Bottom -->
+      <!-- Fixed Control Hub Bar -->
       <div id="media-control-hub">
         <div id="media-controls">
           <button id="play-pause" class="control-button" title="Toggle Connection">
@@ -518,13 +516,74 @@
       new p5(homeSketch);
     </script>
   
+    <!-- ============ PARTICLE OVERLAY (Audio-Reactive Visuals) ============ -->
+    <script>
+      let particleSketch = function(p) {
+        let particles = [];
+        let fft;
+        let audioEl;
+  
+        p.setup = function() {
+          let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+          canvas.parent("particle-overlay");
+          fft = new p5.FFT(0.8, 64);
+          audioEl = document.getElementById("my-audio");
+          let pe = new p5.MediaElement(audioEl);
+          fft.setInput(pe);
+        };
+  
+        p.draw = function() {
+          p.clear();
+          let spectrum = fft.analyze();
+          let avg = spectrum.reduce((a, b) => a + b, 0) / spectrum.length;
+          let spawnRate = p.map(avg, 0, 255, 0, 5);
+          for (let i = 0; i < spawnRate; i++) {
+            particles.push(new Particle(p.random(p.width), p.random(p.height)));
+          }
+          for (let i = particles.length - 1; i >= 0; i--) {
+            particles[i].update();
+            particles[i].display();
+            if (particles[i].isFinished()) {
+              particles.splice(i, 1);
+            }
+          }
+        };
+  
+        class Particle {
+          constructor(x, y) {
+            this.pos = p.createVector(x, y);
+            this.vel = p5.Vector.random2D().mult(p.random(0.5, 2));
+            this.lifetime = 255;
+          }
+          update() {
+            this.pos.add(this.vel);
+            this.lifetime -= 2;
+          }
+          display() {
+            p.noStroke();
+            p.fill(255, this.lifetime);
+            p.ellipse(this.pos.x, this.pos.y, 5);
+          }
+          isFinished() {
+            return this.lifetime < 0;
+          }
+        }
+      };
+      // Create a container div for the particle overlay if not already present
+      if (!document.getElementById("particle-overlay")) {
+        let particleDiv = document.createElement("div");
+        particleDiv.id = "particle-overlay";
+        document.body.appendChild(particleDiv);
+      }
+      new p5(particleSketch, "particle-overlay");
+    </script>
+  
     <!-- ============ JS LOGIC (PASSWORD, MEDIA CONTROLS, PAGE SWITCHERS, ETC.) ============ -->
     <script>
       window.addEventListener("load", () => {
-        // Debug: Log when the page loads
         console.log("Page loaded, attaching event listeners...");
   
-        // Home Page: "Enter Transmission Code" button
+        // Home Page: "Enter Transmission Code" button and modal
         const enterCodeBtn = document.getElementById("enter-code-btn");
         const passwordModal = document.getElementById("password-modal");
         const modalClose = document.getElementById("modal-close");
@@ -693,9 +752,7 @@
           }
         }
         function hideLoading() {
-          if (loader) {
-            loader.style.display = "none";
-          }
+          if (loader) { loader.style.display = "none"; }
         }
         function showGallery() {
           console.log("Showing gallery...");
@@ -704,7 +761,7 @@
           homePage.offsetWidth;
           homePage.classList.add("invisible");
   
-          // Use sand_4_loop video exclusively
+          // Use sand_4_loop exclusively
           const chosenSource = "assets/sand_4_loop.mp4";
           const videoSourceElem = document.getElementById("video-source");
           videoSourceElem.src = chosenSource;
