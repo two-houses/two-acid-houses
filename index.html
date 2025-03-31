@@ -130,6 +130,7 @@
       }
       #static-top { top: 10%; line-height: 1.2; }
       #static-bottom { top: 65%; }
+
       /* "Enter Transmission Code" button at bottom */
       #enter-code-btn {
         position: absolute;
@@ -151,7 +152,9 @@
         transform: translateX(-50%) scale(1.03);
       }
       @media screen and (max-width: 600px) {
-        #enter-code-btn { bottom: 80px; }
+        #enter-code-btn {
+          bottom: 80px;
+        }
       }
   
       /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
@@ -189,6 +192,7 @@
         transition: transform 0.2s;
       }
       .control-button:hover { transform: scale(1.03); }
+
       /* Digital counter styled like an old stopwatch */
       #digital-counter {
         background-color: #fff;
@@ -201,6 +205,7 @@
         min-width: 180px;
         text-align: center;
       }
+
       /* LED indicator */
       #led-indicator {
         width: 15px;
@@ -216,10 +221,17 @@
         0%,100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
         50% { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
+
       /* Divider */
-      #divider { font-size: 24px; margin: 0 20px; }
+      #divider {
+        font-size: 24px;
+        margin: 0 20px;
+      }
+
       /* Right side: Settings Cog and Dropdown */
-      #settings-section { position: relative; }
+      #settings-section {
+        position: relative;
+      }
       #settings-btn {
         background: transparent;
         border: none;
@@ -227,20 +239,22 @@
         font-size: 24px;
         cursor: pointer;
       }
+
+      /* Force dropdown to unfold upwards */
       #settings-dropdown {
-  display: none;
-  position: absolute;
-  bottom: 100%; /* ← Key change: dropdown opens upward */
-  right: 0;
-  margin-bottom: 10px; /* adds space between button and dropdown */
-  background-color: #fff;
-  color: #000;
-  border: 2px solid #000;
-  border-radius: 4px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  z-index: 4000;
-}
+        display: none;
+        position: absolute;
+        bottom: 100%; /* dropdown opens upward */
+        right: 0;
+        margin-bottom: 10px; /* gap between button and dropdown */
+        background-color: #fff;
+        color: #000;
+        border: 2px solid #000;
+        border-radius: 4px;
+        padding: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        z-index: 4000; /* ensure above black bar */
+      }
 
       #settings-dropdown button {
         background: transparent;
@@ -253,7 +267,9 @@
         text-align: left;
         cursor: pointer;
       }
-      #settings-dropdown button:hover { background-color: #eee; }
+      #settings-dropdown button:hover {
+        background-color: #eee;
+      }
   
       /* ---------------- VIDEO BACKGROUND --------------- */
       #video-container {
@@ -276,7 +292,8 @@
         position: fixed;
         z-index: 3000;
         top: 0; left: 0;
-        width: 100%; height: 100%;
+        width: 100%;
+        height: 100%;
         background-color: rgba(0,0,0,0.7);
         align-items: center;
         justify-content: center;
@@ -320,17 +337,31 @@
         cursor: pointer;
       }
       @media screen and (max-width: 600px) {
-        body { overflow-x: hidden; }
-        .page-container { height: auto; min-height: 100vh; overflow: visible; }
-        #static-top, #static-bottom { font-size: 32px; }
-        #enter-code-btn { font-size: 16px; bottom: 80px; }
+        body {
+          overflow-x: hidden;
+        }
+        .page-container {
+          height: auto;
+          min-height: 100vh;
+          overflow: visible;
+        }
+        #static-top, #static-bottom {
+          font-size: 32px;
+        }
+        #enter-code-btn {
+          font-size: 16px;
+          bottom: 80px;
+        }
         .modal-content {
           transform: translateY(-20%);
           max-width: 90%;
           padding: 20px;
         }
         .modal-content input[type='password'],
-        .modal-content button { font-size: 14px; padding: 8px 12px; }
+        .modal-content button {
+          font-size: 14px;
+          padding: 8px 12px;
+        }
       }
       .modal-content.inverse {
         background: white;
@@ -338,7 +369,9 @@
       }
       .modal-content.inverse p,
       .modal-content.inverse a,
-      .modal-content.inverse span { color: black; }
+      .modal-content.inverse span {
+        color: black;
+      }
       .modal-content.inverse button {
         background: white;
         color: black;
@@ -412,10 +445,6 @@
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
           <source id="video-source" src="assets/sand_4_loop.mp4" type="video/mp4" />
-          <!-- Other sources commented out -->
-          <!-- <source src="assets/sand_1_loop.mp4" type="video/mp4" /> -->
-          <!-- <source src="assets/sand_2_loop.mp4" type="video/mp4" /> -->
-          <!-- <source src="assets/sand_3_loop.mp4" type="video/mp4" /> -->
         </video>
       </div>
     </div>
@@ -607,6 +636,7 @@
         const rewindBtn = document.getElementById("rewind-btn");
         const digitalCounter = document.getElementById("digital-counter");
   
+        const settingsSection = document.getElementById("settings-section");
         const settingsBtn = document.getElementById("settings-btn");
         const settingsDropdown = document.getElementById("settings-dropdown");
         const downloadButton = document.getElementById("download-btn");
@@ -695,10 +725,10 @@
           let seconds = Math.floor(t % 60);
           let ms = Math.floor((t - Math.floor(t)) * 1000);
           digitalCounter.innerText =
-            ("" + hours).padStart(2, '0') + ":" +
-            ("" + minutes).padStart(2, '0') + ":" +
-            ("" + seconds).padStart(2, '0') + ":" +
-            ("" + ms).padStart(3, '0');
+            String(hours).padStart(2, '0') + ":" +
+            String(minutes).padStart(2, '0') + ":" +
+            String(seconds).padStart(2, '0') + ":" +
+            String(ms).padStart(3, '0');
         }
         setInterval(updateCounter, 50);
   
@@ -706,10 +736,11 @@
   
         // Settings Dropdown Toggle
         settingsBtn.addEventListener("click", () => {
+          console.log("Settings cog clicked!");
           settingsDropdown.style.display = (settingsDropdown.style.display === "block") ? "none" : "block";
         });
         window.addEventListener("click", (e) => {
-          if (!document.getElementById("settings-section").contains(e.target)) {
+          if (!settingsSection.contains(e.target)) {
             settingsDropdown.style.display = "none";
           }
         });
@@ -757,7 +788,9 @@
           }
         }
         function hideLoading() {
-          if (loader) { loader.style.display = "none"; }
+          if (loader) {
+            loader.style.display = "none";
+          }
         }
         function showGallery() {
           console.log("Showing gallery...");
