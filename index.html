@@ -61,6 +61,7 @@
         background: #f3f3f3;
         color: #000;
       }
+      /* Subtle static overlay */
       body::before {
         content: "";
         pointer-events: none;
@@ -156,7 +157,7 @@
   
       /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
       #gallery-page { }
-      /* Fixed control bar at bottom */
+      /* Fixed control bar at the bottom */
       #media-control-hub {
         position: fixed;
         bottom: 0;
@@ -189,7 +190,7 @@
         transition: transform 0.2s;
       }
       .control-button:hover { transform: scale(1.03); }
-      /* Digital counter styled like an old stopwatch */
+      /* Digital counter: white box with black digits */
       #digital-counter {
         background-color: #fff;
         color: #000;
@@ -218,7 +219,7 @@
       }
       /* Divider */
       #divider { font-size: 24px; margin: 0 20px; }
-      /* Right side: Settings Cog */
+      /* Right side: Settings Cog and Dropdown */
       #settings-section { position: relative; }
       #settings-btn {
         background: transparent;
@@ -227,7 +228,6 @@
         font-size: 24px;
         cursor: pointer;
       }
-      /* Settings dropdown */
       #settings-dropdown {
         display: none;
         position: absolute;
@@ -380,7 +380,7 @@
   
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
-      <!-- Fixed Control Hub Bar -->
+      <!-- Fixed Control Bar at Bottom -->
       <div id="media-control-hub">
         <div id="media-controls">
           <button id="play-pause" class="control-button" title="Toggle Connection">
@@ -436,6 +436,7 @@
   
     <!-- ============ HOME PAGE P5 SKETCH ============ -->
     <script>
+      // Home page p5 sketch for ACID letters
       let homeSketch = function (p) {
         let textInput = "ACID",
             letters = [],
@@ -569,7 +570,6 @@
           }
         }
       };
-      // Create a container div for the particle overlay if not already present
       if (!document.getElementById("particle-overlay")) {
         let particleDiv = document.createElement("div");
         particleDiv.id = "particle-overlay";
@@ -578,18 +578,42 @@
       new p5(particleSketch, "particle-overlay");
     </script>
   
-    <!-- ============ JS LOGIC (PASSWORD, MEDIA CONTROLS, PAGE SWITCHERS, ETC.) ============ -->
+    <!-- ============ MAIN JS LOGIC ============ -->
     <script>
       window.addEventListener("load", () => {
         console.log("Page loaded, attaching event listeners...");
   
-        // Home Page: "Enter Transmission Code" button and modal
+        // Cache DOM elements
+        const loader = document.getElementById("loader");
+        const loaderText = document.querySelector("#loader .loading-text");
+  
+        const homePage = document.getElementById("home-page");
+        const galleryPage = document.getElementById("gallery-page");
+  
+        // Home page elements
         const enterCodeBtn = document.getElementById("enter-code-btn");
         const passwordModal = document.getElementById("password-modal");
         const modalClose = document.getElementById("modal-close");
         const modalSubmit = document.getElementById("modal-submit");
         const modalPassword = document.getElementById("modal-password");
   
+        // Media controls elements (Gallery page)
+        const audio = document.getElementById("my-audio");
+        const playPauseBtn = document.getElementById("play-pause");
+        const playPauseText = document.getElementById("play-pause-text");
+        const ledIndicator = document.getElementById("led-indicator");
+        const rewindBtn = document.getElementById("rewind-btn");
+        const digitalCounter = document.getElementById("digital-counter");
+  
+        const settingsBtn = document.getElementById("settings-btn");
+        const settingsDropdown = document.getElementById("settings-dropdown");
+        const downloadButton = document.getElementById("download-btn");
+        const placeholderButton = document.getElementById("placeholder-btn");
+        const resetSessionBtn = document.getElementById("reset-session");
+        const returnHomeBtn = document.getElementById("return-home");
+        const disconnectBtn = document.getElementById("disconnect-btn");
+  
+        // --- Home Page Button & Password Modal ---
         enterCodeBtn.addEventListener("click", () => {
           console.log("Enter Transmission Code button clicked");
           if (localStorage.getItem("passwordAccepted") === "true") {
@@ -629,22 +653,7 @@
           }
         }
   
-        // Media Controls (Gallery Page)
-        const audio = document.getElementById("my-audio");
-        const playPauseBtn = document.getElementById("play-pause");
-        const playPauseText = document.getElementById("play-pause-text");
-        const ledIndicator = document.getElementById("led-indicator");
-        const rewindBtn = document.getElementById("rewind-btn");
-        const digitalCounter = document.getElementById("digital-counter");
-  
-        const settingsBtn = document.getElementById("settings-btn");
-        const settingsDropdown = document.getElementById("settings-dropdown");
-        const downloadButton = document.getElementById("download-btn");
-        const placeholderButton = document.getElementById("placeholder-btn");
-        const resetSessionBtn = document.getElementById("reset-session");
-        const returnHomeBtn = document.getElementById("return-home");
-        const disconnectBtn = document.getElementById("disconnect-btn");
-  
+        // --- Media Controls ---
         playPauseText.textContent = "Connect";
         ledIndicator.classList.add("light-off");
   
@@ -685,16 +694,11 @@
         disconnectBtn.addEventListener("click", showHome);
   
         // Settings Dropdown Toggle
-        const settingsSection = document.getElementById("settings-section");
         settingsBtn.addEventListener("click", () => {
-          if (settingsDropdown.style.display === "block") {
-            settingsDropdown.style.display = "none";
-          } else {
-            settingsDropdown.style.display = "block";
-          }
+          settingsDropdown.style.display = (settingsDropdown.style.display === "block") ? "none" : "block";
         });
         window.addEventListener("click", (e) => {
-          if (!settingsSection.contains(e.target)) {
+          if (!document.getElementById("settings-section").contains(e.target)) {
             settingsDropdown.style.display = "none";
           }
         });
@@ -739,12 +743,7 @@
           }
         });
   
-        // Loading Overlay & Page Switchers
-        const homePage = document.getElementById("home-page");
-        const galleryPage = document.getElementById("gallery-page");
-        const loader = document.getElementById("loader");
-        const loaderText = document.querySelector("#loader .loading-text");
-  
+        // --- Loading Overlay & Page Switchers ---
         function showLoading(message) {
           if (loader && loaderText) {
             loaderText.innerHTML = message;
