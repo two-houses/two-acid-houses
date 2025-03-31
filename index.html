@@ -61,7 +61,6 @@
         background: #f3f3f3;
         color: #000;
       }
-      /* Subtle static overlay */
       body::before {
         content: "";
         pointer-events: none;
@@ -190,7 +189,7 @@
         transition: transform 0.2s;
       }
       .control-button:hover { transform: scale(1.03); }
-      /* Digital counter: white box with black digits */
+      /* Digital counter styled like an old stopwatch */
       #digital-counter {
         background-color: #fff;
         color: #000;
@@ -436,7 +435,6 @@
   
     <!-- ============ HOME PAGE P5 SKETCH ============ -->
     <script>
-      // Home page p5 sketch for ACID letters
       let homeSketch = function (p) {
         let textInput = "ACID",
             letters = [],
@@ -597,7 +595,7 @@
         const modalSubmit = document.getElementById("modal-submit");
         const modalPassword = document.getElementById("modal-password");
   
-        // Media controls elements (Gallery page)
+        // Media controls elements
         const audio = document.getElementById("my-audio");
         const playPauseBtn = document.getElementById("play-pause");
         const playPauseText = document.getElementById("play-pause-text");
@@ -613,7 +611,7 @@
         const returnHomeBtn = document.getElementById("return-home");
         const disconnectBtn = document.getElementById("disconnect-btn");
   
-        // --- Home Page Button & Password Modal ---
+        // --- Home Page: "Enter Transmission Code" Button ---
         enterCodeBtn.addEventListener("click", () => {
           console.log("Enter Transmission Code button clicked");
           if (localStorage.getItem("passwordAccepted") === "true") {
@@ -654,11 +652,19 @@
         }
   
         // --- Media Controls ---
+        // Safety checks for audio element
+        function safeAudio() {
+          if (!audio) {
+            console.error("Audio element not found!");
+          }
+          return audio;
+        }
+  
         playPauseText.textContent = "Connect";
         ledIndicator.classList.add("light-off");
   
-        playPauseBtn.addEventListener("click", togglePlay);
-        function togglePlay() {
+        playPauseBtn.addEventListener("click", () => {
+          if (!safeAudio()) return;
           if (audio.paused) {
             audio.play();
             playPauseText.textContent = "Connected...";
@@ -670,14 +676,16 @@
             ledIndicator.classList.remove("light-active");
             ledIndicator.classList.add("light-off");
           }
-        }
+        });
   
         rewindBtn.addEventListener("click", () => {
+          if (!safeAudio()) return;
           audio.currentTime = Math.max(0, audio.currentTime - 10);
           updateCounter();
         });
   
         function updateCounter() {
+          if (!audio) return;
           let t = audio.currentTime;
           let hours = Math.floor(t / 3600);
           let minutes = Math.floor((t % 3600) / 60);
@@ -717,29 +725,24 @@
         });
   
         // Download & Placeholder Modals
-        const downloadModal = document.getElementById("download-modal");
-        const placeholderModal = document.getElementById("placeholder-modal");
-        const downloadModalClose = document.getElementById("download-modal-close");
-        const placeholderModalClose = document.getElementById("placeholder-modal-close");
-  
         downloadButton.addEventListener("click", () => {
-          downloadModal.style.display = "flex";
+          document.getElementById("download-modal").style.display = "flex";
         });
         placeholderButton.addEventListener("click", () => {
-          placeholderModal.style.display = "flex";
+          document.getElementById("placeholder-modal").style.display = "flex";
         });
-        downloadModalClose.addEventListener("click", () => {
-          downloadModal.style.display = "none";
+        document.getElementById("download-modal-close").addEventListener("click", () => {
+          document.getElementById("download-modal").style.display = "none";
         });
-        placeholderModalClose.addEventListener("click", () => {
-          placeholderModal.style.display = "none";
+        document.getElementById("placeholder-modal-close").addEventListener("click", () => {
+          document.getElementById("placeholder-modal").style.display = "none";
         });
         window.addEventListener("click", (e) => {
-          if (e.target === downloadModal) {
-            downloadModal.style.display = "none";
+          if (e.target === document.getElementById("download-modal")) {
+            document.getElementById("download-modal").style.display = "none";
           }
-          if (e.target === placeholderModal) {
-            placeholderModal.style.display = "none";
+          if (e.target === document.getElementById("placeholder-modal")) {
+            document.getElementById("placeholder-modal").style.display = "none";
           }
         });
   
@@ -778,6 +781,7 @@
           }, 3000);
         }
         function showHome() {
+          if (!audio) return;
           if (!audio.paused) {
             audio.pause();
             playPauseText.textContent = "Connect";
