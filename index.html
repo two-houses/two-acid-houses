@@ -44,7 +44,7 @@
       }
     </style>
 
-    <!-- p5.js (for the home page ACID sketch) and p5.sound for audio-reactivity -->
+    <!-- p5.js and p5.sound (for particle and audio reactivity) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
 
@@ -101,7 +101,7 @@
         justify-content: center;
       }
       @keyframes gentlePulse {
-        0%,100% { opacity: 1; transform: scale(1); }
+        0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.85; transform: scale(1.02); }
       }
       .loading-text {
@@ -121,7 +121,7 @@
         background: transparent;
         touch-action: auto;
       }
-      /* Static text elements */
+      /* Static text */
       #static-top, #static-bottom {
         position: absolute;
         width: 100%;
@@ -158,29 +158,29 @@
 
       /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
       #gallery-page { }
-      /* New fixed control hub bar */
+      /* Fixed black control bar */
       #media-control-hub {
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
-        background: rgba(0,0,0,0.6);
-        padding: 10px 0;
+        background-color: #000;
+        color: #fff;
+        padding: 10px 20px;
         box-sizing: border-box;
         display: flex;
-        flex-direction: column;
-        gap: 8px;
+        justify-content: space-between;
+        align-items: center;
         z-index: 350;
       }
-      .primary-controls, .secondary-controls {
+      /* Left side: Media Controls */
+      #media-controls {
         display: flex;
-        justify-content: center;
         align-items: center;
         gap: 20px;
-        flex-wrap: wrap;
       }
-      /* Primary Controls: Play/Pause, Rewind, Digital Counter */
-      .primary-controls button {
+      /* Play/Pause button */
+      .control-button {
         background-color: #fff;
         color: #000;
         border: 2px solid #000;
@@ -190,29 +190,77 @@
         cursor: pointer;
         transition: transform 0.2s;
       }
-      .primary-controls button:hover { transform: scale(1.03); }
-      /* Digital counter styled like an old digital clock */
+      .control-button:hover { transform: scale(1.03); }
+      /* Digital counter: white box with black digits */
       #digital-counter {
-        font-family: 'Wavehaus42Light', monospace;
-        font-size: 18px;
+        background-color: #fff;
         color: #000;
-        background: #fff;
-        padding: 10px 15px;
+        font-family: 'Wavehaus42Light', monospace;
+        font-size: 16px;
+        padding: 8px 12px;
         border: 2px solid #000;
         border-radius: 4px;
+        min-width: 140px;
+        text-align: center;
       }
-      /* Secondary Controls: Download, Consult, Disconnect, Reset */
-      .secondary-controls button {
+      /* LED indicator: styled as a small blinking pipe divider */
+      #led-indicator {
+        width: 15px;
+        height: 15px;
+        margin-left: 10px;
+        border: 1px solid #333;
+        border-radius: 2px;
+        box-shadow: 0 0 3px rgba(0,0,0,0.2);
+      }
+      .light-off { background-color: #777; animation: none; }
+      .light-active { background-color: #e70000; animation: ledPulse 1.5s infinite; }
+      @keyframes ledPulse {
+        0%, 100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
+        50% { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
+      }
+      /* Pipe-style divider */
+      #divider {
+        font-size: 24px;
+        margin: 0 20px;
+        color: #fff;
+      }
+      /* Right side: Settings Cog */
+      #settings-section {
+        position: relative;
+      }
+      #settings-btn {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+      }
+      /* Settings dropdown (initially hidden) */
+      #settings-dropdown {
+        display: none;
+        position: absolute;
+        bottom: 50px;
+        right: 0;
         background-color: #fff;
         color: #000;
         border: 2px solid #000;
-        padding: 10px 15px;
+        border-radius: 4px;
+        padding: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        z-index: 4000;
+      }
+      #settings-dropdown button {
+        background: transparent;
+        border: none;
+        color: #000;
         font-family: 'Wavehaus42Light', Arial, sans-serif;
         font-size: 16px;
+        padding: 8px 12px;
+        width: 100%;
+        text-align: left;
         cursor: pointer;
-        transition: transform 0.2s;
       }
-      .secondary-controls button:hover { transform: scale(1.03); }
+      #settings-dropdown button:hover { background-color: #eee; }
 
       /* ---------------- VIDEO BACKGROUND --------------- */
       #video-container {
@@ -340,45 +388,33 @@
 
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
-      <!-- Control Hub: Fixed at Bottom -->
+      <!-- Media Control Hub: Fixed Black Bar -->
       <div id="media-control-hub">
-        <div class="primary-controls">
-          <!-- Play/Pause Button -->
-          <button id="play-pause" class="control-panel-button" title="Toggle signal detection">
-            <span id="play-pause-text">Lock into detected signal</span>
-            <span id="play-pause-indicator" class="indicator light-off"></span>
+        <div id="media-controls">
+          <button id="play-pause" class="control-button" title="Toggle Connection">
+            <span id="play-pause-text">Connect</span>
           </button>
-          <!-- Rewind Button -->
-          <button id="rewind-btn" class="control-panel-button" title="Rewind signal 10 seconds">
-            &#x23EA; Rewind Signal
+          <button id="rewind-btn" class="control-button" title="Rewind Transmission">
+            Rewind Transmission
           </button>
-          <!-- Digital Counter (old stopwatch style) -->
-          <div id="digital-counter" class="digital-counter" title="Connection Time">Connection Time: 00:00</div>
+          <div id="digital-counter">00:00:00:000</div>
+          <div id="led-indicator" class="light-off" title="Signal Indicator"></div>
+          <div id="divider">|</div>
         </div>
-        <div class="secondary-controls">
-          <!-- Download Button -->
-          <button id="download-btn" class="control-panel-button" title="Download 16-bit Audio Manifest">
-            Download 16-bit Audio Manifest
-          </button>
-          <!-- Consult Training Manual Button -->
-          <button id="placeholder-btn" class="control-panel-button" title="Consult Training Manual">
-            Consult Training Manual
-          </button>
-          <!-- Disconnect Button -->
-          <button id="disconnect-btn" class="control-panel-button" title="Disconnect from Relay Station">
-            Disconnect From Relay Station
-          </button>
-          <!-- Reset Connection Button -->
-          <button id="reset-session" class="control-panel-button" title="Reset connection (requires re-entry of transition code)">
-            Reset Connection
-          </button>
+        <div id="settings-section">
+          <button id="settings-btn" title="Settings">&#9881;</button>
+          <div id="settings-dropdown">
+            <button id="download-btn" class="dropdown-button">Retrieve Audio Transition</button>
+            <button id="placeholder-btn" class="dropdown-button">Consult Training Manual</button>
+            <button id="reset-session" class="dropdown-button">Reset Transmission Connection</button>
+            <button id="return-home" class="dropdown-button">Return Home</button>
+          </div>
         </div>
       </div>
 
       <!-- Video Background -->
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
-          <!-- Only using sand_4_loop video -->
           <source id="video-source" src="assets/sand_4_loop.mp4" type="video/mp4" />
           <!-- Other sources commented out -->
           <!-- <source src="assets/sand_1_loop.mp4" type="video/mp4" /> -->
@@ -485,10 +521,9 @@
           initializeLetters();
         };
       };
-  
       new p5(homeSketch);
     </script>
-
+  
     <!-- ============ PARTICLE OVERLAY (Audio-Reactive Visuals) ============ -->
     <script>
       let particleSketch = function(p) {
@@ -542,17 +577,14 @@
           }
         }
       };
-      // Create particle overlay canvas in a new div we add below.
       let particleDiv = document.createElement("div");
       particleDiv.id = "particle-overlay";
       document.body.appendChild(particleDiv);
       new p5(particleSketch, "particle-overlay");
     </script>
-
-    <!-- ============ JS LOGIC (PASSWORD, PAGE SWITCHERS, MEDIA CONTROLS, ETC.) ============ -->
-    <script>
-      // Orientation (if needed, can be added later)
   
+    <!-- ============ JS LOGIC (PASSWORD, MEDIA CONTROLS, PAGE SWITCHERS, ETC.) ============ -->
+    <script>
       // 1) Home Page: "Enter Transmission Code" button with localStorage persistence.
       const enterCodeBtn = document.getElementById("enter-code-btn");
       const passwordModal = document.getElementById("password-modal");
@@ -600,61 +632,90 @@
         }
       }
   
-      // 2) Media Controls on Gallery Page
+      // 2) Media Controls (Gallery Page)
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
-      const playPauseIndicator = document.getElementById("play-pause-indicator");
+      const ledIndicator = document.getElementById("led-indicator");
       const rewindBtn = document.getElementById("rewind-btn");
       const digitalCounter = document.getElementById("digital-counter");
+  
+      // For dropdown settings
+      const settingsBtn = document.getElementById("settings-btn");
+      const settingsDropdown = document.getElementById("settings-dropdown");
       const downloadButton = document.getElementById("download-btn");
       const placeholderButton = document.getElementById("placeholder-btn");
-      const disconnectBtn = document.getElementById("disconnect-btn");
       const resetSessionBtn = document.getElementById("reset-session");
+      const returnHomeBtn = document.getElementById("return-home");
+      const disconnectBtn = document.getElementById("disconnect-btn");
   
-      playPauseText.textContent = "Lock into detected signal";
-      playPauseIndicator.classList.add("light-off");
+      // Initialize play/pause button text and LED state
+      playPauseText.textContent = "Connect";
+      ledIndicator.classList.add("light-off");
   
       playPauseBtn.addEventListener("click", togglePlay);
       function togglePlay() {
         if (audio.paused) {
           audio.play();
-          playPauseText.textContent = "Halt signal detection protocol";
-          playPauseIndicator.classList.remove("light-off");
-          playPauseIndicator.classList.add("light-active");
+          playPauseText.textContent = "Connected...";
+          ledIndicator.classList.remove("light-off");
+          ledIndicator.classList.add("light-active");
         } else {
           audio.pause();
-          playPauseText.textContent = "Lock into detected signal";
-          playPauseIndicator.classList.remove("light-active");
-          playPauseIndicator.classList.add("light-off");
+          playPauseText.textContent = "Connect";
+          ledIndicator.classList.remove("light-active");
+          ledIndicator.classList.add("light-off");
         }
       }
   
-      // Rewind button: subtract 10 seconds from audio.currentTime
-      // Also update the digital counter accordingly.
-      document.getElementById("rewind-btn").addEventListener("click", () => {
+      rewindBtn.addEventListener("click", () => {
         audio.currentTime = Math.max(0, audio.currentTime - 10);
         updateCounter();
       });
   
       function updateCounter() {
         let t = audio.currentTime;
-        let minutes = Math.floor(t / 60);
+        let hours = Math.floor(t / 3600);
+        let minutes = Math.floor((t % 3600) / 60);
         let seconds = Math.floor(t % 60);
-        if (seconds < 10) seconds = "0" + seconds;
-        digitalCounter.innerText = "Connection Time: " + minutes + ":" + seconds;
+        let ms = Math.floor((t - Math.floor(t)) * 1000);
+        digitalCounter.innerText =
+          ("" + hours).padStart(2, '0') + ":" +
+          ("" + minutes).padStart(2, '0') + ":" +
+          ("" + seconds).padStart(2, '0') + ":" +
+          ("" + ms).padStart(3, '0');
       }
-      // Update the counter regularly
-      setInterval(updateCounter, 500);
+      setInterval(updateCounter, 50);
   
       disconnectBtn.addEventListener("click", showHome);
   
-      // Reset Session Button: Confirm and remove password from localStorage.
+      // Settings Dropdown Toggle
+      const settingsSection = document.getElementById("settings-section");
+      settingsBtn.addEventListener("click", () => {
+        if (settingsDropdown.style.display === "block") {
+          settingsDropdown.style.display = "none";
+        } else {
+          settingsDropdown.style.display = "block";
+        }
+      });
+      // Clicking outside settings hides the dropdown
+      window.addEventListener("click", (e) => {
+        if (!settingsSection.contains(e.target)) {
+          settingsDropdown.style.display = "none";
+        }
+      });
+  
+      // Reset Session Button with confirmation
       resetSessionBtn.addEventListener("click", () => {
         if (confirm("Are you sure: This will break your existing connection and require you to resubmit your transition code")) {
           localStorage.removeItem("passwordAccepted");
           alert("Connection reset. Please re-enter your transmission code on the Home page.");
         }
+      });
+  
+      // Return Home Button (keeps localStorage intact)
+      returnHomeBtn.addEventListener("click", () => {
+        showHome();
       });
   
       // 3) Download & Placeholder Modals
@@ -697,9 +758,7 @@
         }
       }
       function hideLoading() {
-        if (loader) {
-          loader.style.display = "none";
-        }
+        if (loader) { loader.style.display = "none"; }
       }
       function showGallery() {
         showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
@@ -727,7 +786,7 @@
       function showHome() {
         if (!audio.paused) {
           audio.pause();
-          playPauseText.textContent = "Lock into detected signal";
+          playPauseText.textContent = "Connect";
           playPauseIndicator.classList.remove("light-active");
           playPauseIndicator.classList.add("light-off");
         }
