@@ -379,6 +379,9 @@
   
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
+      <!-- Insert Audio Element (hidden) -->
+      <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
+  
       <!-- Fixed Control Bar at Bottom -->
       <div id="media-control-hub">
         <div id="media-controls">
@@ -584,7 +587,6 @@
         // Cache DOM elements
         const loader = document.getElementById("loader");
         const loaderText = document.querySelector("#loader .loading-text");
-  
         const homePage = document.getElementById("home-page");
         const galleryPage = document.getElementById("gallery-page");
   
@@ -652,7 +654,6 @@
         }
   
         // --- Media Controls ---
-        // Safety checks for audio element
         function safeAudio() {
           if (!audio) {
             console.error("Audio element not found!");
@@ -763,7 +764,7 @@
           homePage.offsetWidth;
           homePage.classList.add("invisible");
   
-          // Use sand_4_loop exclusively
+          // Use sand_4_loop video exclusively
           const chosenSource = "assets/sand_4_loop.mp4";
           const videoSourceElem = document.getElementById("video-source");
           videoSourceElem.src = chosenSource;
