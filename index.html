@@ -77,17 +77,9 @@
         opacity: 0.3;
         mix-blend-mode: multiply;
       }
-
-      .fadeable {
-        transition: opacity 0.8s ease;
-      }
-      .hidden {
-        display: none;
-      }
-      .invisible {
-        opacity: 0;
-        pointer-events: none;
-      }
+      .fadeable { transition: opacity 0.8s ease; }
+      .hidden { display: none; }
+      .invisible { opacity: 0; pointer-events: none; }
       .page-container {
         position: relative;
         width: 100%;
@@ -103,7 +95,7 @@
         z-index: 9999;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: rgba(255,255,255,0.9);
         align-items: center;
         justify-content: center;
       }
@@ -119,9 +111,7 @@
       }
 
       /* ---------------- HOME PAGE --------------- */
-      #home-page {
-        /* Home page container */
-      }
+      #home-page { }
       #interactive-container-home {
         position: absolute;
         top: 0; left: 0;
@@ -130,7 +120,7 @@
         background: transparent;
         touch-action: auto;
       }
-      /* Static text elements */
+      /* Static text */
       #static-top, #static-bottom {
         position: absolute;
         width: 100%;
@@ -139,13 +129,8 @@
         pointer-events: none;
         color: #000;
       }
-      #static-top {
-        top: 10%;
-        line-height: 1.2;
-      }
-      #static-bottom {
-        top: 65%;
-      }
+      #static-top { top: 10%; line-height: 1.2; }
+      #static-bottom { top: 65%; }
       /* "Enter Transmission Code" button at the bottom */
       #enter-code-btn {
         position: absolute;
@@ -154,7 +139,7 @@
         transform: translateX(-50%);
         padding: 15px 20px;
         font-size: 18px;
-        background-color: transparent;  /* Transparent background */
+        background-color: transparent;
         color: #111;
         border: 2px solid #111;
         border-radius: 6px;
@@ -162,22 +147,16 @@
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
       }
-      /* Ensure the button remains centered on hover */
       #enter-code-btn:hover {
         background-color: rgba(17,17,17,0.1);
         transform: translateX(-50%) scale(1.03);
       }
-      /* Raise button further from bottom on mobile */
       @media screen and (max-width: 600px) {
-        #enter-code-btn {
-          bottom: 80px;
-        }
+        #enter-code-btn { bottom: 80px; }
       }
 
       /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
-      #gallery-page {
-        /* Gallery page container */
-      }
+      #gallery-page { }
       #audio-player {
         z-index: 350;
         position: absolute;
@@ -188,30 +167,12 @@
         width: 320px;
         padding: 20px;
         box-sizing: border-box;
-        background-color: transparent;  /* Transparent background */
+        background-color: transparent;
         border: 2px solid rgba(255,255,255,0.7);
         border-radius: 8px;
-        /* Removed box-shadow for a more integrated feel */
         position: relative;
       }
-      /* Subtle overlay for the control panel */
-      #audio-player::before {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        border-radius: 8px;
-        pointer-events: none;
-        mask-image: url('data:image/svg+xml;utf8,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><path d="M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 L200,190 Q190,200 180,190 T160,190 T140,190 T120,190 T100,190 T80,190 T60,190 T40,190 T20,190 T0,190 Z" fill="white"/></svg>');
-        mask-size: 100% 100%;
-        background: repeating-linear-gradient(
-          0deg,
-          rgba(0,0,0,0.02) 0%,
-          rgba(0,0,0,0.02) 1px,
-          transparent 1px,
-          transparent 2px
-        );
-        opacity: 0.3;
-      }
+      /* Control Panel Buttons – white background, black text, black border */
       .button-group {
         display: flex;
         flex-direction: column;
@@ -223,15 +184,15 @@
       .control-panel-button {
         width: 280px;
         padding: 15px;
-        border: 2px solid rgba(255,255,255,0.7);
+        border: 2px solid #000;
         font-family: 'Wavehaus42Light', Arial, sans-serif;
         font-size: 16px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background-color: transparent; /* Transparent background */
-        color: #fff;
+        background-color: #fff;
+        color: #000;
         transition: transform 0.2s;
       }
       .control-panel-button:hover {
@@ -245,18 +206,26 @@
         border-radius: 2px;
         box-shadow: 0 0 3px rgba(0,0,0,0.2);
       }
-      .light-off {
-        background-color: #777;
-        animation: none;
-      }
-      .light-active {
-        background-color: #e70000;
-        animation: ledPulse 1.5s infinite;
-      }
+      .light-off { background-color: #777; animation: none; }
+      .light-active { background-color: #e70000; animation: ledPulse 1.5s infinite; }
       @keyframes ledPulse {
         0%, 100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
         50% { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
+      /* Reset Connection Button styling – same as control panel button */
+      #reset-session {
+        width: 280px;
+        padding: 15px;
+        border: 2px solid #000;
+        font-family: 'Wavehaus42Light', Arial, sans-serif;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #fff;
+        color: #000;
+        text-align: center;
+        transition: transform 0.2s;
+      }
+      #reset-session:hover { transform: scale(1.02); }
 
       /* ---------------- VIDEO BACKGROUND --------------- */
       #video-container {
@@ -323,21 +292,10 @@
         cursor: pointer;
       }
       @media screen and (max-width: 600px) {
-        body {
-          overflow-x: hidden;
-        }
-        .page-container {
-          height: auto;
-          min-height: 100vh;
-          overflow: visible;
-        }
-        #static-top, #static-bottom {
-          font-size: 32px;
-        }
-        #enter-code-btn {
-          font-size: 16px;
-          bottom: 80px;
-        }
+        body { overflow-x: hidden; }
+        .page-container { height: auto; min-height: 100vh; overflow: visible; }
+        #static-top, #static-bottom { font-size: 32px; }
+        #enter-code-btn { font-size: 16px; bottom: 80px; }
         .modal-content {
           transform: translateY(-20%);
           max-width: 90%;
@@ -345,8 +303,7 @@
         }
         .modal-content input[type='password'],
         .modal-content button {
-          font-size: 14px;
-          padding: 8px 12px;
+          font-size: 14px; padding: 8px 12px;
         }
       }
       .modal-content.inverse {
@@ -355,9 +312,7 @@
       }
       .modal-content.inverse p,
       .modal-content.inverse a,
-      .modal-content.inverse span {
-        color: black;
-      }
+      .modal-content.inverse span { color: black; }
       .modal-content.inverse button {
         background: white;
         color: black;
@@ -373,14 +328,14 @@
 
     <!-- ============ HOME PAGE ============ -->
     <div id="home-page" class="page-container fadeable">
-      <!-- p5 Canvas (background) -->
+      <!-- p5 Canvas Background -->
       <div id="interactive-container-home"></div>
 
-      <!-- Static text elements -->
+      <!-- Static text -->
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
 
-      <!-- "Enter Transmission Code" button pinned at bottom -->
+      <!-- "Enter Transmission Code" Button -->
       <button id="enter-code-btn">Enter Transmission Code</button>
 
       <!-- Password Modal -->
@@ -404,25 +359,29 @@
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
-          <!-- Play/Pause Button with LED indicator -->
+          <!-- Play/Pause Button -->
           <button id="play-pause" class="control-panel-button">
             <span id="play-pause-text">Lock into detected signal</span>
             <span id="play-pause-indicator" class="indicator light-off"></span>
           </button>
-          <!-- Download Modal Button -->
+          <!-- Download Button -->
           <button id="download-btn" class="control-panel-button">
             Download 16-bit Audio Manifest
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
-          <!-- Placeholder Modal Button -->
+          <!-- Consult Training Manual Button -->
           <button id="placeholder-btn" class="control-panel-button">
             Consult Training Manual
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
-          <!-- Disconnect Button (returns to Home) -->
+          <!-- Disconnect Button -->
           <button id="disconnect-btn" class="control-panel-button">
             Disconnect From Relay Station
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
+          </button>
+          <!-- Reset Session Button -->
+          <button id="reset-session" class="control-panel-button">
+            Reset Connection
           </button>
         </div>
       </div>
@@ -430,9 +389,8 @@
       <!-- Video Background -->
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
-          <!-- Using sand_4_loop as the chosen video -->
           <source id="video-source" src="assets/sand_4_loop.mp4" type="video/mp4" />
-          <!-- Other sources commented out:
+          <!-- Other video sources commented out:
           <source src="assets/sand_1_loop.mp4" type="video/mp4" />
           <source src="assets/sand_2_loop.mp4" type="video/mp4" />
           <source src="assets/sand_3_loop.mp4" type="video/mp4" />
@@ -565,7 +523,7 @@
       const modalSubmit = document.getElementById("modal-submit");
       const modalPassword = document.getElementById("modal-password");
 
-      // When the button is clicked, check localStorage; if password accepted already, skip modal.
+      // When clicked, if localStorage has saved password, skip modal.
       enterCodeBtn.addEventListener("click", () => {
         if (localStorage.getItem("passwordAccepted") === "true") {
           showGallery();
@@ -606,7 +564,7 @@
         }
       }
 
-      // 2) Audio Player + Control Panel
+      // 2) Audio Player & Control Panel (Gallery Page)
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
@@ -615,6 +573,7 @@
       const downloadButton = document.getElementById("download-btn");
       const placeholderButton = document.getElementById("placeholder-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
+      const resetSessionBtn = document.getElementById("reset-session");
 
       playPauseText.textContent = "Lock into detected signal";
       playPauseIndicator.classList.add("light-off");
@@ -636,6 +595,14 @@
 
       disconnectBtn.addEventListener("click", showHome);
 
+      // Reset Session Button – confirm before resetting localStorage
+      resetSessionBtn.addEventListener("click", () => {
+        if (confirm("Are you sure: This will break your existing connection and require you to resubmit your transition code")) {
+          localStorage.removeItem("passwordAccepted");
+          alert("Session reset. Please re-enter your transmission code.");
+        }
+      });
+
       // 3) Download & Placeholder Modals
       const downloadModal = document.getElementById("download-modal");
       const placeholderModal = document.getElementById("placeholder-modal");
@@ -648,14 +615,12 @@
       placeholderButton.addEventListener("click", () => {
         placeholderModal.style.display = "flex";
       });
-
       downloadModalClose.addEventListener("click", () => {
         downloadModal.style.display = "none";
       });
       placeholderModalClose.addEventListener("click", () => {
         placeholderModal.style.display = "none";
       });
-
       window.addEventListener("click", (e) => {
         if (e.target === downloadModal) {
           downloadModal.style.display = "none";
@@ -682,7 +647,6 @@
           loader.style.display = "none";
         }
       }
-
       function showGallery() {
         showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
         homePage.classList.remove("invisible");
@@ -706,7 +670,6 @@
           }, 2000);
         }, 3000);
       }
-
       function showHome() {
         if (!audio.paused) {
           audio.pause();
