@@ -44,9 +44,8 @@
       }
     </style>
 
-    <!-- p5.js and p5.sound (for particle effects) -->
+    <!-- p5.js for the home page ACID sketch -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
 
     <style>
       /* ---------------- GLOBAL / BACKGROUND --------------- */
@@ -78,9 +77,17 @@
         opacity: 0.3;
         mix-blend-mode: multiply;
       }
-      .fadeable { transition: opacity 0.8s ease; }
-      .hidden { display: none; }
-      .invisible { opacity: 0; pointer-events: none; }
+
+      .fadeable {
+        transition: opacity 0.8s ease;
+      }
+      .hidden {
+        display: none;
+      }
+      .invisible {
+        opacity: 0;
+        pointer-events: none;
+      }
       .page-container {
         position: relative;
         width: 100%;
@@ -96,12 +103,12 @@
         z-index: 9999;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background-color: rgba(255,255,255,0.9);
+        background-color: rgba(255, 255, 255, 0.9);
         align-items: center;
         justify-content: center;
       }
       @keyframes gentlePulse {
-        0%,100% { opacity: 1; transform: scale(1); }
+        0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.85; transform: scale(1.02); }
       }
       .loading-text {
@@ -112,7 +119,9 @@
       }
 
       /* ---------------- HOME PAGE --------------- */
-      #home-page { }
+      #home-page {
+        /* Home page container */
+      }
       #interactive-container-home {
         position: absolute;
         top: 0; left: 0;
@@ -121,6 +130,7 @@
         background: transparent;
         touch-action: auto;
       }
+      /* Static text elements */
       #static-top, #static-bottom {
         position: absolute;
         width: 100%;
@@ -129,8 +139,13 @@
         pointer-events: none;
         color: #000;
       }
-      #static-top { top: 10%; line-height: 1.2; }
-      #static-bottom { top: 65%; }
+      #static-top {
+        top: 10%;
+        line-height: 1.2;
+      }
+      #static-bottom {
+        top: 65%;
+      }
       /* "Enter Transmission Code" button at the bottom */
       #enter-code-btn {
         position: absolute;
@@ -139,7 +154,7 @@
         transform: translateX(-50%);
         padding: 15px 20px;
         font-size: 18px;
-        background-color: transparent;
+        background-color: transparent;  /* Transparent background */
         color: #111;
         border: 2px solid #111;
         border-radius: 6px;
@@ -147,18 +162,22 @@
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
       }
-      /* Hover: maintain centering while scaling */
+      /* Ensure the button remains centered on hover */
       #enter-code-btn:hover {
         background-color: rgba(17,17,17,0.1);
         transform: translateX(-50%) scale(1.03);
       }
-      /* On mobile, raise button further so it isn’t cut off */
+      /* Raise button further from bottom on mobile */
       @media screen and (max-width: 600px) {
-        #enter-code-btn { bottom: 80px; }
+        #enter-code-btn {
+          bottom: 80px;
+        }
       }
 
       /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
-      #gallery-page { }
+      #gallery-page {
+        /* Gallery page container */
+      }
       #audio-player {
         z-index: 350;
         position: absolute;
@@ -169,31 +188,55 @@
         width: 320px;
         padding: 20px;
         box-sizing: border-box;
-        background-color: transparent;
-        /* Remove heavy background to integrate with video */
-        border: 2px solid transparent;
+        background-color: transparent;  /* Transparent background */
+        border: 2px solid rgba(255,255,255,0.7);
         border-radius: 8px;
+        /* Removed box-shadow for a more integrated feel */
         position: relative;
       }
-      /* Control panel buttons on gallery: white with black text */
-      #gallery-page .control-panel-button {
+      /* Subtle overlay for the control panel */
+      #audio-player::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        border-radius: 8px;
+        pointer-events: none;
+        mask-image: url('data:image/svg+xml;utf8,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><path d="M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 L200,190 Q190,200 180,190 T160,190 T140,190 T120,190 T100,190 T80,190 T60,190 T40,190 T20,190 T0,190 Z" fill="white"/></svg>');
+        mask-size: 100% 100%;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0,0,0,0.02) 0%,
+          rgba(0,0,0,0.02) 1px,
+          transparent 1px,
+          transparent 2px
+        );
+        opacity: 0.3;
+      }
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        position: relative;
+        z-index: 2;
+      }
+      .control-panel-button {
         width: 280px;
         padding: 15px;
-        border: 2px solid transparent;
+        border: 2px solid rgba(255,255,255,0.7);
         font-family: 'Wavehaus42Light', Arial, sans-serif;
         font-size: 16px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background-color: #fff;
-        color: #000;
+        background-color: transparent; /* Transparent background */
+        color: #fff;
         transition: transform 0.2s;
       }
-      #gallery-page .control-panel-button:hover {
+      .control-panel-button:hover {
         transform: scale(1.02);
       }
-      /* LED indicator remains (for play/pause only) */
       .indicator {
         width: 15px;
         height: 15px;
@@ -202,20 +245,19 @@
         border-radius: 2px;
         box-shadow: 0 0 3px rgba(0,0,0,0.2);
       }
-      .light-off { background-color: #777; animation: none; }
-      .light-active { background-color: #e70000; animation: ledPulse 1.5s infinite; }
+      .light-off {
+        background-color: #777;
+        animation: none;
+      }
+      .light-active {
+        background-color: #e70000;
+        animation: ledPulse 1.5s infinite;
+      }
       @keyframes ledPulse {
         0%, 100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
         50% { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
-      /* Add Reset Session link under the control panel */
-      #reset-session {
-        margin-top: 10px;
-        font-size: 14px;
-        color: #fff;
-        cursor: pointer;
-        text-decoration: underline;
-      }
+
       /* ---------------- VIDEO BACKGROUND --------------- */
       #video-container {
         position: absolute;
@@ -229,15 +271,6 @@
         height: 100%;
         object-fit: cover;
         filter: grayscale(100%);
-      }
-
-      /* ---------------- PARTICLE OVERLAY (for dynamic visual feedback) --------------- */
-      #particle-overlay {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        z-index: 300;  /* Between video (100) and control panel (350) */
-        pointer-events: none;
       }
 
       /* ---------------- MODALS --------------- */
@@ -284,45 +317,37 @@
       }
       .close {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 10px; right: 10px;
         font-size: 20px;
         color: #fff;
-        cursor: pointer;
-      }
-      /* Orientation Modal */
-      #orientation-modal {
-        display: none;
-        position: fixed;
-        z-index: 4000;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background-color: rgba(0,0,0,0.8);
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        color: #fff;
-        padding: 20px;
-        font-size: 20px;
-      }
-      #orientation-modal button {
-        margin-top: 20px;
-        padding: 10px 20px;
-        font-size: 16px;
         cursor: pointer;
       }
       @media screen and (max-width: 600px) {
-        body { overflow-x: hidden; }
-        .page-container { height: auto; min-height: 100vh; overflow: visible; }
-        #static-top, #static-bottom { font-size: 32px; }
-        #enter-code-btn { font-size: 16px; bottom: 80px; }
+        body {
+          overflow-x: hidden;
+        }
+        .page-container {
+          height: auto;
+          min-height: 100vh;
+          overflow: visible;
+        }
+        #static-top, #static-bottom {
+          font-size: 32px;
+        }
+        #enter-code-btn {
+          font-size: 16px;
+          bottom: 80px;
+        }
         .modal-content {
           transform: translateY(-20%);
           max-width: 90%;
           padding: 20px;
         }
         .modal-content input[type='password'],
-        .modal-content button { font-size: 14px; padding: 8px 12px; }
+        .modal-content button {
+          font-size: 14px;
+          padding: 8px 12px;
+        }
       }
       .modal-content.inverse {
         background: white;
@@ -330,7 +355,9 @@
       }
       .modal-content.inverse p,
       .modal-content.inverse a,
-      .modal-content.inverse span { color: black; }
+      .modal-content.inverse span {
+        color: black;
+      }
       .modal-content.inverse button {
         background: white;
         color: black;
@@ -344,22 +371,16 @@
       <div class="loading-text">Loading...</div>
     </div>
 
-    <!-- Orientation Modal (for mobile landscape) -->
-    <div id="orientation-modal">
-      <p>Incorrect communications device alignment - Please hold your handset upright.</p>
-      <button id="orientation-ok">OK</button>
-    </div>
-
     <!-- ============ HOME PAGE ============ -->
     <div id="home-page" class="page-container fadeable">
-      <!-- p5 Canvas Background -->
+      <!-- p5 Canvas (background) -->
       <div id="interactive-container-home"></div>
 
-      <!-- Static Text -->
+      <!-- Static text elements -->
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
 
-      <!-- "Enter Transmission Code" Button -->
+      <!-- "Enter Transmission Code" button pinned at bottom -->
       <button id="enter-code-btn">Enter Transmission Code</button>
 
       <!-- Password Modal -->
@@ -383,24 +404,22 @@
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
-          <!-- Play/Pause Button -->
+          <!-- Play/Pause Button with LED indicator -->
           <button id="play-pause" class="control-panel-button">
             <span id="play-pause-text">Lock into detected signal</span>
             <span id="play-pause-indicator" class="indicator light-off"></span>
           </button>
-          <!-- Download Button -->
+          <!-- Download Modal Button -->
           <button id="download-btn" class="control-panel-button">
             Download 16-bit Audio Manifest
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
-          <!-- Consult Training Manual Button -->
+          <!-- Placeholder Modal Button -->
           <button id="placeholder-btn" class="control-panel-button">
             Consult Training Manual
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
-          <!-- Reset Session Option (for LocalStorage) -->
-          <div id="reset-session" onclick="resetSession()">Reset Session</div>
-          <!-- Disconnect Button -->
+          <!-- Disconnect Button (returns to Home) -->
           <button id="disconnect-btn" class="control-panel-button">
             Disconnect From Relay Station
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
@@ -408,17 +427,16 @@
         </div>
       </div>
 
-      <!-- Particle Overlay for Dynamic Visual Feedback -->
-      <div id="particle-overlay"></div>
-
       <!-- Video Background -->
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
+          <!-- Using sand_4_loop as the chosen video -->
           <source id="video-source" src="assets/sand_4_loop.mp4" type="video/mp4" />
-          <!-- Other video sources are commented out -->
-          <!-- <source src="assets/sand_1_loop.mp4" type="video/mp4" /> -->
-          <!-- <source src="assets/sand_2_loop.mp4" type="video/mp4" /> -->
-          <!-- <source src="assets/sand_3_loop.mp4" type="video/mp4" /> -->
+          <!-- Other sources commented out:
+          <source src="assets/sand_1_loop.mp4" type="video/mp4" />
+          <source src="assets/sand_2_loop.mp4" type="video/mp4" />
+          <source src="assets/sand_3_loop.mp4" type="video/mp4" />
+          -->
         </video>
       </div>
     </div>
@@ -443,7 +461,6 @@
 
     <!-- ============ HOME PAGE P5 SKETCH ============ -->
     <script>
-      // Home page p5 sketch (ACID letters)
       let homeSketch = function (p) {
         let textInput = "ACID",
             letters = [],
@@ -467,22 +484,26 @@
 
         p.draw = function () {
           p.clear();
+
           if (p.millis() - lastFrameRateCheck > 1000) {
             let fps = p.frameRate();
             if (fps < 30) maxTrailLength = 300;
             else if (fps > 50) maxTrailLength = 600;
             lastFrameRateCheck = p.millis();
           }
+
           if (customFont && p.textFont() !== customFont) {
             p.textFont(customFont);
           } else if (!customFont) {
             p.textFont("Arial");
           }
+
           for (let trail of trails) {
             p.fill(trail.color);
             p.noStroke();
             p.text(trail.letter, trail.x, trail.y);
           }
+
           for (let i = 0; i < letters.length; i++) {
             let letter = textInput[i];
             let letterPos = letters[i];
@@ -531,104 +552,20 @@
           initializeLetters();
         };
       };
+
       new p5(homeSketch);
     </script>
 
-    <!-- ============ PARTICLE OVERLAY SKETCH (Gallery Page) ============ -->
+    <!-- ============ JS LOGIC (PASSWORD, PAGE SWITCHERS, ETC.) ============ -->
     <script>
-      // Particle system on gallery page that is audio-reactive.
-      let particleSketch = function(p) {
-        let particles = [];
-        let fft;
-        let audioElement;
-        let mic; // we'll use the existing audio element's source via p5.Sound
-
-        p.setup = function() {
-          let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-          canvas.parent("particle-overlay");
-          p.clear();
-          fft = new p5.FFT(0.8, 64);
-          // Attach the audio element to the fft analyzer:
-          audioElement = document.getElementById("my-audio");
-          // Create a p5.MediaElement from the audio element:
-          let pe = new p5.MediaElement(audioElement);
-          fft.setInput(pe);
-        };
-
-        p.draw = function() {
-          p.clear();
-          let spectrum = fft.analyze();
-          // Calculate an average amplitude value from the spectrum
-          let avg = spectrum.reduce((a, b) => a + b, 0) / spectrum.length;
-          // Map average amplitude to a particle spawn rate
-          let spawnRate = p.map(avg, 0, 255, 0, 5);
-          for (let i = 0; i < spawnRate; i++) {
-            particles.push(new Particle(p.random(p.width), p.random(p.height)));
-          }
-          // Update and draw particles
-          for (let i = particles.length - 1; i >= 0; i--) {
-            particles[i].update();
-            particles[i].display();
-            if (particles[i].isFinished()) {
-              particles.splice(i, 1);
-            }
-          }
-        };
-
-        class Particle {
-          constructor(x, y) {
-            this.pos = p.createVector(x, y);
-            this.vel = p5.Vector.random2D().mult(p.random(0.5, 2));
-            this.acc = p.createVector(0, 0);
-            this.lifetime = 255;
-          }
-          update() {
-            this.pos.add(this.vel);
-            this.lifetime -= 2;
-          }
-          display() {
-            p.noStroke();
-            p.fill(255, this.lifetime);
-            p.ellipse(this.pos.x, this.pos.y, 5);
-          }
-          isFinished() {
-            return this.lifetime < 0;
-          }
-        }
-      };
-      new p5(particleSketch, "particle-overlay");
-    </script>
-
-    <!-- ============ JS LOGIC (PASSWORD, PAGE SWITCHERS, ORIENTATION, ETC.) ============ -->
-    <script>
-      // Orientation Modal Logic
-      const orientationModal = document.getElementById("orientation-modal");
-      const orientationOk = document.getElementById("orientation-ok");
-
-      function checkOrientation() {
-        // On mobile (narrow screens), if width > height, assume landscape.
-        if (window.innerWidth < 768 && window.innerWidth > window.innerHeight) {
-          orientationModal.style.display = "flex";
-        } else {
-          orientationModal.style.display = "none";
-        }
-      }
-      window.addEventListener("resize", checkOrientation);
-      window.addEventListener("orientationchange", checkOrientation);
-      // Initial check
-      checkOrientation();
-
-      orientationOk.addEventListener("click", () => {
-        orientationModal.style.display = "none";
-      });
-
-      // 1) Home Page: "Enter Transmission Code" button with localStorage persistence.
+      // 1) Home Page: "Enter Transmission Code" button
       const enterCodeBtn = document.getElementById("enter-code-btn");
       const passwordModal = document.getElementById("password-modal");
       const modalClose = document.getElementById("modal-close");
       const modalSubmit = document.getElementById("modal-submit");
       const modalPassword = document.getElementById("modal-password");
 
+      // When the button is clicked, check localStorage; if password accepted already, skip modal.
       enterCodeBtn.addEventListener("click", () => {
         if (localStorage.getItem("passwordAccepted") === "true") {
           showGallery();
@@ -642,11 +579,13 @@
       modalClose.addEventListener("click", () => {
         passwordModal.style.display = "none";
       });
+
       window.addEventListener("click", (e) => {
         if (e.target === passwordModal) {
           passwordModal.style.display = "none";
         }
       });
+
       modalSubmit.addEventListener("click", checkPassword);
       modalPassword.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
@@ -654,6 +593,7 @@
           checkPassword();
         }
       });
+
       function checkPassword() {
         const enteredPassword = modalPassword.value;
         const correctPassword = "qwerty";
@@ -666,11 +606,12 @@
         }
       }
 
-      // 2) Audio Player & Control Panel (Gallery Page)
+      // 2) Audio Player + Control Panel
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
       const playPauseIndicator = document.getElementById("play-pause-indicator");
+
       const downloadButton = document.getElementById("download-btn");
       const placeholderButton = document.getElementById("placeholder-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
@@ -692,13 +633,8 @@
           playPauseIndicator.classList.add("light-off");
         }
       }
-      disconnectBtn.addEventListener("click", showHome);
 
-      // Reset Session (Remove localStorage passwordAccepted)
-      function resetSession() {
-        localStorage.removeItem("passwordAccepted");
-        alert("Session has been reset. Please re-enter your launch code next time.");
-      }
+      disconnectBtn.addEventListener("click", showHome);
 
       // 3) Download & Placeholder Modals
       const downloadModal = document.getElementById("download-modal");
@@ -712,12 +648,14 @@
       placeholderButton.addEventListener("click", () => {
         placeholderModal.style.display = "flex";
       });
+
       downloadModalClose.addEventListener("click", () => {
         downloadModal.style.display = "none";
       });
       placeholderModalClose.addEventListener("click", () => {
         placeholderModal.style.display = "none";
       });
+
       window.addEventListener("click", (e) => {
         if (e.target === downloadModal) {
           downloadModal.style.display = "none";
@@ -744,13 +682,14 @@
           loader.style.display = "none";
         }
       }
+
       function showGallery() {
         showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
         homePage.classList.remove("invisible");
         homePage.offsetWidth;
         homePage.classList.add("invisible");
 
-        // Use sand_4_loop exclusively
+        // Use sand_4_loop video exclusively
         const chosenSource = "assets/sand_4_loop.mp4";
         const videoSourceElem = document.getElementById("video-source");
         videoSourceElem.src = chosenSource;
@@ -767,6 +706,7 @@
           }, 2000);
         }, 3000);
       }
+
       function showHome() {
         if (!audio.paused) {
           audio.pause();
