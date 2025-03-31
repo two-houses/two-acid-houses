@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>TWO ACID HOUSES</title>
 
-    <!-- FONT DEFINITIONS -->
+    <!-- FONT DEFINITIONS (unchanged) -->
     <style>
       @font-face {
         font-family: 'NeckynDemoRegular';
@@ -49,7 +49,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
 
     <style>
-      /* ---------------- GLOBAL / BACKGROUND --------------- */
+      /* -----------------------------------
+         GLOBAL / BACKGROUND
+      ----------------------------------- */
       html, body {
         margin: 0;
         overscroll-behavior: none;
@@ -77,9 +79,16 @@
         opacity: 0.3;
         mix-blend-mode: multiply;
       }
-      .fadeable { transition: opacity 0.8s ease; }
-      .hidden { display: none; }
-      .invisible { opacity: 0; pointer-events: none; }
+      .fadeable {
+        transition: opacity 0.8s ease;
+      }
+      .hidden {
+        display: none;
+      }
+      .invisible {
+        opacity: 0;
+        pointer-events: none;
+      }
       .page-container {
         position: relative;
         width: 100%;
@@ -87,8 +96,10 @@
         overflow: hidden;
         z-index: 2;
       }
-  
-      /* ---------------- LOADER OVERLAY --------------- */
+
+      /* -----------------------------------
+         LOADER OVERLAY
+      ----------------------------------- */
       #loader {
         display: none;
         position: fixed;
@@ -109,9 +120,12 @@
         text-align: center;
         font-family: 'Wavehaus28Thin', Arial, sans-serif;
       }
-  
-      /* ---------------- HOME PAGE --------------- */
-      #home-page { }
+
+      /* -----------------------------------
+         HOME PAGE
+      ----------------------------------- */
+      #home-page {
+      }
       #interactive-container-home {
         position: absolute;
         top: 0; left: 0;
@@ -128,8 +142,13 @@
         pointer-events: none;
         color: #000;
       }
-      #static-top { top: 10%; line-height: 1.2; }
-      #static-bottom { top: 65%; }
+      #static-top {
+        top: 10%;
+        line-height: 1.2;
+      }
+      #static-bottom {
+        top: 65%;
+      }
 
       /* "Enter Transmission Code" button at bottom */
       #enter-code-btn {
@@ -156,10 +175,13 @@
           bottom: 80px;
         }
       }
-  
-      /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
-      #gallery-page { }
-      /* Fixed control bar at the bottom */
+
+      /* -----------------------------------
+         GALLERY PAGE / MEDIA PLAYER
+      ----------------------------------- */
+      #gallery-page {
+      }
+      /* Fixed control bar at bottom */
       #media-control-hub {
         position: fixed;
         bottom: 0;
@@ -191,7 +213,9 @@
         cursor: pointer;
         transition: transform 0.2s;
       }
-      .control-button:hover { transform: scale(1.03); }
+      .control-button:hover {
+        transform: scale(1.03);
+      }
 
       /* Digital counter styled like an old stopwatch */
       #digital-counter {
@@ -215,13 +239,18 @@
         border-radius: 2px;
         box-shadow: 0 0 3px rgba(0,0,0,0.2);
       }
-      .light-off { background-color: #777; animation: none; }
-      .light-active { background-color: #e70000; animation: ledPulse 1.5s infinite; }
+      .light-off {
+        background-color: #777;
+        animation: none;
+      }
+      .light-active {
+        background-color: #e70000;
+        animation: ledPulse 1.5s infinite;
+      }
       @keyframes ledPulse {
-        0%,100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
+        0%, 100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
         50% { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
       }
-
       /* Divider */
       #divider {
         font-size: 24px;
@@ -239,23 +268,20 @@
         font-size: 24px;
         cursor: pointer;
       }
-
-      /* Force dropdown to unfold upwards */
       #settings-dropdown {
         display: none;
         position: absolute;
-        bottom: 100%; /* dropdown opens upward */
+        bottom: 100%;  /* open upward above the cog */
         right: 0;
-        margin-bottom: 10px; /* gap between button and dropdown */
+        margin-bottom: 10px;
         background-color: #fff;
         color: #000;
         border: 2px solid #000;
         border-radius: 4px;
         padding: 10px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        z-index: 4000; /* ensure above black bar */
+        z-index: 9999; /* ensure above everything else */
       }
-
       #settings-dropdown button {
         background: transparent;
         border: none;
@@ -270,8 +296,10 @@
       #settings-dropdown button:hover {
         background-color: #eee;
       }
-  
-      /* ---------------- VIDEO BACKGROUND --------------- */
+
+      /* -----------------------------------
+         VIDEO BACKGROUND
+      ----------------------------------- */
       #video-container {
         position: absolute;
         top: 0; left: 0;
@@ -285,15 +313,16 @@
         object-fit: cover;
         filter: grayscale(100%);
       }
-  
-      /* ---------------- MODALS --------------- */
+
+      /* -----------------------------------
+         MODALS
+      ----------------------------------- */
       .modal {
         display: none;
         position: fixed;
         z-index: 3000;
         top: 0; left: 0;
-        width: 100%;
-        height: 100%;
+        width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.7);
         align-items: center;
         justify-content: center;
@@ -384,26 +413,24 @@
     <div id="loader">
       <div class="loading-text">Loading...</div>
     </div>
-  
+
     <!-- ============ HOME PAGE ============ -->
     <div id="home-page" class="page-container fadeable">
-      <!-- p5 Canvas Background -->
+      <!-- p5 Canvas (ACID letters) -->
       <div id="interactive-container-home"></div>
-  
+
       <!-- Static text -->
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
-  
-      <!-- "Enter Transmission Code" Button -->
+
+      <!-- "Enter Transmission Code" button -->
       <button id="enter-code-btn">Enter Transmission Code</button>
-  
+
       <!-- Password Modal -->
       <div id="password-modal" class="modal">
         <div class="modal-content">
           <span class="close" id="modal-close">&times;</span>
-          <div id="update-text">
-            Enter designated launch code...<span id="blinking-dot">.</span>
-          </div>
+          <div id="update-text">Enter designated launch code...<span id="blinking-dot">.</span></div>
           <br />
           <input type="password" id="modal-password" placeholder="....." />
           <br />
@@ -411,13 +438,13 @@
         </div>
       </div>
     </div>
-  
+
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
       <!-- Insert Audio Element (hidden) -->
       <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
-  
-      <!-- Fixed Control Bar at Bottom -->
+
+      <!-- Media Control Hub (bottom) -->
       <div id="media-control-hub">
         <div id="media-controls">
           <button id="play-pause" class="control-button" title="Toggle Connection">
@@ -440,7 +467,7 @@
           </div>
         </div>
       </div>
-  
+
       <!-- Video Background -->
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
@@ -448,8 +475,8 @@
         </video>
       </div>
     </div>
-  
-    <!-- ============ EXTRA MODALS ============ -->
+
+    <!-- EXTRA MODALS -->
     <div id="download-modal" class="modal">
       <div class="modal-content inverse">
         <span class="close" id="download-modal-close">&times;</span>
@@ -459,15 +486,15 @@
         </a>
       </div>
     </div>
-  
+
     <div id="placeholder-modal" class="modal">
       <div class="modal-content inverse">
         <span class="close" id="placeholder-modal-close">&times;</span>
         <p>Placeholder text. Replace this with your content later.</p>
       </div>
     </div>
-  
-    <!-- ============ HOME PAGE P5 SKETCH ============ -->
+
+    <!-- ============ HOME PAGE P5 SKETCH (ACID letters) ============ -->
     <script>
       let homeSketch = function (p) {
         let textInput = "ACID",
@@ -477,11 +504,11 @@
             customFont,
             spacing = 120,
             lastFrameRateCheck = 0;
-  
+
         p.preload = function () {
           customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf");
         };
-  
+
         p.setup = function () {
           let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
           canvas.parent("interactive-container-home");
@@ -489,7 +516,7 @@
           p.textAlign(p.CENTER, p.CENTER);
           initializeLetters();
         };
-  
+
         p.draw = function () {
           p.clear();
           if (p.millis() - lastFrameRateCheck > 1000) {
@@ -503,44 +530,55 @@
           } else if (!customFont) {
             p.textFont("Arial");
           }
+          // Draw any existing trails
           for (let trail of trails) {
             p.fill(trail.color);
             p.noStroke();
             p.text(trail.letter, trail.x, trail.y);
           }
+          // Animate the letters
           for (let i = 0; i < letters.length; i++) {
             let letter = textInput[i];
             let letterPos = letters[i];
             let distance = p.dist(p.mouseX, p.mouseY, letterPos.x, letterPos.y);
             if (distance < 200) {
               let angle = p.atan2(letterPos.y - p.mouseY, letterPos.x - p.mouseX);
-              let force = (200 - distance) ** 1.8 * 0.003;
-              letterPos.x += p.cos(angle) * force;
-              letterPos.y += p.sin(angle) * force;
+              let force = (200 - distance)**1.8 * 0.003;
+              letterPos.x += p.cos(angle)*force;
+              letterPos.y += p.sin(angle)*force;
             }
-            letterPos.x += (letterPos.originalX - letterPos.x) * 0.02;
-            letterPos.y += (letterPos.originalY - letterPos.y) * 0.02;
-            trails.push({ x: letterPos.x - 10, y: letterPos.y, color: [0,255,0], letter });
-            trails.push({ x: letterPos.x + 10, y: letterPos.y, color: [0,0,255], letter });
+            letterPos.x += (letterPos.originalX - letterPos.x)*0.02;
+            letterPos.y += (letterPos.originalY - letterPos.y)*0.02;
+
+            // Color trails
+            trails.push({
+              x: letterPos.x - 10, y: letterPos.y,
+              color: [0,255,0], letter
+            });
+            trails.push({
+              x: letterPos.x + 10, y: letterPos.y,
+              color: [0,0,255], letter
+            });
             if (trails.length > maxTrailLength) {
               trails.splice(0, trails.length - maxTrailLength);
             }
+            // Main letter
             p.fill(0);
             p.noStroke();
             p.text(letter, letterPos.x, letterPos.y);
           }
         };
-  
+
         function initializeLetters() {
           letters = [];
-          let startX = p.windowWidth / 2 - ((textInput.length - 1) * spacing) / 2;
+          let startX = p.windowWidth / 2 - ((textInput.length - 1) * spacing)/2;
           for (let i = 0; i < textInput.length; i++) {
-            let x = startX + i * spacing;
+            let x = startX + i*spacing;
             let y = p.windowHeight / 2;
             letters.push({ x, y, originalX: x, originalY: y });
           }
         }
-  
+
         p.windowResized = function () {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
           initializeLetters();
@@ -548,14 +586,14 @@
       };
       new p5(homeSketch);
     </script>
-  
+
     <!-- ============ PARTICLE OVERLAY (Audio-Reactive Visuals) ============ -->
     <script>
       let particleSketch = function(p) {
         let particles = [];
         let fft;
         let audioEl;
-  
+
         p.setup = function() {
           let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
           canvas.parent("particle-overlay");
@@ -564,7 +602,7 @@
           let pe = new p5.MediaElement(audioEl);
           fft.setInput(pe);
         };
-  
+
         p.draw = function() {
           p.clear();
           let spectrum = fft.analyze();
@@ -581,7 +619,7 @@
             }
           }
         };
-  
+
         class Particle {
           constructor(x, y) {
             this.pos = p.createVector(x, y);
@@ -602,6 +640,8 @@
           }
         }
       };
+
+      // Create a container for the overlay if needed
       if (!document.getElementById("particle-overlay")) {
         let particleDiv = document.createElement("div");
         particleDiv.id = "particle-overlay";
@@ -609,25 +649,25 @@
       }
       new p5(particleSketch, "particle-overlay");
     </script>
-  
+
     <!-- ============ MAIN JS LOGIC ============ -->
     <script>
       window.addEventListener("load", () => {
         console.log("Page loaded, attaching event listeners...");
-  
+
         // Cache DOM elements
         const loader = document.getElementById("loader");
         const loaderText = document.querySelector("#loader .loading-text");
         const homePage = document.getElementById("home-page");
         const galleryPage = document.getElementById("gallery-page");
-  
+
         // Home page elements
         const enterCodeBtn = document.getElementById("enter-code-btn");
         const passwordModal = document.getElementById("password-modal");
         const modalClose = document.getElementById("modal-close");
         const modalSubmit = document.getElementById("modal-submit");
         const modalPassword = document.getElementById("modal-password");
-  
+
         // Media controls elements
         const audio = document.getElementById("my-audio");
         const playPauseBtn = document.getElementById("play-pause");
@@ -635,7 +675,7 @@
         const ledIndicator = document.getElementById("led-indicator");
         const rewindBtn = document.getElementById("rewind-btn");
         const digitalCounter = document.getElementById("digital-counter");
-  
+
         const settingsSection = document.getElementById("settings-section");
         const settingsBtn = document.getElementById("settings-btn");
         const settingsDropdown = document.getElementById("settings-dropdown");
@@ -644,8 +684,10 @@
         const resetSessionBtn = document.getElementById("reset-session");
         const returnHomeBtn = document.getElementById("return-home");
         const disconnectBtn = document.getElementById("disconnect-btn");
-  
-        // --- Home Page: "Enter Transmission Code" Button ---
+
+        /* 
+         * HOME PAGE: "Enter Transmission Code"
+         */
         enterCodeBtn.addEventListener("click", () => {
           console.log("Enter Transmission Code button clicked");
           if (localStorage.getItem("passwordAccepted") === "true") {
@@ -656,7 +698,7 @@
             modalPassword.focus();
           }
         });
-  
+
         modalClose.addEventListener("click", () => {
           passwordModal.style.display = "none";
         });
@@ -672,7 +714,7 @@
             checkPassword();
           }
         });
-  
+
         function checkPassword() {
           const enteredPassword = modalPassword.value;
           const correctPassword = "qwerty";
@@ -684,39 +726,51 @@
             alert("ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation.");
           }
         }
-  
-        // --- Media Controls ---
+
+        /* 
+         * MEDIA CONTROLS
+         */
         function safeAudio() {
           if (!audio) {
             console.error("Audio element not found!");
+            return null;
           }
           return audio;
         }
-  
+
         playPauseText.textContent = "Connect";
         ledIndicator.classList.add("light-off");
-  
+
         playPauseBtn.addEventListener("click", () => {
-          if (!safeAudio()) return;
-          if (audio.paused) {
-            audio.play();
-            playPauseText.textContent = "Connected...";
-            ledIndicator.classList.remove("light-off");
-            ledIndicator.classList.add("light-active");
+          const a = safeAudio();
+          if (!a) return;
+          console.log("Play/Pause clicked. paused =", a.paused);
+          if (a.paused) {
+            a.play().then(() => {
+              console.log("audio.play() resolved, currentTime =", a.currentTime);
+              playPauseText.textContent = "Connected...";
+              ledIndicator.classList.remove("light-off");
+              ledIndicator.classList.add("light-active");
+            }).catch(err => {
+              console.warn("audio.play() failed:", err);
+            });
           } else {
-            audio.pause();
+            a.pause();
+            console.log("audio.pause() called, currentTime =", a.currentTime);
             playPauseText.textContent = "Connect";
             ledIndicator.classList.remove("light-active");
             ledIndicator.classList.add("light-off");
           }
         });
-  
+
         rewindBtn.addEventListener("click", () => {
-          if (!safeAudio()) return;
-          audio.currentTime = Math.max(0, audio.currentTime - 10);
+          const a = safeAudio();
+          if (!a) return;
+          a.currentTime = Math.max(0, a.currentTime - 10);
+          console.log("Rewind -10s. currentTime now =", a.currentTime);
           updateCounter();
         });
-  
+
         function updateCounter() {
           if (!audio) return;
           let t = audio.currentTime;
@@ -725,51 +779,55 @@
           let seconds = Math.floor(t % 60);
           let ms = Math.floor((t - Math.floor(t)) * 1000);
           digitalCounter.innerText =
-            String(hours).padStart(2, '0') + ":" +
-            String(minutes).padStart(2, '0') + ":" +
-            String(seconds).padStart(2, '0') + ":" +
-            String(ms).padStart(3, '0');
+            String(hours).padStart(2,'0') + ":" +
+            String(minutes).padStart(2,'0') + ":" +
+            String(seconds).padStart(2,'0') + ":" +
+            String(ms).padStart(3,'0');
         }
         setInterval(updateCounter, 50);
-  
+
         disconnectBtn.addEventListener("click", showHome);
-  
-        // Settings Dropdown Toggle
+
+        // SETTINGS COG
         settingsBtn.addEventListener("click", () => {
           console.log("Settings cog clicked!");
-          settingsDropdown.style.display = (settingsDropdown.style.display === "block") ? "none" : "block";
+          if (settingsDropdown.style.display === "block") {
+            settingsDropdown.style.display = "none";
+          } else {
+            settingsDropdown.style.display = "block";
+          }
         });
         window.addEventListener("click", (e) => {
           if (!settingsSection.contains(e.target)) {
             settingsDropdown.style.display = "none";
           }
         });
-  
-        // Reset Session Button with confirmation
+
+        // RESET SESSION
         resetSessionBtn.addEventListener("click", () => {
           if (confirm("Are you sure: This will break your existing connection and require you to resubmit your transition code")) {
             localStorage.removeItem("passwordAccepted");
             alert("Connection reset. Please re-enter your transmission code on the Home page.");
           }
         });
-  
-        // Return Home Button (keeps localStorage intact)
+
+        // RETURN HOME (retaining localStorage)
         returnHomeBtn.addEventListener("click", () => {
           showHome();
         });
-  
+
         // Download & Placeholder Modals
-        downloadButton.addEventListener("click", () => {
-          document.getElementById("download-modal").style.display = "flex";
-        });
-        placeholderButton.addEventListener("click", () => {
-          document.getElementById("placeholder-modal").style.display = "flex";
-        });
         document.getElementById("download-modal-close").addEventListener("click", () => {
           document.getElementById("download-modal").style.display = "none";
         });
         document.getElementById("placeholder-modal-close").addEventListener("click", () => {
           document.getElementById("placeholder-modal").style.display = "none";
+        });
+        downloadButton.addEventListener("click", () => {
+          document.getElementById("download-modal").style.display = "flex";
+        });
+        placeholderButton.addEventListener("click", () => {
+          document.getElementById("placeholder-modal").style.display = "flex";
         });
         window.addEventListener("click", (e) => {
           if (e.target === document.getElementById("download-modal")) {
@@ -779,8 +837,10 @@
             document.getElementById("placeholder-modal").style.display = "none";
           }
         });
-  
-        // --- Loading Overlay & Page Switchers ---
+
+        /*
+         * LOADING OVERLAY + PAGE SWITCHING
+         */
         function showLoading(message) {
           if (loader && loaderText) {
             loaderText.innerHTML = message;
@@ -798,13 +858,13 @@
           homePage.classList.remove("invisible");
           homePage.offsetWidth;
           homePage.classList.add("invisible");
-  
+
           // Use sand_4_loop video exclusively
           const chosenSource = "assets/sand_4_loop.mp4";
           const videoSourceElem = document.getElementById("video-source");
           videoSourceElem.src = chosenSource;
           document.getElementById("loop-video").load();
-  
+
           setTimeout(() => {
             showLoading("ACCESS GRANTED");
             setTimeout(() => {
@@ -828,7 +888,7 @@
           galleryPage.classList.remove("invisible");
           galleryPage.offsetWidth;
           galleryPage.classList.add("invisible");
-  
+
           setTimeout(() => {
             galleryPage.classList.add("hidden");
             homePage.classList.remove("hidden");
