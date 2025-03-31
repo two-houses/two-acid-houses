@@ -1,903 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <!-- Ensures mobile browsers scale properly -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>TWO ACID HOUSES</title>
+<head>
+  <meta charset="UTF-8" />
+  <title>Minimal Test</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+    /* A simple container for everything */
+    #home-page, #gallery-page {
+      width: 100%;
+      height: 100vh;
+      display: none;
+    }
+    #home-page.active { display: block; }
+    #gallery-page.active { display: block; }
 
-    <!-- FONT DEFINITIONS (unchanged) -->
-    <style>
-      @font-face {
-        font-family: 'NeckynDemoRegular';
-        src: url('fonts/NeckynDemoRegular-x36AK.otf') format('opentype');
-      }
-      @font-face {
-        font-family: 'Wavehaus28Thin';
-        src: url('fonts/Wavehaus-28Thin.otf') format('opentype');
-        font-weight: 300;
-      }
-      @font-face {
-        font-family: 'Wavehaus42Light';
-        src: url('fonts/Wavehaus-42Light.otf') format('opentype');
-        font-weight: 400;
-      }
-      @font-face {
-        font-family: 'Wavehaus66Book';
-        src: url('fonts/Wavehaus-66Book.otf') format('opentype');
-        font-weight: 500;
-      }
-      @font-face {
-        font-family: 'Wavehaus95SemiBold';
-        src: url('fonts/Wavehaus-95SemiBold.otf') format('opentype');
-        font-weight: 600;
-      }
-      @font-face {
-        font-family: 'Wavehaus128Bold';
-        src: url('fonts/Wavehaus-128Bold.otf') format('opentype');
-        font-weight: 700;
-      }
-      @font-face {
-        font-family: 'Wavehaus158ExtraBold';
-        src: url('fonts/Wavehaus-158ExtraBold.otf') format('opentype');
-        font-weight: 800;
-      }
-    </style>
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #my-audio {
+      display: block;
+    }
+    /* The bar at bottom for media controls */
+    #media-control-hub {
+      position: fixed;
+      bottom: 0; left: 0; width: 100%;
+      background: #000; color: #fff;
+      display: flex; gap: 20px; padding: 12px;
+      justify-content: flex-start;
+      align-items: center;
+      box-sizing: border-box;
+    }
+    #settings-section {
+      margin-left: auto;
+      position: relative;
+    }
+    #settings-btn {
+      background: transparent; 
+      color: #fff; 
+      border: 1px solid #fff;
+      font-size: 18px;
+    }
+    #settings-dropdown {
+      display: none;
+      position: absolute;
+      bottom: 100%; /* open upward */
+      right: 0;
+      margin-bottom: 10px;
+      background: #fff; color: #000;
+      padding: 10px; border: 1px solid #000;
+      z-index: 9999;
+    }
+    #settings-dropdown button {
+      background: none; border: none; cursor: pointer;
+      display: block; width: 100%;
+      text-align: left; padding: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- HOME PAGE -->
+  <div id="home-page" class="active">
+    <h1>HOME PAGE</h1>
+    <button id="enter-code">Enter Transmission Code</button>
+  </div>
 
-    <!-- p5.js and p5.sound -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+  <!-- GALLERY PAGE -->
+  <div id="gallery-page">
+    <audio id="my-audio" src="assets/NMTAH_Side_A.m4a" controls></audio>
 
-    <style>
-      /* -----------------------------------
-         GLOBAL / BACKGROUND
-      ----------------------------------- */
-      html, body {
-        margin: 0;
-        overscroll-behavior: none;
-        touch-action: none;
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        font-family: 'Wavehaus42Light', Arial, sans-serif;
-        background: #f3f3f3;
-        color: #000;
-      }
-      body::before {
-        content: "";
-        pointer-events: none;
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        z-index: 1;
-        background: repeating-linear-gradient(
-          0deg,
-          rgba(0,0,0,0.01),
-          rgba(0,0,0,0.01) 1px,
-          rgba(255,255,255,0.01) 1px,
-          rgba(255,255,255,0.01) 2px
-        );
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-      }
-      .fadeable {
-        transition: opacity 0.8s ease;
-      }
-      .hidden {
-        display: none;
-      }
-      .invisible {
-        opacity: 0;
-        pointer-events: none;
-      }
-      .page-container {
-        position: relative;
-        width: 100%;
-        height: 100vh;
-        overflow: hidden;
-        z-index: 2;
-      }
+    <div id="media-control-hub">
+      <button id="play-pause">Connect</button>
+      <button id="rewind-btn">Rewind -10s</button>
+      <div id="timerDisplay">00:00</div>
 
-      /* -----------------------------------
-         LOADER OVERLAY
-      ----------------------------------- */
-      #loader {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background-color: rgba(255,255,255,0.9);
-        align-items: center;
-        justify-content: center;
-      }
-      @keyframes gentlePulse {
-        0%,100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.85; transform: scale(1.02); }
-      }
-      .loading-text {
-        font-size: 24px;
-        animation: gentlePulse 5s infinite ease-in-out;
-        text-align: center;
-        font-family: 'Wavehaus28Thin', Arial, sans-serif;
-      }
-
-      /* -----------------------------------
-         HOME PAGE
-      ----------------------------------- */
-      #home-page {
-      }
-      #interactive-container-home {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        z-index: 100;
-        background: transparent;
-        touch-action: auto;
-      }
-      #static-top, #static-bottom {
-        position: absolute;
-        width: 100%;
-        text-align: center;
-        font-size: 48px;
-        pointer-events: none;
-        color: #000;
-      }
-      #static-top {
-        top: 10%;
-        line-height: 1.2;
-      }
-      #static-bottom {
-        top: 65%;
-      }
-
-      /* "Enter Transmission Code" button at bottom */
-      #enter-code-btn {
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 15px 20px;
-        font-size: 18px;
-        background-color: transparent;
-        color: #111;
-        border: 2px solid #111;
-        border-radius: 6px;
-        z-index: 9999;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
-      }
-      #enter-code-btn:hover {
-        background-color: rgba(17,17,17,0.1);
-        transform: translateX(-50%) scale(1.03);
-      }
-      @media screen and (max-width: 600px) {
-        #enter-code-btn {
-          bottom: 80px;
-        }
-      }
-
-      /* -----------------------------------
-         GALLERY PAGE / MEDIA PLAYER
-      ----------------------------------- */
-      #gallery-page {
-      }
-      /* Fixed control bar at bottom */
-      #media-control-hub {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #000;
-        color: #fff;
-        padding: 10px 20px;
-        box-sizing: border-box;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 350;
-      }
-      /* Left side: Media Controls */
-      #media-controls {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-      /* Play/Pause button */
-      .control-button {
-        background-color: #fff;
-        color: #000;
-        border: 2px solid #000;
-        padding: 10px 15px;
-        font-family: 'Wavehaus42Light', Arial, sans-serif;
-        font-size: 16px;
-        cursor: pointer;
-        transition: transform 0.2s;
-      }
-      .control-button:hover {
-        transform: scale(1.03);
-      }
-
-      /* Digital counter styled like an old stopwatch */
-      #digital-counter {
-        background-color: #fff;
-        color: #000;
-        font-family: 'Wavehaus42Light', monospace;
-        font-size: 16px;
-        padding: 8px 12px;
-        border: 2px solid #000;
-        border-radius: 4px;
-        min-width: 180px;
-        text-align: center;
-      }
-
-      /* LED indicator */
-      #led-indicator {
-        width: 15px;
-        height: 15px;
-        margin-left: 10px;
-        border: 1px solid #333;
-        border-radius: 2px;
-        box-shadow: 0 0 3px rgba(0,0,0,0.2);
-      }
-      .light-off {
-        background-color: #777;
-        animation: none;
-      }
-      .light-active {
-        background-color: #e70000;
-        animation: ledPulse 1.5s infinite;
-      }
-      @keyframes ledPulse {
-        0%, 100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
-        50% { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
-      }
-      /* Divider */
-      #divider {
-        font-size: 24px;
-        margin: 0 20px;
-      }
-
-      /* Right side: Settings Cog and Dropdown */
-      #settings-section {
-        position: relative;
-      }
-      #settings-btn {
-        background: transparent;
-        border: none;
-        color: #fff;
-        font-size: 24px;
-        cursor: pointer;
-      }
-      #settings-dropdown {
-        display: none;
-        position: absolute;
-        bottom: 100%;  /* open upward above the cog */
-        right: 0;
-        margin-bottom: 10px;
-        background-color: #fff;
-        color: #000;
-        border: 2px solid #000;
-        border-radius: 4px;
-        padding: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        z-index: 9999; /* ensure above everything else */
-      }
-      #settings-dropdown button {
-        background: transparent;
-        border: none;
-        color: #000;
-        font-family: 'Wavehaus42Light', Arial, sans-serif;
-        font-size: 16px;
-        padding: 8px 12px;
-        width: 100%;
-        text-align: left;
-        cursor: pointer;
-      }
-      #settings-dropdown button:hover {
-        background-color: #eee;
-      }
-
-      /* -----------------------------------
-         VIDEO BACKGROUND
-      ----------------------------------- */
-      #video-container {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        z-index: 100;
-        overflow: hidden;
-      }
-      #loop-video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: grayscale(100%);
-      }
-
-      /* -----------------------------------
-         MODALS
-      ----------------------------------- */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 3000;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background-color: rgba(0,0,0,0.7);
-        align-items: center;
-        justify-content: center;
-      }
-      .modal-content {
-        position: relative;
-        max-width: 40%;
-        min-height: 250px;
-        padding: 40px 15px;
-        text-align: center;
-        background: black;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        transform: translateY(-10%);
-      }
-      .modal-content input[type='password'] {
-        padding: 10px;
-        font-size: 16px;
-        width: 80%;
-        margin-bottom: 10px;
-      }
-      .modal-content button {
-        padding: 10px 20px;
-        font-size: 16px;
-        font-family: 'Wavehaus28Thin', Arial, sans-serif;
-        cursor: pointer;
-        background: white;
-        color: #333;
-        border: none;
-        border-radius: 0;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      }
-      .close {
-        position: absolute;
-        top: 10px; right: 10px;
-        font-size: 20px;
-        color: #fff;
-        cursor: pointer;
-      }
-      @media screen and (max-width: 600px) {
-        body {
-          overflow-x: hidden;
-        }
-        .page-container {
-          height: auto;
-          min-height: 100vh;
-          overflow: visible;
-        }
-        #static-top, #static-bottom {
-          font-size: 32px;
-        }
-        #enter-code-btn {
-          font-size: 16px;
-          bottom: 80px;
-        }
-        .modal-content {
-          transform: translateY(-20%);
-          max-width: 90%;
-          padding: 20px;
-        }
-        .modal-content input[type='password'],
-        .modal-content button {
-          font-size: 14px;
-          padding: 8px 12px;
-        }
-      }
-      .modal-content.inverse {
-        background: white;
-        color: black;
-      }
-      .modal-content.inverse p,
-      .modal-content.inverse a,
-      .modal-content.inverse span {
-        color: black;
-      }
-      .modal-content.inverse button {
-        background: white;
-        color: black;
-        border: 2px solid black;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- LOADER OVERLAY -->
-    <div id="loader">
-      <div class="loading-text">Loading...</div>
-    </div>
-
-    <!-- ============ HOME PAGE ============ -->
-    <div id="home-page" class="page-container fadeable">
-      <!-- p5 Canvas (ACID letters) -->
-      <div id="interactive-container-home"></div>
-
-      <!-- Static text -->
-      <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
-      <div id="static-bottom">HOUSES</div>
-
-      <!-- "Enter Transmission Code" button -->
-      <button id="enter-code-btn">Enter Transmission Code</button>
-
-      <!-- Password Modal -->
-      <div id="password-modal" class="modal">
-        <div class="modal-content">
-          <span class="close" id="modal-close">&times;</span>
-          <div id="update-text">Enter designated launch code...<span id="blinking-dot">.</span></div>
-          <br />
-          <input type="password" id="modal-password" placeholder="....." />
-          <br />
-          <button id="modal-submit">ACTIVATE Transmission RELAY</button>
+      <div id="settings-section">
+        <button id="settings-btn">Cog</button>
+        <div id="settings-dropdown">
+          <button>Option 1</button>
+          <button>Option 2</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- ============ GALLERY PAGE ============ -->
-    <div id="gallery-page" class="page-container fadeable invisible hidden">
-      <!-- Insert Audio Element (hidden) -->
-      <audio id="my-audio" src="assets/NMTAH_Side_A.m4a" controls></audio>
+  <script>
+    const home = document.getElementById('home-page');
+    const gallery = document.getElementById('gallery-page');
+    const enterCode = document.getElementById('enter-code');
+    const playPauseBtn = document.getElementById('play-pause');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const rewindBtn = document.getElementById('rewind-btn');
 
-      <!-- Media Control Hub (bottom) -->
-      <div id="media-control-hub">
-        <div id="media-controls">
-          <button id="play-pause" class="control-button" title="Toggle Connection">
-            <span id="play-pause-text">Connect</span>
-          </button>
-          <button id="rewind-btn" class="control-button" title="Rewind Transmission">
-            Rewind Transmission
-          </button>
-          <div id="digital-counter">00:00:00:000</div>
-          <div id="led-indicator" class="light-off" title="Signal Indicator"></div>
-          <div id="divider">|</div>
-        </div>
-        <div id="settings-section">
-          <button id="settings-btn" title="Settings">&#9881;</button>
-          <div id="settings-dropdown">
-            <button id="download-btn" class="dropdown-button">Retrieve Audio Transition</button>
-            <button id="placeholder-btn" class="dropdown-button">Consult Training Manual</button>
-            <button id="reset-session" class="dropdown-button">Reset Transmission Connection</button>
-            <button id="return-home" class="dropdown-button">Return Home</button>
-          </div>
-        </div>
-      </div>
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsDropdown = document.getElementById('settings-dropdown');
 
-      <!-- Video Background -->
-      <div id="video-container">
-        <video id="loop-video" autoplay loop muted playsinline>
-          <source id="video-source" src="assets/sand_4_loop.mp4" type="video/mp4" />
-        </video>
-      </div>
-    </div>
+    const audio = document.getElementById('my-audio');
 
-    <!-- EXTRA MODALS -->
-    <div id="download-modal" class="modal">
-      <div class="modal-content inverse">
-        <span class="close" id="download-modal-close">&times;</span>
-        <p>This is your full audio manifest. <br> Click the button below to download.</p>
-        <a href="assets/NMTAH_Side_A.wav" download="NMTAH_Side_A.wav">
-          <button>Download manifest</button>
-        </a>
-      </div>
-    </div>
+    // Switch to gallery
+    enterCode.addEventListener('click', () => {
+      console.log("Enter code clicked. Switch page.");
+      home.classList.remove('active');
+      gallery.classList.add('active');
+    });
 
-    <div id="placeholder-modal" class="modal">
-      <div class="modal-content inverse">
-        <span class="close" id="placeholder-modal-close">&times;</span>
-        <p>Placeholder text. Replace this with your content later.</p>
-      </div>
-    </div>
-
-    <!-- ============ HOME PAGE P5 SKETCH (ACID letters) ============ -->
-    <script>
-      let homeSketch = function (p) {
-        let textInput = "ACID",
-            letters = [],
-            trails = [],
-            maxTrailLength = 500,
-            customFont,
-            spacing = 120,
-            lastFrameRateCheck = 0;
-
-        p.preload = function () {
-          customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf");
-        };
-
-        p.setup = function () {
-          let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-          canvas.parent("interactive-container-home");
-          p.textSize(160);
-          p.textAlign(p.CENTER, p.CENTER);
-          initializeLetters();
-        };
-
-        p.draw = function () {
-          p.clear();
-          if (p.millis() - lastFrameRateCheck > 1000) {
-            let fps = p.frameRate();
-            if (fps < 30) maxTrailLength = 300;
-            else if (fps > 50) maxTrailLength = 600;
-            lastFrameRateCheck = p.millis();
-          }
-          if (customFont && p.textFont() !== customFont) {
-            p.textFont(customFont);
-          } else if (!customFont) {
-            p.textFont("Arial");
-          }
-          // Draw any existing trails
-          for (let trail of trails) {
-            p.fill(trail.color);
-            p.noStroke();
-            p.text(trail.letter, trail.x, trail.y);
-          }
-          // Animate the letters
-          for (let i = 0; i < letters.length; i++) {
-            let letter = textInput[i];
-            let letterPos = letters[i];
-            let distance = p.dist(p.mouseX, p.mouseY, letterPos.x, letterPos.y);
-            if (distance < 200) {
-              let angle = p.atan2(letterPos.y - p.mouseY, letterPos.x - p.mouseX);
-              let force = (200 - distance)**1.8 * 0.003;
-              letterPos.x += p.cos(angle)*force;
-              letterPos.y += p.sin(angle)*force;
-            }
-            letterPos.x += (letterPos.originalX - letterPos.x)*0.02;
-            letterPos.y += (letterPos.originalY - letterPos.y)*0.02;
-
-            // Color trails
-            trails.push({
-              x: letterPos.x - 10, y: letterPos.y,
-              color: [0,255,0], letter
-            });
-            trails.push({
-              x: letterPos.x + 10, y: letterPos.y,
-              color: [0,0,255], letter
-            });
-            if (trails.length > maxTrailLength) {
-              trails.splice(0, trails.length - maxTrailLength);
-            }
-            // Main letter
-            p.fill(0);
-            p.noStroke();
-            p.text(letter, letterPos.x, letterPos.y);
-          }
-        };
-
-        function initializeLetters() {
-          letters = [];
-          let startX = p.windowWidth / 2 - ((textInput.length - 1) * spacing)/2;
-          for (let i = 0; i < textInput.length; i++) {
-            let x = startX + i*spacing;
-            let y = p.windowHeight / 2;
-            letters.push({ x, y, originalX: x, originalY: y });
-          }
-        }
-
-        p.windowResized = function () {
-          p.resizeCanvas(p.windowWidth, p.windowHeight);
-          initializeLetters();
-        };
-      };
-      new p5(homeSketch);
-    </script>
-
-    <!-- ============ PARTICLE OVERLAY (Audio-Reactive Visuals) ============ -->
-    <script>
-      let particleSketch = function(p) {
-        let particles = [];
-        let fft;
-        let audioEl;
-
-        p.setup = function() {
-          let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-          canvas.parent("particle-overlay");
-          fft = new p5.FFT(0.8, 64);
-          audioEl = document.getElementById("my-audio");
-          let pe = new p5.MediaElement(audioEl);
-          fft.setInput(pe);
-        };
-
-        p.draw = function() {
-          p.clear();
-          let spectrum = fft.analyze();
-          let avg = spectrum.reduce((a, b) => a + b, 0) / spectrum.length;
-          let spawnRate = p.map(avg, 0, 255, 0, 5);
-          for (let i = 0; i < spawnRate; i++) {
-            particles.push(new Particle(p.random(p.width), p.random(p.height)));
-          }
-          for (let i = particles.length - 1; i >= 0; i--) {
-            particles[i].update();
-            particles[i].display();
-            if (particles[i].isFinished()) {
-              particles.splice(i, 1);
-            }
-          }
-        };
-
-        class Particle {
-          constructor(x, y) {
-            this.pos = p.createVector(x, y);
-            this.vel = p5.Vector.random2D().mult(p.random(0.5, 2));
-            this.lifetime = 255;
-          }
-          update() {
-            this.pos.add(this.vel);
-            this.lifetime -= 2;
-          }
-          display() {
-            p.noStroke();
-            p.fill(255, this.lifetime);
-            p.ellipse(this.pos.x, this.pos.y, 5);
-          }
-          isFinished() {
-            return this.lifetime < 0;
-          }
-        }
-      };
-
-      // Create a container for the overlay if needed
-      if (!document.getElementById("particle-overlay")) {
-        let particleDiv = document.createElement("div");
-        particleDiv.id = "particle-overlay";
-        document.body.appendChild(particleDiv);
+    // Play/pause
+    playPauseBtn.addEventListener('click', () => {
+      console.log("Play/pause clicked, paused =", audio.paused);
+      if (audio.paused) {
+        audio.play().then(() => {
+          console.log("audio.play() resolved, currentTime =", audio.currentTime);
+          playPauseBtn.textContent = "Connected...";
+        }).catch(err => {
+          console.warn("audio.play() failed:", err);
+        });
+      } else {
+        audio.pause();
+        console.log("audio.pause() called, currentTime =", audio.currentTime);
+        playPauseBtn.textContent = "Connect";
       }
-      new p5(particleSketch, "particle-overlay");
-    </script>
+    });
 
-    <!-- ============ MAIN JS LOGIC ============ -->
-    <script>
-      window.addEventListener("load", () => {
-        console.log("Page loaded, attaching event listeners...");
+    // Rewind
+    rewindBtn.addEventListener('click', () => {
+      audio.currentTime = Math.max(0, audio.currentTime - 10);
+      console.log("Rewind, currentTime now =", audio.currentTime);
+      updateTimer();
+    });
 
-        // Cache DOM elements
-        const loader = document.getElementById("loader");
-        const loaderText = document.querySelector("#loader .loading-text");
-        const homePage = document.getElementById("home-page");
-        const galleryPage = document.getElementById("gallery-page");
+    function updateTimer() {
+      let t = audio.currentTime;
+      let m = Math.floor(t/60);
+      let s = Math.floor(t%60);
+      if (s<10) s="0"+s;
+      timerDisplay.textContent = `${m}:${s}`;
+    }
+    setInterval(updateTimer, 500);
 
-        // Home page elements
-        const enterCodeBtn = document.getElementById("enter-code-btn");
-        const passwordModal = document.getElementById("password-modal");
-        const modalClose = document.getElementById("modal-close");
-        const modalSubmit = document.getElementById("modal-submit");
-        const modalPassword = document.getElementById("modal-password");
-
-        // Media controls elements
-        const audio = document.getElementById("my-audio");
-        const playPauseBtn = document.getElementById("play-pause");
-        const playPauseText = document.getElementById("play-pause-text");
-        const ledIndicator = document.getElementById("led-indicator");
-        const rewindBtn = document.getElementById("rewind-btn");
-        const digitalCounter = document.getElementById("digital-counter");
-
-        const settingsSection = document.getElementById("settings-section");
-        const settingsBtn = document.getElementById("settings-btn");
-        const settingsDropdown = document.getElementById("settings-dropdown");
-        const downloadButton = document.getElementById("download-btn");
-        const placeholderButton = document.getElementById("placeholder-btn");
-        const resetSessionBtn = document.getElementById("reset-session");
-        const returnHomeBtn = document.getElementById("return-home");
-        const disconnectBtn = document.getElementById("disconnect-btn");
-
-        /* 
-         * HOME PAGE: "Enter Transmission Code"
-         */
-        enterCodeBtn.addEventListener("click", () => {
-          console.log("Enter Transmission Code button clicked");
-          if (localStorage.getItem("passwordAccepted") === "true") {
-            showGallery();
-          } else {
-            passwordModal.style.display = "flex";
-            modalPassword.value = "";
-            modalPassword.focus();
-          }
-        });
-
-        modalClose.addEventListener("click", () => {
-          passwordModal.style.display = "none";
-        });
-        window.addEventListener("click", (e) => {
-          if (e.target === passwordModal) {
-            passwordModal.style.display = "none";
-          }
-        });
-        modalSubmit.addEventListener("click", checkPassword);
-        modalPassword.addEventListener("keydown", (event) => {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            checkPassword();
-          }
-        });
-
-        function checkPassword() {
-          const enteredPassword = modalPassword.value;
-          const correctPassword = "qwerty";
-          if (enteredPassword === correctPassword) {
-            localStorage.setItem("passwordAccepted", "true");
-            passwordModal.style.display = "none";
-            showGallery();
-          } else {
-            alert("ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation.");
-          }
-        }
-
-        /* 
-         * MEDIA CONTROLS
-         */
-        function safeAudio() {
-          if (!audio) {
-            console.error("Audio element not found!");
-            return null;
-          }
-          return audio;
-        }
-
-        playPauseText.textContent = "Connect";
-        ledIndicator.classList.add("light-off");
-
-        playPauseBtn.addEventListener("click", () => {
-          const a = safeAudio();
-          if (!a) return;
-          console.log("Play/Pause clicked. paused =", a.paused);
-          if (a.paused) {
-            a.play().then(() => {
-              console.log("audio.play() resolved, currentTime =", a.currentTime);
-              playPauseText.textContent = "Connected...";
-              ledIndicator.classList.remove("light-off");
-              ledIndicator.classList.add("light-active");
-            }).catch(err => {
-              console.warn("audio.play() failed:", err);
-            });
-          } else {
-            a.pause();
-            console.log("audio.pause() called, currentTime =", a.currentTime);
-            playPauseText.textContent = "Connect";
-            ledIndicator.classList.remove("light-active");
-            ledIndicator.classList.add("light-off");
-          }
-        });
-
-        rewindBtn.addEventListener("click", () => {
-          const a = safeAudio();
-          if (!a) return;
-          a.currentTime = Math.max(0, a.currentTime - 10);
-          console.log("Rewind -10s. currentTime now =", a.currentTime);
-          updateCounter();
-        });
-
-        function updateCounter() {
-          if (!audio) return;
-          let t = audio.currentTime;
-          let hours = Math.floor(t / 3600);
-          let minutes = Math.floor((t % 3600) / 60);
-          let seconds = Math.floor(t % 60);
-          let ms = Math.floor((t - Math.floor(t)) * 1000);
-          digitalCounter.innerText =
-            String(hours).padStart(2,'0') + ":" +
-            String(minutes).padStart(2,'0') + ":" +
-            String(seconds).padStart(2,'0') + ":" +
-            String(ms).padStart(3,'0');
-        }
-        setInterval(updateCounter, 50);
-
-        disconnectBtn.addEventListener("click", showHome);
-
-        // SETTINGS COG
-        settingsBtn.addEventListener("click", () => {
-          console.log("Settings cog clicked!");
-          if (settingsDropdown.style.display === "block") {
-            settingsDropdown.style.display = "none";
-          } else {
-            settingsDropdown.style.display = "block";
-          }
-        });
-        window.addEventListener("click", (e) => {
-          if (!settingsSection.contains(e.target)) {
-            settingsDropdown.style.display = "none";
-          }
-        });
-
-        // RESET SESSION
-        resetSessionBtn.addEventListener("click", () => {
-          if (confirm("Are you sure: This will break your existing connection and require you to resubmit your transition code")) {
-            localStorage.removeItem("passwordAccepted");
-            alert("Connection reset. Please re-enter your transmission code on the Home page.");
-          }
-        });
-
-        // RETURN HOME (retaining localStorage)
-        returnHomeBtn.addEventListener("click", () => {
-          showHome();
-        });
-
-        // Download & Placeholder Modals
-        document.getElementById("download-modal-close").addEventListener("click", () => {
-          document.getElementById("download-modal").style.display = "none";
-        });
-        document.getElementById("placeholder-modal-close").addEventListener("click", () => {
-          document.getElementById("placeholder-modal").style.display = "none";
-        });
-        downloadButton.addEventListener("click", () => {
-          document.getElementById("download-modal").style.display = "flex";
-        });
-        placeholderButton.addEventListener("click", () => {
-          document.getElementById("placeholder-modal").style.display = "flex";
-        });
-        window.addEventListener("click", (e) => {
-          if (e.target === document.getElementById("download-modal")) {
-            document.getElementById("download-modal").style.display = "none";
-          }
-          if (e.target === document.getElementById("placeholder-modal")) {
-            document.getElementById("placeholder-modal").style.display = "none";
-          }
-        });
-
-        /*
-         * LOADING OVERLAY + PAGE SWITCHING
-         */
-        function showLoading(message) {
-          if (loader && loaderText) {
-            loaderText.innerHTML = message;
-            loader.style.display = "flex";
-          }
-        }
-        function hideLoading() {
-          if (loader) {
-            loader.style.display = "none";
-          }
-        }
-        function showGallery() {
-          console.log("Showing gallery...");
-          showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
-          homePage.classList.remove("invisible");
-          homePage.offsetWidth;
-          homePage.classList.add("invisible");
-
-          // Use sand_4_loop video exclusively
-          const chosenSource = "assets/sand_4_loop.mp4";
-          const videoSourceElem = document.getElementById("video-source");
-          videoSourceElem.src = chosenSource;
-          document.getElementById("loop-video").load();
-
-          setTimeout(() => {
-            showLoading("ACCESS GRANTED");
-            setTimeout(() => {
-              homePage.classList.add("hidden");
-              galleryPage.classList.remove("hidden");
-              galleryPage.offsetWidth;
-              galleryPage.classList.remove("invisible");
-              hideLoading();
-            }, 2000);
-          }, 3000);
-        }
-        function showHome() {
-          if (!audio) return;
-          if (!audio.paused) {
-            audio.pause();
-            playPauseText.textContent = "Connect";
-            ledIndicator.classList.remove("light-active");
-            ledIndicator.classList.add("light-off");
-          }
-          showLoading("Bringing you back down....");
-          galleryPage.classList.remove("invisible");
-          galleryPage.offsetWidth;
-          galleryPage.classList.add("invisible");
-
-          setTimeout(() => {
-            galleryPage.classList.add("hidden");
-            homePage.classList.remove("hidden");
-            homePage.offsetWidth;
-            homePage.classList.remove("invisible");
-            hideLoading();
-          }, 3000);
-        }
-      });
-    </script>
-  </body>
+    // Cog
+    settingsBtn.addEventListener('click', () => {
+      console.log("Cog clicked!");
+      if (settingsDropdown.style.display === "block") {
+        settingsDropdown.style.display = "none";
+      } else {
+        settingsDropdown.style.display = "block";
+      }
+    });
+  </script>
+</body>
 </html>
