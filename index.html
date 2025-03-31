@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>TWO ACID HOUSES</title>
 
-    <!-- FONT DEFINITIONS (Same as before) -->
+    <!-- FONT DEFINITIONS -->
     <style>
       @font-face {
         font-family: 'NeckynDemoRegular';
@@ -60,7 +60,7 @@
         background: #f3f3f3;
         color: #000;
       }
-      /* Subtle static overlay using repeating-linear-gradient */
+      /* Subtle static overlay */
       body::before {
         content: "";
         pointer-events: none;
@@ -93,7 +93,7 @@
         width: 100%;
         height: 100vh;
         overflow: hidden;
-        z-index: 2; /* above the static overlay */
+        z-index: 2;
       }
 
       /* ---------------- LOADER OVERLAY --------------- */
@@ -120,17 +120,17 @@
 
       /* ---------------- HOME PAGE --------------- */
       #home-page {
-        /* container for the entire home page */
+        /* Home page container */
       }
       #interactive-container-home {
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        z-index: 100; /* p5 canvas behind the button */
+        z-index: 100;
         background: transparent;
         touch-action: auto;
       }
-      /* Static text for styling */
+      /* Static text elements */
       #static-top, #static-bottom {
         position: absolute;
         width: 100%;
@@ -140,42 +140,43 @@
         color: #000;
       }
       #static-top {
-        top: 10%; line-height: 1.2;
+        top: 10%;
+        line-height: 1.2;
       }
       #static-bottom {
         top: 65%;
       }
-      /* The button pinned at the bottom center */
+      /* "Enter Transmission Code" button at the bottom */
       #enter-code-btn {
         position: absolute;
-        bottom: 30px;           /* pinned near bottom */
+        bottom: 30px;
         left: 50%;
         transform: translateX(-50%);
         padding: 15px 20px;
         font-size: 18px;
-        background-color: #eee;
-        color: #000;
+        background-color: transparent;  /* Transparent background */
+        color: #111;
         border: 2px solid #111;
         border-radius: 6px;
-        z-index: 9999;         /* highest so it's guaranteed clickable */
+        z-index: 9999;
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
       }
-      /* Preserve centering on hover by combining translation with scaling */
+      /* Ensure the button remains centered on hover */
       #enter-code-btn:hover {
-        background-color: #ddd;
+        background-color: rgba(17,17,17,0.1);
         transform: translateX(-50%) scale(1.03);
       }
-      /* On mobile, increase bottom spacing so it’s not cut off */
+      /* Raise button further from bottom on mobile */
       @media screen and (max-width: 600px) {
         #enter-code-btn {
-          bottom: 50px;
+          bottom: 80px;
         }
       }
 
       /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
       #gallery-page {
-        /* container for entire gallery page */
+        /* Gallery page container */
       }
       #audio-player {
         z-index: 350;
@@ -187,13 +188,13 @@
         width: 320px;
         padding: 20px;
         box-sizing: border-box;
-        background-color: #f7f7f7;
-        border: 2px solid #333;
+        background-color: transparent;  /* Transparent background */
+        border: 2px solid rgba(255,255,255,0.7);
         border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        /* Removed box-shadow for a more integrated feel */
         position: relative;
       }
-      /* Subtle wiggly overlay for #audio-player */
+      /* Subtle overlay for the control panel */
       #audio-player::before {
         content: "";
         position: absolute;
@@ -222,25 +223,20 @@
       .control-panel-button {
         width: 280px;
         padding: 15px;
-        border: none;
+        border: 2px solid rgba(255,255,255,0.7);
         font-family: 'Wavehaus42Light', Arial, sans-serif;
         font-size: 16px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background-color: #eee;
-        color: #000;
-        position: relative;
-        border: 2px solid #111;
-        border-radius: 4px;
-        transition: background-color 0.3s, transform 0.2s;
+        background-color: transparent; /* Transparent background */
+        color: #fff;
+        transition: transform 0.2s;
       }
       .control-panel-button:hover {
-        background-color: #ddd;
         transform: scale(1.02);
       }
-      /* LED indicator styling */
       .indicator {
         width: 15px;
         height: 15px;
@@ -340,7 +336,7 @@
         }
         #enter-code-btn {
           font-size: 16px;
-          bottom: 50px; /* Increased bottom spacing on mobile */
+          bottom: 80px;
         }
         .modal-content {
           transform: translateY(-20%);
@@ -369,7 +365,6 @@
       }
     </style>
   </head>
-
   <body>
     <!-- LOADER OVERLAY -->
     <div id="loader">
@@ -378,14 +373,14 @@
 
     <!-- ============ HOME PAGE ============ -->
     <div id="home-page" class="page-container fadeable">
-      <!-- p5 Canvas container (behind the button) -->
+      <!-- p5 Canvas (background) -->
       <div id="interactive-container-home"></div>
 
-      <!-- Static text -->
+      <!-- Static text elements -->
       <div id="static-top">NEW<br>MURALS<br>FOR<br>TWO</div>
       <div id="static-bottom">HOUSES</div>
 
-      <!-- "Enter Transmission Code" button pinned at bottom center -->
+      <!-- "Enter Transmission Code" button pinned at bottom -->
       <button id="enter-code-btn">Enter Transmission Code</button>
 
       <!-- Password Modal -->
@@ -409,25 +404,22 @@
       <div id="audio-player">
         <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
         <div class="button-group">
-          <!-- Button 1: Play/Pause with LED indicator -->
+          <!-- Play/Pause Button with LED indicator -->
           <button id="play-pause" class="control-panel-button">
             <span id="play-pause-text">Lock into detected signal</span>
             <span id="play-pause-indicator" class="indicator light-off"></span>
           </button>
-
-          <!-- Button 2: Download Modal -->
+          <!-- Download Modal Button -->
           <button id="download-btn" class="control-panel-button">
             Download 16-bit Audio Manifest
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
-
-          <!-- Button 3: Placeholder Modal -->
+          <!-- Placeholder Modal Button -->
           <button id="placeholder-btn" class="control-panel-button">
             Consult Training Manual
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
-
-          <!-- Button 4: Disconnect (returns to home) -->
+          <!-- Disconnect Button (returns to Home) -->
           <button id="disconnect-btn" class="control-panel-button">
             Disconnect From Relay Station
             <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
@@ -438,7 +430,13 @@
       <!-- Video Background -->
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
-          <source id="video-source" src="" type="video/mp4" />
+          <!-- Using sand_4_loop as the chosen video -->
+          <source id="video-source" src="assets/sand_4_loop.mp4" type="video/mp4" />
+          <!-- Other sources commented out:
+          <source src="assets/sand_1_loop.mp4" type="video/mp4" />
+          <source src="assets/sand_2_loop.mp4" type="video/mp4" />
+          <source src="assets/sand_3_loop.mp4" type="video/mp4" />
+          -->
         </video>
       </div>
     </div>
@@ -521,13 +519,13 @@
             trails.push({
               x: letterPos.x - 10,
               y: letterPos.y,
-              color: [0, 255, 0],
+              color: [0,255,0],
               letter
             });
             trails.push({
               x: letterPos.x + 10,
               y: letterPos.y,
-              color: [0, 0, 255],
+              color: [0,0,255],
               letter
             });
             if (trails.length > maxTrailLength) {
@@ -560,17 +558,22 @@
 
     <!-- ============ JS LOGIC (PASSWORD, PAGE SWITCHERS, ETC.) ============ -->
     <script>
-      // 1) Home Page: "Enter Transmission Code" button shows password modal.
+      // 1) Home Page: "Enter Transmission Code" button
       const enterCodeBtn = document.getElementById("enter-code-btn");
       const passwordModal = document.getElementById("password-modal");
       const modalClose = document.getElementById("modal-close");
       const modalSubmit = document.getElementById("modal-submit");
       const modalPassword = document.getElementById("modal-password");
 
+      // When the button is clicked, check localStorage; if password accepted already, skip modal.
       enterCodeBtn.addEventListener("click", () => {
-        passwordModal.style.display = "flex";
-        modalPassword.value = "";
-        modalPassword.focus();
+        if (localStorage.getItem("passwordAccepted") === "true") {
+          showGallery();
+        } else {
+          passwordModal.style.display = "flex";
+          modalPassword.value = "";
+          modalPassword.focus();
+        }
       });
 
       modalClose.addEventListener("click", () => {
@@ -595,6 +598,7 @@
         const enteredPassword = modalPassword.value;
         const correctPassword = "qwerty";
         if (enteredPassword === correctPassword) {
+          localStorage.setItem("passwordAccepted", "true");
           passwordModal.style.display = "none";
           showGallery();
         } else {
@@ -685,14 +689,8 @@
         homePage.offsetWidth;
         homePage.classList.add("invisible");
 
-        const videoSources = [
-          "assets/sand_1_loop.mp4",
-          "assets/sand_2_loop.mp4",
-          "assets/sand_3_loop.mp4",
-          "assets/sand_4_loop.mp4"
-        ];
-        const randomIndex = Math.floor(Math.random() * videoSources.length);
-        const chosenSource = videoSources[randomIndex];
+        // Use sand_4_loop video exclusively
+        const chosenSource = "assets/sand_4_loop.mp4";
         const videoSourceElem = document.getElementById("video-source");
         videoSourceElem.src = chosenSource;
         document.getElementById("loop-video").load();
