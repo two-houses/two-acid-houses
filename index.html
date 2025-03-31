@@ -44,8 +44,9 @@
       }
     </style>
 
-    <!-- p5.js for the home page ACID sketch -->
+    <!-- p5.js (for the home page ACID sketch) and p5.sound for audio-reactivity -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
 
     <style>
       /* ---------------- GLOBAL / BACKGROUND --------------- */
@@ -100,7 +101,7 @@
         justify-content: center;
       }
       @keyframes gentlePulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
+        0%,100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.85; transform: scale(1.02); }
       }
       .loading-text {
@@ -120,7 +121,7 @@
         background: transparent;
         touch-action: auto;
       }
-      /* Static text */
+      /* Static text elements */
       #static-top, #static-bottom {
         position: absolute;
         width: 100%;
@@ -131,7 +132,7 @@
       }
       #static-top { top: 10%; line-height: 1.2; }
       #static-bottom { top: 65%; }
-      /* "Enter Transmission Code" button at the bottom */
+      /* "Enter Transmission Code" button at bottom */
       #enter-code-btn {
         position: absolute;
         bottom: 30px;
@@ -157,75 +158,61 @@
 
       /* ---------------- GALLERY PAGE / MEDIA PLAYER --------------- */
       #gallery-page { }
-      #audio-player {
-        z-index: 350;
-        position: absolute;
-        top: 15%;
-        left: 50%;
-        transform: translate(-50%, 0);
-        text-align: center;
-        width: 320px;
-        padding: 20px;
+      /* New fixed control hub bar */
+      #media-control-hub {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(0,0,0,0.6);
+        padding: 10px 0;
         box-sizing: border-box;
-        background-color: transparent;
-        border: 2px solid rgba(255,255,255,0.7);
-        border-radius: 8px;
-        position: relative;
-      }
-      /* Control Panel Buttons – white background, black text, black border */
-      .button-group {
         display: flex;
         flex-direction: column;
+        gap: 8px;
+        z-index: 350;
+      }
+      .primary-controls, .secondary-controls {
+        display: flex;
+        justify-content: center;
         align-items: center;
         gap: 20px;
-        position: relative;
-        z-index: 2;
+        flex-wrap: wrap;
       }
-      .control-panel-button {
-        width: 280px;
-        padding: 15px;
+      /* Primary Controls: Play/Pause, Rewind, Digital Counter */
+      .primary-controls button {
+        background-color: #fff;
+        color: #000;
         border: 2px solid #000;
+        padding: 10px 15px;
         font-family: 'Wavehaus42Light', Arial, sans-serif;
         font-size: 16px;
         cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #fff;
-        color: #000;
         transition: transform 0.2s;
       }
-      .control-panel-button:hover {
-        transform: scale(1.02);
-      }
-      .indicator {
-        width: 15px;
-        height: 15px;
-        margin-left: 10px;
-        border: 1px solid #333;
-        border-radius: 2px;
-        box-shadow: 0 0 3px rgba(0,0,0,0.2);
-      }
-      .light-off { background-color: #777; animation: none; }
-      .light-active { background-color: #e70000; animation: ledPulse 1.5s infinite; }
-      @keyframes ledPulse {
-        0%, 100% { opacity: 0.9; box-shadow: 0 0 6px rgba(231,0,0,0.8); }
-        50% { opacity: 0.5; box-shadow: 0 0 2px rgba(231,0,0,0.3); }
-      }
-      /* Reset Connection Button styling – same as control panel button */
-      #reset-session {
-        width: 280px;
-        padding: 15px;
+      .primary-controls button:hover { transform: scale(1.03); }
+      /* Digital counter styled like an old digital clock */
+      #digital-counter {
+        font-family: 'Wavehaus42Light', monospace;
+        font-size: 18px;
+        color: #000;
+        background: #fff;
+        padding: 10px 15px;
         border: 2px solid #000;
+        border-radius: 4px;
+      }
+      /* Secondary Controls: Download, Consult, Disconnect, Reset */
+      .secondary-controls button {
+        background-color: #fff;
+        color: #000;
+        border: 2px solid #000;
+        padding: 10px 15px;
         font-family: 'Wavehaus42Light', Arial, sans-serif;
         font-size: 16px;
         cursor: pointer;
-        background-color: #fff;
-        color: #000;
-        text-align: center;
         transition: transform 0.2s;
       }
-      #reset-session:hover { transform: scale(1.02); }
+      .secondary-controls button:hover { transform: scale(1.03); }
 
       /* ---------------- VIDEO BACKGROUND --------------- */
       #video-container {
@@ -302,9 +289,7 @@
           padding: 20px;
         }
         .modal-content input[type='password'],
-        .modal-content button {
-          font-size: 14px; padding: 8px 12px;
-        }
+        .modal-content button { font-size: 14px; padding: 8px 12px; }
       }
       .modal-content.inverse {
         background: white;
@@ -355,32 +340,36 @@
 
     <!-- ============ GALLERY PAGE ============ -->
     <div id="gallery-page" class="page-container fadeable invisible hidden">
-      <!-- Control Panel -->
-      <div id="audio-player">
-        <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
-        <div class="button-group">
+      <!-- Control Hub: Fixed at Bottom -->
+      <div id="media-control-hub">
+        <div class="primary-controls">
           <!-- Play/Pause Button -->
-          <button id="play-pause" class="control-panel-button">
+          <button id="play-pause" class="control-panel-button" title="Toggle signal detection">
             <span id="play-pause-text">Lock into detected signal</span>
             <span id="play-pause-indicator" class="indicator light-off"></span>
           </button>
+          <!-- Rewind Button -->
+          <button id="rewind-btn" class="control-panel-button" title="Rewind signal 10 seconds">
+            &#x23EA; Rewind Signal
+          </button>
+          <!-- Digital Counter (old stopwatch style) -->
+          <div id="digital-counter" class="digital-counter" title="Connection Time">Connection Time: 00:00</div>
+        </div>
+        <div class="secondary-controls">
           <!-- Download Button -->
-          <button id="download-btn" class="control-panel-button">
+          <button id="download-btn" class="control-panel-button" title="Download 16-bit Audio Manifest">
             Download 16-bit Audio Manifest
-            <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
           <!-- Consult Training Manual Button -->
-          <button id="placeholder-btn" class="control-panel-button">
+          <button id="placeholder-btn" class="control-panel-button" title="Consult Training Manual">
             Consult Training Manual
-            <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
           <!-- Disconnect Button -->
-          <button id="disconnect-btn" class="control-panel-button">
+          <button id="disconnect-btn" class="control-panel-button" title="Disconnect from Relay Station">
             Disconnect From Relay Station
-            <span class="indicator light-off" style="margin-left:10px; opacity:0;"></span>
           </button>
-          <!-- Reset Session Button -->
-          <button id="reset-session" class="control-panel-button">
+          <!-- Reset Connection Button -->
+          <button id="reset-session" class="control-panel-button" title="Reset connection (requires re-entry of transition code)">
             Reset Connection
           </button>
         </div>
@@ -389,12 +378,12 @@
       <!-- Video Background -->
       <div id="video-container">
         <video id="loop-video" autoplay loop muted playsinline>
+          <!-- Only using sand_4_loop video -->
           <source id="video-source" src="assets/sand_4_loop.mp4" type="video/mp4" />
-          <!-- Other video sources commented out:
-          <source src="assets/sand_1_loop.mp4" type="video/mp4" />
-          <source src="assets/sand_2_loop.mp4" type="video/mp4" />
-          <source src="assets/sand_3_loop.mp4" type="video/mp4" />
-          -->
+          <!-- Other sources commented out -->
+          <!-- <source src="assets/sand_1_loop.mp4" type="video/mp4" /> -->
+          <!-- <source src="assets/sand_2_loop.mp4" type="video/mp4" /> -->
+          <!-- <source src="assets/sand_3_loop.mp4" type="video/mp4" /> -->
         </video>
       </div>
     </div>
@@ -427,11 +416,11 @@
             customFont,
             spacing = 120,
             lastFrameRateCheck = 0;
-
+  
         p.preload = function () {
           customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf");
         };
-
+  
         p.setup = function () {
           let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
           canvas.parent("interactive-container-home");
@@ -439,29 +428,25 @@
           p.textAlign(p.CENTER, p.CENTER);
           initializeLetters();
         };
-
+  
         p.draw = function () {
           p.clear();
-
           if (p.millis() - lastFrameRateCheck > 1000) {
             let fps = p.frameRate();
             if (fps < 30) maxTrailLength = 300;
             else if (fps > 50) maxTrailLength = 600;
             lastFrameRateCheck = p.millis();
           }
-
           if (customFont && p.textFont() !== customFont) {
             p.textFont(customFont);
           } else if (!customFont) {
             p.textFont("Arial");
           }
-
           for (let trail of trails) {
             p.fill(trail.color);
             p.noStroke();
             p.text(trail.letter, trail.x, trail.y);
           }
-
           for (let i = 0; i < letters.length; i++) {
             let letter = textInput[i];
             let letterPos = letters[i];
@@ -474,18 +459,8 @@
             }
             letterPos.x += (letterPos.originalX - letterPos.x) * 0.02;
             letterPos.y += (letterPos.originalY - letterPos.y) * 0.02;
-            trails.push({
-              x: letterPos.x - 10,
-              y: letterPos.y,
-              color: [0,255,0],
-              letter
-            });
-            trails.push({
-              x: letterPos.x + 10,
-              y: letterPos.y,
-              color: [0,0,255],
-              letter
-            });
+            trails.push({ x: letterPos.x - 10, y: letterPos.y, color: [0,255,0], letter });
+            trails.push({ x: letterPos.x + 10, y: letterPos.y, color: [0,0,255], letter });
             if (trails.length > maxTrailLength) {
               trails.splice(0, trails.length - maxTrailLength);
             }
@@ -494,7 +469,7 @@
             p.text(letter, letterPos.x, letterPos.y);
           }
         };
-
+  
         function initializeLetters() {
           letters = [];
           let startX = p.windowWidth / 2 - ((textInput.length - 1) * spacing) / 2;
@@ -504,26 +479,87 @@
             letters.push({ x, y, originalX: x, originalY: y });
           }
         }
-
+  
         p.windowResized = function () {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
           initializeLetters();
         };
       };
-
+  
       new p5(homeSketch);
     </script>
 
-    <!-- ============ JS LOGIC (PASSWORD, PAGE SWITCHERS, ETC.) ============ -->
+    <!-- ============ PARTICLE OVERLAY (Audio-Reactive Visuals) ============ -->
     <script>
-      // 1) Home Page: "Enter Transmission Code" button
+      let particleSketch = function(p) {
+        let particles = [];
+        let fft;
+        let audioEl;
+  
+        p.setup = function() {
+          let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+          canvas.parent("particle-overlay");
+          fft = new p5.FFT(0.8, 64);
+          audioEl = document.getElementById("my-audio");
+          let pe = new p5.MediaElement(audioEl);
+          fft.setInput(pe);
+        };
+  
+        p.draw = function() {
+          p.clear();
+          let spectrum = fft.analyze();
+          let avg = spectrum.reduce((a, b) => a + b, 0) / spectrum.length;
+          let spawnRate = p.map(avg, 0, 255, 0, 5);
+          for (let i = 0; i < spawnRate; i++) {
+            particles.push(new Particle(p.random(p.width), p.random(p.height)));
+          }
+          for (let i = particles.length - 1; i >= 0; i--) {
+            particles[i].update();
+            particles[i].display();
+            if (particles[i].isFinished()) {
+              particles.splice(i, 1);
+            }
+          }
+        };
+  
+        class Particle {
+          constructor(x, y) {
+            this.pos = p.createVector(x, y);
+            this.vel = p5.Vector.random2D().mult(p.random(0.5, 2));
+            this.lifetime = 255;
+          }
+          update() {
+            this.pos.add(this.vel);
+            this.lifetime -= 2;
+          }
+          display() {
+            p.noStroke();
+            p.fill(255, this.lifetime);
+            p.ellipse(this.pos.x, this.pos.y, 5);
+          }
+          isFinished() {
+            return this.lifetime < 0;
+          }
+        }
+      };
+      // Create particle overlay canvas in a new div we add below.
+      let particleDiv = document.createElement("div");
+      particleDiv.id = "particle-overlay";
+      document.body.appendChild(particleDiv);
+      new p5(particleSketch, "particle-overlay");
+    </script>
+
+    <!-- ============ JS LOGIC (PASSWORD, PAGE SWITCHERS, MEDIA CONTROLS, ETC.) ============ -->
+    <script>
+      // Orientation (if needed, can be added later)
+  
+      // 1) Home Page: "Enter Transmission Code" button with localStorage persistence.
       const enterCodeBtn = document.getElementById("enter-code-btn");
       const passwordModal = document.getElementById("password-modal");
       const modalClose = document.getElementById("modal-close");
       const modalSubmit = document.getElementById("modal-submit");
       const modalPassword = document.getElementById("modal-password");
-
-      // When clicked, if localStorage has saved password, skip modal.
+  
       enterCodeBtn.addEventListener("click", () => {
         if (localStorage.getItem("passwordAccepted") === "true") {
           showGallery();
@@ -533,17 +569,17 @@
           modalPassword.focus();
         }
       });
-
+  
       modalClose.addEventListener("click", () => {
         passwordModal.style.display = "none";
       });
-
+  
       window.addEventListener("click", (e) => {
         if (e.target === passwordModal) {
           passwordModal.style.display = "none";
         }
       });
-
+  
       modalSubmit.addEventListener("click", checkPassword);
       modalPassword.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
@@ -551,7 +587,7 @@
           checkPassword();
         }
       });
-
+  
       function checkPassword() {
         const enteredPassword = modalPassword.value;
         const correctPassword = "qwerty";
@@ -563,21 +599,22 @@
           alert("ACCESS RESTRICTED: Launch code does not match records. Consult mission control documentation.");
         }
       }
-
-      // 2) Audio Player & Control Panel (Gallery Page)
+  
+      // 2) Media Controls on Gallery Page
       const audio = document.getElementById("my-audio");
       const playPauseBtn = document.getElementById("play-pause");
       const playPauseText = document.getElementById("play-pause-text");
       const playPauseIndicator = document.getElementById("play-pause-indicator");
-
+      const rewindBtn = document.getElementById("rewind-btn");
+      const digitalCounter = document.getElementById("digital-counter");
       const downloadButton = document.getElementById("download-btn");
       const placeholderButton = document.getElementById("placeholder-btn");
       const disconnectBtn = document.getElementById("disconnect-btn");
       const resetSessionBtn = document.getElementById("reset-session");
-
+  
       playPauseText.textContent = "Lock into detected signal";
       playPauseIndicator.classList.add("light-off");
-
+  
       playPauseBtn.addEventListener("click", togglePlay);
       function togglePlay() {
         if (audio.paused) {
@@ -592,23 +629,40 @@
           playPauseIndicator.classList.add("light-off");
         }
       }
-
+  
+      // Rewind button: subtract 10 seconds from audio.currentTime
+      // Also update the digital counter accordingly.
+      document.getElementById("rewind-btn").addEventListener("click", () => {
+        audio.currentTime = Math.max(0, audio.currentTime - 10);
+        updateCounter();
+      });
+  
+      function updateCounter() {
+        let t = audio.currentTime;
+        let minutes = Math.floor(t / 60);
+        let seconds = Math.floor(t % 60);
+        if (seconds < 10) seconds = "0" + seconds;
+        digitalCounter.innerText = "Connection Time: " + minutes + ":" + seconds;
+      }
+      // Update the counter regularly
+      setInterval(updateCounter, 500);
+  
       disconnectBtn.addEventListener("click", showHome);
-
-      // Reset Session Button – confirm before resetting localStorage
+  
+      // Reset Session Button: Confirm and remove password from localStorage.
       resetSessionBtn.addEventListener("click", () => {
         if (confirm("Are you sure: This will break your existing connection and require you to resubmit your transition code")) {
           localStorage.removeItem("passwordAccepted");
-          alert("Session reset. Please re-enter your transmission code.");
+          alert("Connection reset. Please re-enter your transmission code on the Home page.");
         }
       });
-
+  
       // 3) Download & Placeholder Modals
       const downloadModal = document.getElementById("download-modal");
       const placeholderModal = document.getElementById("placeholder-modal");
       const downloadModalClose = document.getElementById("download-modal-close");
       const placeholderModalClose = document.getElementById("placeholder-modal-close");
-
+  
       downloadButton.addEventListener("click", () => {
         downloadModal.style.display = "flex";
       });
@@ -629,13 +683,13 @@
           placeholderModal.style.display = "none";
         }
       });
-
+  
       // 4) Loading Overlay & Page Switchers
       const homePage = document.getElementById("home-page");
       const galleryPage = document.getElementById("gallery-page");
       const loader = document.getElementById("loader");
       const loaderText = document.querySelector("#loader .loading-text");
-
+  
       function showLoading(message) {
         if (loader && loaderText) {
           loaderText.innerHTML = message;
@@ -652,13 +706,13 @@
         homePage.classList.remove("invisible");
         homePage.offsetWidth;
         homePage.classList.add("invisible");
-
+  
         // Use sand_4_loop video exclusively
         const chosenSource = "assets/sand_4_loop.mp4";
         const videoSourceElem = document.getElementById("video-source");
         videoSourceElem.src = chosenSource;
         document.getElementById("loop-video").load();
-
+  
         setTimeout(() => {
           showLoading("ACCESS GRANTED");
           setTimeout(() => {
@@ -681,7 +735,7 @@
         galleryPage.classList.remove("invisible");
         galleryPage.offsetWidth;
         galleryPage.classList.add("invisible");
-
+  
         setTimeout(() => {
           galleryPage.classList.add("hidden");
           homePage.classList.remove("hidden");
