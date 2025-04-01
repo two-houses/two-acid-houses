@@ -2,18 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Home Page Always + One-Time Password</title>
+  <title>Home Page Always + One-Time Password + Loading Screens</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
-    body { margin: 0; font-family: sans-serif; }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
     /* Two "pages": home & gallery */
     #home-page, #gallery-page {
       width: 100%;
       height: 100vh;
       display: none;
     }
-    #home-page.active { display: block; }
-    #gallery-page.active { display: block; }
+    #home-page.active {
+      display: block;
+    }
+    #gallery-page.active {
+      display: block;
+    }
 
     /* HOME LAYOUT */
     #home-content {
@@ -32,94 +39,153 @@
     /* Password Modal */
     #password-modal {
       display: none;
-      position: fixed; 
+      position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5); 
-      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
     }
     #password-content {
-      background: #fff; 
-      padding: 20px 30px; 
-      border-radius: 4px; 
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 4px;
       text-align: center;
       position: relative;
     }
     #modal-close {
-      position: absolute; top: 10px; right: 10px; cursor: pointer;
+      position: absolute;
+      top: 10px; right: 10px;
+      cursor: pointer;
     }
     #modal-password {
       padding: 8px;
-      font-size: 16px; 
+      font-size: 16px;
       margin-top: 10px;
     }
     #modal-submit {
-      margin-top: 10px; 
-      padding: 10px 16px; 
-      font-size: 16px; 
+      margin-top: 10px;
+      padding: 10px 16px;
+      font-size: 16px;
       cursor: pointer;
     }
 
     /* GALLERY PAGE */
-    #gallery-content { display: flex; flex-direction: column; height: 100%; padding: 20px; }
-    #my-audio { display: none; }
+    #gallery-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 20px;
+    }
+    #my-audio {
+      display: none;
+    }
 
     /* Bottom bar for media controls */
     #player-bar {
-      position: fixed; 
+      position: fixed;
       bottom: 0; left: 0; width: 100%;
       background: #000; color: #fff;
       display: flex; gap: 20px;
-      align-items: center; padding: 10px; box-sizing: border-box;
+      align-items: center;
+      padding: 10px;
+      box-sizing: border-box;
     }
     #play-pause, #rewind-btn {
-      background: #fff; color: #000; border: 2px solid #000; padding: 8px 14px; cursor: pointer;
+      background: #fff; color: #000; border: 2px solid #000;
+      padding: 8px 14px; cursor: pointer;
     }
     #timerDisplay {
-      background: #fff; color: #000; 
+      background: #fff; color: #000;
       padding: 5px 10px; border: 2px solid #000;
       min-width: 80px; text-align: center;
     }
 
     /* Settings menu */
     #settings-section {
-      margin-left: auto; 
+      margin-left: auto;
       position: relative;
     }
     #settings-btn {
-      background: transparent; border: 2px solid #fff; 
-      color: #fff; font-size: 16px; cursor: pointer; padding: 6px 10px;
+      background: transparent;
+      border: 2px solid #fff;
+      color: #fff; font-size: 16px;
+      cursor: pointer;
+      padding: 6px 10px;
     }
     #settings-dropdown {
-      display: none; position: absolute; bottom: 100%; right: 0; margin-bottom: 10px;
-      background: #fff; color: #000; padding: 10px; border: 1px solid #000;
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 10px;
+      background: #fff; color: #000;
+      padding: 10px; border: 1px solid #000;
       z-index: 9999;
     }
     #settings-dropdown button {
-      display: block; width: 100%; text-align: left; 
-      border: none; background: transparent; padding: 5px 0;
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: none; background: transparent;
+      padding: 5px 0;
       cursor: pointer; font-size: 14px;
     }
-    #settings-dropdown button:hover { background: #eee; }
+    #settings-dropdown button:hover {
+      background: #eee;
+    }
 
     /* Download & Manual modals */
     .modal-bg {
-      display: none; 
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5);
       align-items: center; justify-content: center;
       z-index: 2000;
     }
     .modal-box {
-      background: #fff; color: #000; 
-      padding: 20px 30px; border-radius: 4px; 
-      text-align: center; position: relative;
+      background: #fff; color: #000;
+      padding: 20px 30px;
+      border-radius: 4px;
+      text-align: center;
+      position: relative;
     }
     .close-btn {
       position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 16px;
     }
+
+    /* LOADER OVERLAY */
+    #loader {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255,255,255,0.9);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .loading-text {
+      font-size: 24px;
+      font-family: Arial, sans-serif;
+      animation: gentlePulse 5s infinite ease-in-out;
+    }
+    @keyframes gentlePulse {
+      0%,100% {
+        opacity: 1; transform: scale(1);
+      }
+      50% {
+        opacity: 0.85; transform: scale(1.02);
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- LOADER OVERLAY -->
+  <div id="loader">
+    <div class="loading-text" id="loader-text">Loading...</div>
+  </div>
+
   <!-- HOME PAGE -->
   <div id="home-page" class="active">
     <div id="home-content">
@@ -181,53 +247,68 @@
 
   <script>
     // Pages
-    const homePage      = document.getElementById('home-page');
-    const galleryPage   = document.getElementById('gallery-page');
-    // Password modal
-    const passwordModal = document.getElementById('password-modal');
-    const modalClose    = document.getElementById('modal-close');
-    const modalSubmit   = document.getElementById('modal-submit');
-    const modalPassword = document.getElementById('modal-password');
-    const enterCodeBtn  = document.getElementById('enter-code-btn');
+    const homePage     = document.getElementById('home-page');
+    const galleryPage  = document.getElementById('gallery-page');
+    // Loader
+    const loader       = document.getElementById('loader');
+    const loaderText   = document.getElementById('loader-text');
 
-    // Audio + Media Controls
-    const audioEl       = document.getElementById('my-audio');
-    const playPauseBtn  = document.getElementById('play-pause');
-    const rewindBtn     = document.getElementById('rewind-btn');
-    const timerDisplay  = document.getElementById('timerDisplay');
+    // Home & Password
+    const enterCodeBtn   = document.getElementById('enter-code-btn');
+    const passwordModal  = document.getElementById('password-modal');
+    const modalClose     = document.getElementById('modal-close');
+    const modalSubmit    = document.getElementById('modal-submit');
+    const modalPassword  = document.getElementById('modal-password');
+
+    // Audio & Media controls
+    const audioEl      = document.getElementById('my-audio');
+    const playPauseBtn = document.getElementById('play-pause');
+    const rewindBtn    = document.getElementById('rewind-btn');
+    const timerDisplay = document.getElementById('timerDisplay');
 
     // Settings
-    const settingsBtn   = document.getElementById('settings-btn');
-    const settingsDropdown = document.getElementById('settings-dropdown');
-    const downloadBtn   = document.getElementById('download-btn');
-    const manualBtn     = document.getElementById('manual-btn');
-    const resetCodeBtn  = document.getElementById('reset-code-btn');
-    const returnHomeBtn = document.getElementById('return-home');
+    const settingsBtn     = document.getElementById('settings-btn');
+    const settingsDropdown= document.getElementById('settings-dropdown');
+    const downloadBtn     = document.getElementById('download-btn');
+    const manualBtn       = document.getElementById('manual-btn');
+    const resetCodeBtn    = document.getElementById('reset-code-btn');
+    const returnHomeBtn   = document.getElementById('return-home');
 
-    // Download & Manual modals
-    const downloadModal = document.getElementById('download-modal');
-    const manualModal   = document.getElementById('manual-modal');
-    const downloadClose = document.getElementById('download-close');
-    const manualClose   = document.getElementById('manual-close');
+    // Extra modals
+    const downloadModal   = document.getElementById('download-modal');
+    const downloadClose   = document.getElementById('download-close');
+    const manualModal     = document.getElementById('manual-modal');
+    const manualClose     = document.getElementById('manual-close');
 
-    // 1) On load: Always show home page
-    // We do NOT skip to gallery even if localStorage is set.
+    // On load: always show home page
     window.addEventListener('load', () => {
-      console.log("Page loaded. localStorage passwordAccepted =", localStorage.getItem("passwordAccepted"));
-      homePage.classList.add('active');  // always show
+      console.log("Page loaded. Always landing on home page. localStorage passwordAccepted =", localStorage.getItem("passwordAccepted"));
+      homePage.classList.add('active');
       galleryPage.classList.remove('active');
     });
 
     /*
-     * 2) "Enter Transmission Code" button 
-     *    - If password accepted => skip modal & go gallery
-     *    - Else => show modal
+     * HELPER: show/hide loading
+     */
+    function showLoading(message) {
+      loaderText.innerHTML = message;
+      loader.style.display = "flex";
+    }
+    function hideLoading() {
+      loader.style.display = "none";
+    }
+
+    /*
+     * HOME PAGE: Enter Transmission Code button
+     * - If localStorage is set => skip password modal, show loading, then gallery
+     * - Else => show password modal
      */
     enterCodeBtn.addEventListener('click', () => {
-      console.log("Enter Transmission Code clicked");
-      if (localStorage.getItem("passwordAccepted") === "true") {
-        console.log("Already accepted => going to gallery directly");
-        goToGallery();
+      console.log("Enter Transmission Code clicked.");
+      const passAccepted = localStorage.getItem("passwordAccepted") === "true";
+      if (passAccepted) {
+        console.log("Password previously accepted => skipping modal + loading sequence.");
+        doLoadingToGallery();
       } else {
         passwordModal.style.display = 'flex';
         modalPassword.value = '';
@@ -245,23 +326,37 @@
         checkPassword();
       }
     });
+
     function checkPassword() {
       const code = modalPassword.value;
       console.log("User typed code:", code);
       const correct = "qwerty";
       if (code === correct) {
-        console.log("Correct code => set localStorage and go gallery");
+        console.log("Correct code => set localStorage => do loading");
         localStorage.setItem("passwordAccepted","true");
         passwordModal.style.display = 'none';
-        goToGallery();
+        doLoadingToGallery();
       } else {
         alert("ACCESS RESTRICTED: Launch code does not match records.");
       }
     }
 
-    /*
-     * 3) goToGallery function
-     */
+    // The 2-step loading sequence:
+    //  3s => "TRANSMITTING..."
+    //  2s => "ACCESS GRANTED"
+    // Then show gallery
+    function doLoadingToGallery() {
+      console.log("Initiating loading => then gallery.");
+      showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
+      setTimeout(() => {
+        showLoading("ACCESS GRANTED");
+        setTimeout(() => {
+          hideLoading();
+          goToGallery();
+        }, 2000);
+      }, 3000);
+    }
+
     function goToGallery() {
       homePage.classList.remove('active');
       galleryPage.classList.add('active');
@@ -269,7 +364,7 @@
     }
 
     /*
-     * 4) Audio Controls
+     * AUDIO CONTROLS
      */
     playPauseBtn.addEventListener('click', () => {
       console.log("Play/Pause clicked. paused =", audioEl.paused);
@@ -289,21 +384,21 @@
 
     rewindBtn.addEventListener('click', () => {
       audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
-      console.log("Rewind -10s =>", audioEl.currentTime);
+      console.log("Rewind -10s => currentTime =", audioEl.currentTime);
       updateTimer();
     });
 
     function updateTimer() {
       let t = audioEl.currentTime;
-      let m = Math.floor(t/60);
-      let s = Math.floor(t%60);
-      if (s<10) s="0"+s;
+      let m = Math.floor(t / 60);
+      let s = Math.floor(t % 60);
+      if (s < 10) s = "0" + s;
       timerDisplay.textContent = `${m}:${s}`;
     }
     setInterval(updateTimer, 500);
 
     /*
-     * 5) Settings Cog
+     * SETTINGS COG
      */
     settingsBtn.addEventListener('click', () => {
       console.log("Settings cog clicked!");
@@ -321,7 +416,7 @@
 
     // Return Home
     returnHomeBtn.addEventListener('click', () => {
-      console.log("Return Home => switching pages");
+      console.log("Return Home => going back to home page");
       galleryPage.classList.remove('active');
       homePage.classList.add('active');
       if (!audioEl.paused) {
@@ -332,11 +427,10 @@
 
     // Reset Transmission Code
     resetCodeBtn.addEventListener('click', () => {
-      let sure = confirm("Are you sure? This will require you to re-enter your transmission code.");
+      let sure = confirm("Are you sure? This will require you to re-enter your transition code.");
       if (sure) {
-        console.log("Reset confirmed => removing passwordAccepted");
+        console.log("Removing localStorage password => returning home");
         localStorage.removeItem("passwordAccepted");
-        // forcibly go home
         galleryPage.classList.remove('active');
         homePage.classList.add('active');
         if (!audioEl.paused) {
@@ -347,16 +441,16 @@
     });
 
     /*
-     * 6) Download & Manual Modals
+     * DOWNLOAD & MANUAL MODALS
      */
     downloadBtn.addEventListener('click', () => {
       downloadModal.style.display = 'flex';
     });
-    downloadClose.addEventListener('click', () => {
-      downloadModal.style.display = 'none';
-    });
     manualBtn.addEventListener('click', () => {
       manualModal.style.display = 'flex';
+    });
+    downloadClose.addEventListener('click', () => {
+      downloadModal.style.display = 'none';
     });
     manualClose.addEventListener('click', () => {
       manualModal.style.display = 'none';
