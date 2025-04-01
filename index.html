@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>TWO ACID HOUSES</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
   <!-- CUSTOM FONT DEFINITIONS -->
   <style>
@@ -41,24 +41,18 @@
       background: #f3f3f3;
       color: #000;
     }
-    /* A subtle overlay (can be removed if not needed) */
+    /* (Optional) subtle overlay */
     body::before {
       content: "";
       pointer-events: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       z-index: 1;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0,0,0,0.01),
-        rgba(0,0,0,0.01) 1px,
-        rgba(255,255,255,0.01) 1px,
-        rgba(255,255,255,0.01) 2px
-      );
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.01), rgba(0,0,0,0.01) 1px, rgba(255,255,255,0.01) 1px, rgba(255,255,255,0.01) 2px);
       opacity: 0.3;
       mix-blend-mode: multiply;
     }
-    /* Pages: only the active one is visible */
+    /* Pages: only active one is visible */
     #home-page, #media-page {
       display: none;
       width: 100%;
@@ -74,7 +68,7 @@
       overflow: hidden;
       z-index: 2;
     }
-    
+
     /* -----------------------------------
        LOADER OVERLAY (Solid White Background)
     ----------------------------------- */
@@ -104,7 +98,7 @@
        HOME PAGE (Landing)
     ----------------------------------- */
     #home-page {
-      /* Home page uses Wavehaus95SemiBold for main headings */
+      /* Use a container for content */
     }
     #home-content {
       display: flex;
@@ -113,7 +107,7 @@
       align-items: center;
       height: 100%;
     }
-    /* The landing page text uses Wavehaus95SemiBold */
+    /* Landing page headings use Wavehaus95SemiBold */
     #home-content h2 {
       font-family: 'Wavehaus95SemiBold', Arial, sans-serif;
       font-size: 48px;
@@ -128,30 +122,26 @@
       color: #111;
       border: 2px solid #111;
       border-radius: 6px;
+      margin-top: 20px;
     }
     #enter-code-btn:hover {
       background-color: rgba(17,17,17,0.1);
       transform: scale(1.03);
-    }
-    @media screen and (max-width: 600px) {
-      #enter-code-btn { margin-bottom: 20px; }
     }
     
     /* -----------------------------------
        MEDIA PAGE (formerly Gallery Page)
     ----------------------------------- */
     #media-page {
-      /* Media page styling; you can add further styling as needed */
+      /* Media page container */
     }
     #gallery-content {
       padding: 20px;
       font-family: 'Wavehaus95SemiBold', Arial, sans-serif;
     }
-    /* Audio element remains hidden */
-    #my-audio {
-      display: none;
-    }
-    /* Media control bar */
+    /* Hidden audio element */
+    #my-audio { display: none; }
+    /* Player bar at bottom */
     #player-bar {
       position: fixed;
       bottom: 0;
@@ -166,7 +156,7 @@
       align-items: center;
       z-index: 350;
     }
-    /* Buttons & timer in media control bar use Wavehaus28Thin */
+    /* Buttons & timer in player bar use Wavehaus28Thin */
     #player-bar button {
       background-color: #fff;
       color: #000;
@@ -180,7 +170,7 @@
     #player-bar button:hover {
       transform: scale(1.03);
     }
-    /* Timer now in hh:mm:ss:cs (centiseconds) */
+    /* Timer: hh:mm:ss:cs format */
     #timerDisplay {
       background-color: #fff;
       color: #000;
@@ -205,7 +195,7 @@
       padding: 6px 10px;
       font-family: 'Wavehaus28Thin', Arial, sans-serif;
     }
-    /* Dropdown opens upward */
+    /* Dropdown: opens upward */
     #settings-dropdown {
       display: none;
       position: absolute;
@@ -236,8 +226,8 @@
     }
     
     /* -----------------------------------
-       MODALS (for Transmission Code, Download, and Manual)
-       Use Wavehaus42Light for modals.
+       MODALS (for Transmission Code, Download, Manual)
+       Use Wavehaus42Light for modals
     ----------------------------------- */
     .modal {
       display: none;
@@ -278,7 +268,6 @@
       background: white;
       color: #333;
       border: none;
-      border-radius: 0;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       font-family: 'Wavehaus42Light', Arial, sans-serif;
     }
@@ -303,7 +292,10 @@
         transform: translateY(-20%);
       }
       .modal-content input[type='password'],
-      .modal-content button { font-size: 14px; padding: 8px 12px; }
+      .modal-content button {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
     }
     
     /* -----------------------------------
@@ -435,13 +427,19 @@
       console.log("Page loaded. localStorage passwordAccepted =", localStorage.getItem("passwordAccepted"));
       homePage.classList.add('active');
       mediaPage.classList.remove('active');
+      // Update button text based on localStorage
+      if (localStorage.getItem("passwordAccepted") === "true") {
+        enterCodeBtn.textContent = "Proceed to Media";
+      } else {
+        enterCodeBtn.textContent = "Enter Transmission Code";
+      }
     });
 
-    /* 2) Home Page: Enter Transmission Code */
+    /* 2) Home Page: Enter Transmission Code button */
     enterCodeBtn.addEventListener('click', () => {
       console.log("Enter Transmission Code clicked.");
       if (localStorage.getItem("passwordAccepted") === "true") {
-        console.log("Password already accepted, starting loading sequence.");
+        console.log("Password already accepted. Starting loading sequence...");
         doLoadingToMedia();
       } else {
         passwordModal.style.display = 'flex';
@@ -464,7 +462,7 @@
       console.log("User typed code:", code);
       const correct = "qwerty";
       if (code === correct) {
-        console.log("Correct code. Saving to localStorage.");
+        console.log("Correct code. Storing in localStorage and initiating loading sequence.");
         localStorage.setItem("passwordAccepted", "true");
         passwordModal.style.display = 'none';
         doLoadingToMedia();
@@ -473,13 +471,15 @@
       }
     }
 
-    /* 3) Loading Sequence */
+    /* 3) Loading Sequence: 3s of 'TRANSMITTING...' then 2s of 'ACCESS GRANTED' */
     function doLoadingToMedia() {
       console.log("Starting loading sequence...");
       showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
       setTimeout(() => {
+        console.log("3 seconds elapsed: Updating loader to 'ACCESS GRANTED'");
         showLoading("ACCESS GRANTED");
         setTimeout(() => {
+          console.log("5 seconds elapsed: Hiding loader and transitioning to Media Page.");
           hideLoading();
           goToMedia();
         }, 2000);
@@ -519,13 +519,13 @@
       console.log("Rewind -10s, currentTime =", audioEl.currentTime);
       updateTimer();
     });
-    // Timer in hh:mm:ss:cs (centiseconds)
+    // Timer in hh:mm:ss:cs format
     function updateTimer() {
       let t = audioEl.currentTime;
       let h = Math.floor(t / 3600);
       let m = Math.floor((t % 3600) / 60);
       let s = Math.floor(t % 60);
-      let cs = Math.floor(((t - Math.floor(t)) * 100));
+      let cs = Math.floor((t - Math.floor(t)) * 100);
       timerDisplay.textContent =
         String(h).padStart(2, '0') + ":" +
         String(m).padStart(2, '0') + ":" +
@@ -549,7 +549,7 @@
       }
     });
 
-    /* 6) Return Home */
+    /* 6) Return Home from Media Page */
     returnHomeBtn.addEventListener('click', () => {
       console.log("Return Home clicked.");
       mediaPage.classList.remove('active');
@@ -564,7 +564,7 @@
     resetCodeBtn.addEventListener('click', () => {
       const sure = confirm("Are you sure? This will require you to re-enter your transmission code.");
       if (sure) {
-        console.log("Reset confirmed. Removing localStorage and returning home.");
+        console.log("Reset confirmed. Removing localStorage and returning to Home Page.");
         localStorage.removeItem("passwordAccepted");
         mediaPage.classList.remove('active');
         homePage.classList.add('active');
@@ -572,6 +572,8 @@
           audioEl.pause();
           playPauseBtn.textContent = "Connect";
         }
+        // Optionally update the button text back on home page
+        enterCodeBtn.textContent = "Enter Transmission Code";
       }
     });
 
