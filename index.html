@@ -1,612 +1,601 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <!-- Ensures mobile browsers scale properly -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>TWO ACID HOUSES</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>TWO ACID HOUSES</title>
 
-    <!-- CUSTOM FONT DEFINITIONS -->
-    <style>
-      @font-face {
-        font-family: 'Wavehaus28Thin';
-        src: url('fonts/Wavehaus-28Thin.otf') format('opentype');
-        font-weight: normal;
-        font-style: normal;
-      }
-      @font-face {
-        font-family: 'Wavehaus42Light';
-        src: url('fonts/Wavehaus-42Light.otf') format('opentype');
-        font-weight: normal;
-        font-style: normal;
-      }
-      @font-face {
-        font-family: 'Wavehaus95SemiBold';
-        src: url('fonts/Wavehaus-95SemiBold.otf') format('opentype');
-        font-weight: normal;
-        font-style: normal;
-      }
-    </style>
+  <!-- CUSTOM FONT DEFINITIONS -->
+  <style>
+    @font-face {
+      font-family: 'Wavehaus28Thin';
+      src: url('fonts/Wavehaus-28Thin.otf') format('opentype');
+    }
+    @font-face {
+      font-family: 'Wavehaus42Light';
+      src: url('fonts/Wavehaus-42Light.otf') format('opentype');
+    }
+    @font-face {
+      font-family: 'Wavehaus95SemiBold';
+      src: url('fonts/Wavehaus-95SemiBold.otf') format('opentype');
+    }
+  </style>
 
-    <!-- p5.js and p5.sound -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+  <!-- p5.js and p5.sound -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
 
-    <style>
-      /* -----------------------------------
-         GLOBAL / BACKGROUND
-      ----------------------------------- */
-      html, body {
-        margin: 0;
-        overscroll-behavior: none;
-        touch-action: none;
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        font-family: 'Wavehaus95SemiBold', Arial, sans-serif; /* Landing text & loading */
-        background: #f3f3f3;
-        color: #000;
-      }
-      body::before {
-        content: "";
-        pointer-events: none;
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        z-index: 1;
-        background: repeating-linear-gradient(
-          0deg,
-          rgba(0,0,0,0.01),
-          rgba(0,0,0,0.01) 1px,
-          rgba(255,255,255,0.01) 1px,
-          rgba(255,255,255,0.01) 2px
-        );
-        opacity: 0.3;
-        mix-blend-mode: multiply;
-      }
-      .fadeable { transition: opacity 0.8s ease; }
-      .hidden { display: none; }
-      .invisible { opacity: 0; pointer-events: none; }
+  <style>
+    /* -----------------------------------
+       GLOBAL / BACKGROUND
+    ----------------------------------- */
+    html, body {
+      margin: 0;
+      overscroll-behavior: none;
+      touch-action: none;
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      /* Landing page text and loader use Wavehaus95SemiBold */
+      font-family: 'Wavehaus95SemiBold', Arial, sans-serif;
+      background: #f3f3f3;
+      color: #000;
+    }
+    /* A subtle overlay (can be removed if not needed) */
+    body::before {
+      content: "";
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 1;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.01),
+        rgba(0,0,0,0.01) 1px,
+        rgba(255,255,255,0.01) 1px,
+        rgba(255,255,255,0.01) 2px
+      );
+      opacity: 0.3;
+      mix-blend-mode: multiply;
+    }
+    /* Pages: only the active one is visible */
+    #home-page, #media-page {
+      display: none;
+      width: 100%;
+      height: 100vh;
+    }
+    #home-page.active, #media-page.active {
+      display: block;
+    }
+    .page-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 2;
+    }
+    
+    /* -----------------------------------
+       LOADER OVERLAY (Solid White Background)
+    ----------------------------------- */
+    #loader {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 1s ease;
+    }
+    .loading-text {
+      font-size: 24px;
+      font-family: 'Wavehaus95SemiBold', Arial, sans-serif;
+      text-align: center;
+      animation: gentlePulse 5s infinite ease-in-out;
+    }
+    @keyframes gentlePulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    
+    /* -----------------------------------
+       HOME PAGE (Landing)
+    ----------------------------------- */
+    #home-page {
+      /* Home page uses Wavehaus95SemiBold for main headings */
+    }
+    #home-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    /* The landing page text uses Wavehaus95SemiBold */
+    #home-content h2 {
+      font-family: 'Wavehaus95SemiBold', Arial, sans-serif;
+      font-size: 48px;
+    }
+    /* "Enter Transmission Code" button uses Wavehaus28Thin */
+    #enter-code-btn {
+      padding: 14px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      font-family: 'Wavehaus28Thin', Arial, sans-serif;
+      background-color: transparent;
+      color: #111;
+      border: 2px solid #111;
+      border-radius: 6px;
+    }
+    #enter-code-btn:hover {
+      background-color: rgba(17,17,17,0.1);
+      transform: scale(1.03);
+    }
+    @media screen and (max-width: 600px) {
+      #enter-code-btn { margin-bottom: 20px; }
+    }
+    
+    /* -----------------------------------
+       MEDIA PAGE (formerly Gallery Page)
+    ----------------------------------- */
+    #media-page {
+      /* Media page styling; you can add further styling as needed */
+    }
+    #gallery-content {
+      padding: 20px;
+      font-family: 'Wavehaus95SemiBold', Arial, sans-serif;
+    }
+    /* Audio element remains hidden */
+    #my-audio {
+      display: none;
+    }
+    /* Media control bar */
+    #player-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #000;
+      color: #fff;
+      padding: 10px 20px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 350;
+    }
+    /* Buttons & timer in media control bar use Wavehaus28Thin */
+    #player-bar button {
+      background-color: #fff;
+      color: #000;
+      border: 2px solid #000;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-family: 'Wavehaus28Thin', Arial, sans-serif;
+      font-size: 16px;
+      transition: transform 0.2s;
+    }
+    #player-bar button:hover {
+      transform: scale(1.03);
+    }
+    /* Timer now in hh:mm:ss:cs (centiseconds) */
+    #timerDisplay {
+      background-color: #fff;
+      color: #000;
+      font-family: 'Wavehaus28Thin', monospace;
+      font-size: 16px;
+      padding: 5px 10px;
+      border: 2px solid #000;
+      min-width: 120px;
+      text-align: center;
+    }
+    /* Settings section */
+    #settings-section {
+      margin-left: auto;
+      position: relative;
+    }
+    #settings-btn {
+      background: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 6px 10px;
+      font-family: 'Wavehaus28Thin', Arial, sans-serif;
+    }
+    /* Dropdown opens upward */
+    #settings-dropdown {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 10px;
+      background-color: #fff;
+      color: #000;
+      border: 2px solid #000;
+      border-radius: 4px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 9999;
+      font-family: 'Wavehaus28Thin', Arial, sans-serif;
+    }
+    #settings-dropdown button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      padding: 5px 0;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #settings-dropdown button:hover {
+      background-color: #eee;
+    }
+    
+    /* -----------------------------------
+       MODALS (for Transmission Code, Download, and Manual)
+       Use Wavehaus42Light for modals.
+    ----------------------------------- */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      position: relative;
+      max-width: 40%;
+      min-height: 250px;
+      padding: 40px 15px;
+      text-align: center;
+      background: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transform: translateY(-10%);
+      font-family: 'Wavehaus42Light', Arial, sans-serif;
+    }
+    .modal-content input[type='password'] {
+      padding: 10px;
+      font-size: 16px;
+      width: 80%;
+      margin-bottom: 10px;
+    }
+    .modal-content button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background: white;
+      color: #333;
+      border: none;
+      border-radius: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      font-family: 'Wavehaus42Light', Arial, sans-serif;
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      color: #fff;
+      cursor: pointer;
+    }
+    @media screen and (max-width: 600px) {
       .page-container {
-        position: relative;
-        width: 100%;
-        height: 100vh;
-        overflow: hidden;
-        z-index: 2;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
       }
-      
-      /* -----------------------------------
-         LOADER OVERLAY (Solid White Background)
-      ----------------------------------- */
-      #loader {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background-color: #fff;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 1s ease;
-      }
-      .loading-text {
-        font-size: 24px;
-        font-family: 'Wavehaus95SemiBold', Arial, sans-serif;
-        text-align: center;
-        animation: gentlePulse 5s infinite ease-in-out;
-      }
-      @keyframes gentlePulse {
-        0%,100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.85; transform: scale(1.02); }
-      }
-      
-      /* -----------------------------------
-         HOME PAGE (Landing) 
-      ----------------------------------- */
-      #home-page { }
-      #interactive-container-home {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        z-index: 100;
-        background: transparent;
-        touch-action: auto;
-      }
-      #static-top, #static-bottom {
-        position: absolute;
-        width: 100%;
-        text-align: center;
-        font-size: 48px;
-        pointer-events: none;
-        color: #000;
-      }
-      #static-top { top: 10%; line-height: 1.2; }
-      #static-bottom { top: 65%; }
-      /* Home page text uses Wavehaus95SemiBold */
-      #home-content h2 {
-        font-family: 'Wavehaus95SemiBold', Arial, sans-serif;
-      }
-      /* "Enter Transmission Code" button uses Wavehaus28Thin */
-      #enter-code-btn {
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 15px 20px;
-        font-size: 18px;
-        background-color: transparent;
-        color: #111;
-        border: 2px solid #111;
-        border-radius: 6px;
-        z-index: 9999;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
-        font-family: 'Wavehaus28Thin', Arial, sans-serif;
-      }
-      #enter-code-btn:hover {
-        background-color: rgba(17,17,17,0.1);
-        transform: translateX(-50%) scale(1.03);
-      }
-      @media screen and (max-width: 600px) {
-        #enter-code-btn { bottom: 80px; }
-      }
-      
-      /* -----------------------------------
-         MEDIA PAGE (formerly Gallery Page)
-      ----------------------------------- */
-      #media-page { }
-      /* Hidden audio element for playback */
-      #my-audio { display: none; }
-      /* Media control bar */
-      #player-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #000;
-        color: #fff;
-        padding: 10px 20px;
-        box-sizing: border-box;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 350;
-      }
-      /* Buttons in media control bar use Wavehaus28Thin */
-      #player-bar button {
-        background-color: #fff;
-        color: #000;
-        border: 2px solid #000;
-        padding: 8px 14px;
-        cursor: pointer;
-        font-family: 'Wavehaus28Thin', Arial, sans-serif;
-        font-size: 16px;
-        transition: transform 0.2s;
-      }
-      #player-bar button:hover { transform: scale(1.03); }
-      /* Timer: now in hh:mm:ss:cs format */
-      #timerDisplay {
-        background-color: #fff;
-        color: #000;
-        font-family: 'Wavehaus28Thin', monospace;
-        font-size: 16px;
-        padding: 5px 10px;
-        border: 2px solid #000;
-        min-width: 120px;
-        text-align: center;
-      }
-      /* Settings section */
-      #settings-section {
-        margin-left: auto;
-        position: relative;
-      }
-      #settings-btn {
-        background: transparent;
-        border: 2px solid #fff;
-        color: #fff;
-        font-size: 16px;
-        cursor: pointer;
-        padding: 6px 10px;
-        font-family: 'Wavehaus28Thin', Arial, sans-serif;
-      }
-      /* Dropdown opens upward */
-      #settings-dropdown {
-        display: none;
-        position: absolute;
-        bottom: 100%;
-        right: 0;
-        margin-bottom: 10px;
-        background-color: #fff;
-        color: #000;
-        border: 2px solid #000;
-        border-radius: 4px;
-        padding: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        z-index: 9999;
-        font-family: 'Wavehaus28Thin', Arial, sans-serif;
-      }
-      #settings-dropdown button {
-        display: block;
-        width: 100%;
-        text-align: left;
-        border: none;
-        background: transparent;
-        padding: 5px 0;
-        cursor: pointer;
-        font-size: 14px;
-      }
-      #settings-dropdown button:hover {
-        background-color: #eee;
-      }
-      
-      /* -----------------------------------
-         MODALS: Use Wavehaus42Light for modals
-      ----------------------------------- */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 3000;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background-color: rgba(0,0,0,0.7);
-        align-items: center;
-        justify-content: center;
-      }
+      #enter-code-btn { font-size: 16px; }
       .modal-content {
-        position: relative;
-        max-width: 40%;
-        min-height: 250px;
-        padding: 40px 15px;
-        text-align: center;
-        background: black;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        transform: translateY(-10%);
-        font-family: 'Wavehaus42Light', Arial, sans-serif;
+        max-width: 90%;
+        padding: 20px;
+        transform: translateY(-20%);
       }
-      .modal-content input[type='password'] {
-        padding: 10px;
-        font-size: 16px;
-        width: 80%;
-        margin-bottom: 10px;
-      }
-      .modal-content button {
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        background: white;
-        color: #333;
-        border: none;
-        border-radius: 0;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        font-family: 'Wavehaus42Light', Arial, sans-serif;
-      }
-      .close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 20px;
-        color: #fff;
-        cursor: pointer;
-      }
-      @media screen and (max-width: 600px) {
-        body { overflow-x: hidden; }
-        .page-container { height: auto; min-height: 100vh; overflow: visible; }
-        #static-top, #static-bottom { font-size: 32px; }
-        #enter-code-btn { font-size: 16px; bottom: 80px; }
-        .modal-content {
-          transform: translateY(-20%);
-          max-width: 90%;
-          padding: 20px;
-        }
-        .modal-content input[type='password'],
-        .modal-content button { font-size: 14px; padding: 8px 12px; }
-      }
-      
-      /* -----------------------------------
-         DOWNLOAD & MANUAL MODALS: Use default fonts
-      ----------------------------------- */
-      .modal-bg {
-        display: none;
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.5);
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-      }
-      .modal-box {
-        background: #fff;
-        color: #000;
-        padding: 20px 30px;
-        border-radius: 4px;
-        text-align: center;
-        position: relative;
-      }
-      .close-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        cursor: pointer;
-        font-size: 16px;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- LOADER OVERLAY -->
-    <div id="loader">
-      <div class="loading-text" id="loader-text">Loading...</div>
+      .modal-content input[type='password'],
+      .modal-content button { font-size: 14px; padding: 8px 12px; }
+    }
+    
+    /* -----------------------------------
+       DOWNLOAD & MANUAL MODALS (default fonts)
+    ----------------------------------- */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .modal-box {
+      background: #fff;
+      color: #000;
+      padding: 20px 30px;
+      border-radius: 4px;
+      text-align: center;
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- LOADER OVERLAY -->
+  <div id="loader">
+    <div class="loading-text" id="loader-text">Loading...</div>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div id="home-page" class="page-container active">
+    <div id="home-content">
+      <h2>HOME PAGE</h2>
+      <button id="enter-code-btn">Enter Transmission Code</button>
     </div>
-  
-    <!-- HOME PAGE -->
-    <div id="home-page" class="page-container active">
-      <div id="home-content">
-        <h2>HOME PAGE</h2>
-        <button id="enter-code-btn">Enter Transmission Code</button>
+    <!-- Password Modal -->
+    <div id="password-modal">
+      <div id="password-content" class="modal-content">
+        <span class="close" id="modal-close">✖</span>
+        <h3>Enter Launch Code</h3>
+        <input type="password" id="modal-password" />
+        <br/>
+        <button id="modal-submit">Activate Transmission Relay</button>
       </div>
-      <!-- Password Modal -->
-      <div id="password-modal">
-        <div id="password-content">
-          <span class="close" id="modal-close">✖</span>
-          <h3>Enter Launch Code</h3>
-          <input type="password" id="modal-password" />
-          <br/>
-          <button id="modal-submit">Activate Transmission Relay</button>
+    </div>
+  </div>
+
+  <!-- MEDIA PAGE -->
+  <div id="media-page" class="page-container">
+    <div id="gallery-content">
+      <h2>MEDIA PAGE</h2>
+      <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
+    </div>
+    <!-- Player Bar -->
+    <div id="player-bar">
+      <button id="play-pause">Connect</button>
+      <button id="rewind-btn">Rewind -10s</button>
+      <div id="timerDisplay">00:00:00:00</div>
+      <div id="settings-section">
+        <button id="settings-btn">⚙</button>
+        <div id="settings-dropdown">
+          <button id="download-btn">Retrieve Audio Transition</button>
+          <button id="manual-btn">Consult Training Manual</button>
+          <button id="reset-code-btn">Reset Transmission Code</button>
+          <button id="return-home">Return Home</button>
         </div>
       </div>
     </div>
-  
-    <!-- MEDIA PAGE (formerly Gallery Page) -->
-    <div id="media-page" class="page-container">
-      <div id="gallery-content">
-        <h2>MEDIA PAGE</h2>
-        <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
-      </div>
-      <!-- Player Bar -->
-      <div id="player-bar">
-        <button id="play-pause">Connect</button>
-        <button id="rewind-btn">Rewind -10s</button>
-        <div id="timerDisplay">00:00:00:00</div>
-  
-        <div id="settings-section">
-          <button id="settings-btn">⚙</button>
-          <div id="settings-dropdown">
-            <button id="download-btn">Retrieve Audio Transition</button>
-            <button id="manual-btn">Consult Training Manual</button>
-            <button id="reset-code-btn">Reset Transmission Code</button>
-            <button id="return-home">Return Home</button>
-          </div>
-        </div>
-      </div>
+  </div>
+
+  <!-- DOWNLOAD & MANUAL MODALS -->
+  <div id="download-modal" class="modal-bg">
+    <div class="modal-box">
+      <span class="close-btn" id="download-close">✖</span>
+      <p>This is your full audio manifest.<br>Click the button below to download.</p>
+      <a href="assets/NMTAH_Side_A.wav" download="NMTAH_Side_A.wav">
+        <button>Download manifest</button>
+      </a>
     </div>
-  
-    <!-- Download & Manual Modals -->
-    <div id="download-modal" class="modal-bg">
-      <div class="modal-box">
-        <span class="close-btn" id="download-close">✖</span>
-        <p>This is your full audio manifest. Click the button below to download.</p>
-        <a href="assets/NMTAH_Side_A.wav" download="NMTAH_Side_A.wav">
-          <button>Download manifest</button>
-        </a>
-      </div>
+  </div>
+  <div id="manual-modal" class="modal-bg">
+    <div class="modal-box">
+      <span class="close-btn" id="manual-close">✖</span>
+      <p>Placeholder text. Replace this with your training manual content.</p>
     </div>
-    <div id="manual-modal" class="modal-bg">
-      <div class="modal-box">
-        <span class="close-btn" id="manual-close">✖</span>
-        <p>Placeholder text. Replace this with your training manual content.</p>
-      </div>
-    </div>
-  
-    <script>
-      // Pages
-      const homePage      = document.getElementById('home-page');
-      const mediaPage     = document.getElementById('media-page');  // renamed from gallery-page
-  
-      // Loader
-      const loader        = document.getElementById('loader');
-      const loaderText    = document.getElementById('loader-text');
-  
-      // Home Page Elements
-      const enterCodeBtn  = document.getElementById('enter-code-btn');
-      const passwordModal = document.getElementById('password-modal');
-      const modalClose    = document.getElementById('modal-close');
-      const modalSubmit   = document.getElementById('modal-submit');
-      const modalPassword = document.getElementById('modal-password');
-  
-      // Media Controls / Audio
-      const audioEl       = document.getElementById('my-audio');
-      const playPauseBtn  = document.getElementById('play-pause');
-      const rewindBtn     = document.getElementById('rewind-btn');
-      const timerDisplay  = document.getElementById('timerDisplay');
-  
-      // Settings
-      const settingsBtn      = document.getElementById('settings-btn');
-      const settingsDropdown = document.getElementById('settings-dropdown');
-      const downloadBtn      = document.getElementById('download-btn');
-      const manualBtn        = document.getElementById('manual-btn');
-      const resetCodeBtn     = document.getElementById('reset-code-btn');
-      const returnHomeBtn    = document.getElementById('return-home');
-  
-      // Extra modals
-      const downloadModal   = document.getElementById('download-modal');
-      const downloadClose   = document.getElementById('download-close');
-      const manualModal     = document.getElementById('manual-modal');
-      const manualClose     = document.getElementById('manual-close');
-  
-      /* 1) On load: always start at home page */
-      window.addEventListener('load', () => {
-        console.log("Page loaded. localStorage passwordAccepted =", localStorage.getItem("passwordAccepted"));
-        homePage.classList.add('active');
-        mediaPage.classList.remove('active');
-      });
-  
-      /* 2) Home Page: Enter Transmission Code */
-      enterCodeBtn.addEventListener('click', () => {
-        console.log("Enter Transmission Code clicked");
-        // If localStorage indicates password already accepted, skip modal with loading
-        if (localStorage.getItem("passwordAccepted") === "true") {
-          console.log("Password already accepted, initiating loading sequence...");
-          doLoadingToMedia();
-        } else {
-          passwordModal.style.display = 'flex';
-          modalPassword.value = '';
-          modalPassword.focus();
-        }
-      });
-  
-      modalClose.addEventListener('click', () => {
+  </div>
+
+  <script>
+    // Pages
+    const homePage      = document.getElementById('home-page');
+    const mediaPage     = document.getElementById('media-page');
+    // Loader
+    const loader        = document.getElementById('loader');
+    const loaderText    = document.getElementById('loader-text');
+    // Home Page Elements
+    const enterCodeBtn  = document.getElementById('enter-code-btn');
+    const passwordModal = document.getElementById('password-modal');
+    const modalClose    = document.getElementById('modal-close');
+    const modalSubmit   = document.getElementById('modal-submit');
+    const modalPassword = document.getElementById('modal-password');
+    // Audio & Media Controls
+    const audioEl       = document.getElementById('my-audio');
+    const playPauseBtn  = document.getElementById('play-pause');
+    const rewindBtn     = document.getElementById('rewind-btn');
+    const timerDisplay  = document.getElementById('timerDisplay');
+    // Settings
+    const settingsBtn      = document.getElementById('settings-btn');
+    const settingsDropdown = document.getElementById('settings-dropdown');
+    const downloadBtn      = document.getElementById('download-btn');
+    const manualBtn        = document.getElementById('manual-btn');
+    const resetCodeBtn     = document.getElementById('reset-code-btn');
+    const returnHomeBtn    = document.getElementById('return-home');
+    // Extra Modals
+    const downloadModal  = document.getElementById('download-modal');
+    const downloadClose  = document.getElementById('download-close');
+    const manualModal    = document.getElementById('manual-modal');
+    const manualClose    = document.getElementById('manual-close');
+
+    /* 1) On load: Always show Home Page */
+    window.addEventListener('load', () => {
+      console.log("Page loaded. localStorage passwordAccepted =", localStorage.getItem("passwordAccepted"));
+      homePage.classList.add('active');
+      mediaPage.classList.remove('active');
+    });
+
+    /* 2) Home Page: Enter Transmission Code */
+    enterCodeBtn.addEventListener('click', () => {
+      console.log("Enter Transmission Code clicked.");
+      if (localStorage.getItem("passwordAccepted") === "true") {
+        console.log("Password already accepted, starting loading sequence.");
+        doLoadingToMedia();
+      } else {
+        passwordModal.style.display = 'flex';
+        modalPassword.value = '';
+        modalPassword.focus();
+      }
+    });
+    modalClose.addEventListener('click', () => {
+      passwordModal.style.display = 'none';
+    });
+    modalSubmit.addEventListener('click', checkPassword);
+    modalPassword.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        checkPassword();
+      }
+    });
+    function checkPassword() {
+      const code = modalPassword.value;
+      console.log("User typed code:", code);
+      const correct = "qwerty";
+      if (code === correct) {
+        console.log("Correct code. Saving to localStorage.");
+        localStorage.setItem("passwordAccepted", "true");
         passwordModal.style.display = 'none';
-      });
-      modalSubmit.addEventListener('click', checkPassword);
-      modalPassword.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Enter') {
-          ev.preventDefault();
-          checkPassword();
-        }
-      });
-  
-      function checkPassword() {
-        const code = modalPassword.value;
-        console.log("User typed code:", code);
-        const correct = "qwerty";
-        if (code === correct) {
-          console.log("Correct code. Storing in localStorage.");
-          localStorage.setItem("passwordAccepted", "true");
-          passwordModal.style.display = 'none';
-          doLoadingToMedia();
-        } else {
-          alert("ACCESS RESTRICTED: Launch code does not match records.");
-        }
+        doLoadingToMedia();
+      } else {
+        alert("ACCESS RESTRICTED: Launch code does not match records.");
       }
-  
-      // 3) Loading sequence: show loading overlay then transition to media page
-      function doLoadingToMedia() {
-        console.log("Initiating loading sequence...");
-        showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
+    }
+
+    /* 3) Loading Sequence */
+    function doLoadingToMedia() {
+      console.log("Starting loading sequence...");
+      showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
+      setTimeout(() => {
+        showLoading("ACCESS GRANTED");
         setTimeout(() => {
-          showLoading("ACCESS GRANTED");
-          setTimeout(() => {
-            hideLoading();
-            goToMedia();
-          }, 2000);
-        }, 3000);
+          hideLoading();
+          goToMedia();
+        }, 2000);
+      }, 3000);
+    }
+    function showLoading(message) {
+      loaderText.innerHTML = message;
+      loader.style.display = "flex";
+    }
+    function hideLoading() {
+      loader.style.display = "none";
+    }
+    function goToMedia() {
+      homePage.classList.remove('active');
+      mediaPage.classList.add('active');
+      console.log("Transitioned to Media Page.");
+    }
+
+    /* 4) Audio Controls */
+    playPauseBtn.addEventListener('click', () => {
+      console.log("Play/Pause clicked. paused =", audioEl.paused);
+      if (audioEl.paused) {
+        audioEl.play().then(() => {
+          console.log("audio.play() resolved, currentTime =", audioEl.currentTime);
+          playPauseBtn.textContent = "Connected...";
+        }).catch(err => {
+          console.warn("audio.play() failed:", err);
+        });
+      } else {
+        audioEl.pause();
+        console.log("audio.pause() called, currentTime =", audioEl.currentTime);
+        playPauseBtn.textContent = "Connect";
       }
-  
-      function showLoading(message) {
-        loaderText.innerHTML = message;
-        loader.style.display = "flex";
+    });
+    rewindBtn.addEventListener('click', () => {
+      audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
+      console.log("Rewind -10s, currentTime =", audioEl.currentTime);
+      updateTimer();
+    });
+    // Timer in hh:mm:ss:cs (centiseconds)
+    function updateTimer() {
+      let t = audioEl.currentTime;
+      let h = Math.floor(t / 3600);
+      let m = Math.floor((t % 3600) / 60);
+      let s = Math.floor(t % 60);
+      let cs = Math.floor(((t - Math.floor(t)) * 100));
+      timerDisplay.textContent =
+        String(h).padStart(2, '0') + ":" +
+        String(m).padStart(2, '0') + ":" +
+        String(s).padStart(2, '0') + ":" +
+        String(cs).padStart(2, '0');
+    }
+    setInterval(updateTimer, 50);
+
+    /* 5) Settings Cog & Dropdown */
+    settingsBtn.addEventListener('click', () => {
+      console.log("Settings cog clicked!");
+      if (settingsDropdown.style.display === 'block') {
+        settingsDropdown.style.display = 'none';
+      } else {
+        settingsDropdown.style.display = 'block';
       }
-      function hideLoading() {
-        loader.style.opacity = 1;
-        loader.style.display = "none";
+    });
+    window.addEventListener('click', (e) => {
+      if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target)) {
+        settingsDropdown.style.display = 'none';
       }
-      function goToMedia() {
-        homePage.classList.remove('active');
-        mediaPage.classList.add('active');
-        console.log("Now on Media Page");
+    });
+
+    /* 6) Return Home */
+    returnHomeBtn.addEventListener('click', () => {
+      console.log("Return Home clicked.");
+      mediaPage.classList.remove('active');
+      homePage.classList.add('active');
+      if (!audioEl.paused) {
+        audioEl.pause();
+        playPauseBtn.textContent = "Connect";
       }
-  
-      /* 4) Audio Controls */
-      playPauseBtn.addEventListener('click', () => {
-        console.log("Play/Pause clicked. paused =", audioEl.paused);
-        if (audioEl.paused) {
-          audioEl.play().then(() => {
-            console.log("audio.play() resolved. currentTime =", audioEl.currentTime);
-            playPauseBtn.textContent = "Connected...";
-          }).catch(err => {
-            console.warn("audio.play() failed:", err);
-          });
-        } else {
-          audioEl.pause();
-          console.log("audio.pause() called. currentTime =", audioEl.currentTime);
-          playPauseBtn.textContent = "Connect";
-        }
-      });
-  
-      rewindBtn.addEventListener('click', () => {
-        audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
-        console.log("Rewind -10s. currentTime =", audioEl.currentTime);
-        updateTimer();
-      });
-  
-      // Timer in hh:mm:ss:cs (centiseconds)
-      function updateTimer() {
-        let t = audioEl.currentTime;
-        let h = Math.floor(t / 3600);
-        let m = Math.floor((t % 3600) / 60);
-        let s = Math.floor(t % 60);
-        let cs = Math.floor(((t - Math.floor(t)) * 100)); // centiseconds (2 digits)
-        timerDisplay.textContent =
-          String(h).padStart(2, '0') + ":" +
-          String(m).padStart(2, '0') + ":" +
-          String(s).padStart(2, '0') + ":" +
-          String(cs).padStart(2, '0');
-      }
-      setInterval(updateTimer, 50);
-  
-      /* 5) Settings Cog & Dropdown */
-      settingsBtn.addEventListener('click', () => {
-        console.log("Settings cog clicked!");
-        if (settingsDropdown.style.display === 'block') {
-          settingsDropdown.style.display = 'none';
-        } else {
-          settingsDropdown.style.display = 'block';
-        }
-      });
-      window.addEventListener('click', (e) => {
-        if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target)) {
-          settingsDropdown.style.display = 'none';
-        }
-      });
-  
-      /* 6) Return Home from Media Page */
-      returnHomeBtn.addEventListener('click', () => {
-        console.log("Return Home clicked");
+    });
+
+    /* 7) Reset Transmission Code */
+    resetCodeBtn.addEventListener('click', () => {
+      const sure = confirm("Are you sure? This will require you to re-enter your transmission code.");
+      if (sure) {
+        console.log("Reset confirmed. Removing localStorage and returning home.");
+        localStorage.removeItem("passwordAccepted");
         mediaPage.classList.remove('active');
         homePage.classList.add('active');
         if (!audioEl.paused) {
           audioEl.pause();
           playPauseBtn.textContent = "Connect";
         }
-      });
-  
-      /* 7) Reset Transmission Code */
-      resetCodeBtn.addEventListener('click', () => {
-        const sure = confirm("Are you sure? This will require you to re-enter your transmission code.");
-        if (sure) {
-          console.log("Reset confirmed. Removing localStorage and returning home.");
-          localStorage.removeItem("passwordAccepted");
-          mediaPage.classList.remove('active');
-          homePage.classList.add('active');
-          if (!audioEl.paused) {
-            audioEl.pause();
-            playPauseBtn.textContent = "Connect";
-          }
-        }
-      });
-  
-      /* 8) Download & Manual Modals */
-      downloadBtn.addEventListener('click', () => {
-        downloadModal.style.display = 'flex';
-      });
-      downloadClose.addEventListener('click', () => {
+      }
+    });
+
+    /* 8) Download & Manual Modals */
+    downloadBtn.addEventListener('click', () => {
+      downloadModal.style.display = 'flex';
+    });
+    downloadClose.addEventListener('click', () => {
+      downloadModal.style.display = 'none';
+    });
+    manualBtn.addEventListener('click', () => {
+      manualModal.style.display = 'flex';
+    });
+    manualClose.addEventListener('click', () => {
+      manualModal.style.display = 'none';
+    });
+    window.addEventListener('click', (e) => {
+      if (e.target === downloadModal) {
         downloadModal.style.display = 'none';
-      });
-      manualBtn.addEventListener('click', () => {
-        manualModal.style.display = 'flex';
-      });
-      manualClose.addEventListener('click', () => {
+      }
+      if (e.target === manualModal) {
         manualModal.style.display = 'none';
-      });
-      window.addEventListener('click', (e) => {
-        if (e.target === downloadModal) {
-          downloadModal.style.display = 'none';
-        }
-        if (e.target === manualModal) {
-          manualModal.style.display = 'none';
-        }
-      });
-    </script>
-  </body>
+      }
+    });
+  </script>
+</body>
 </html>
