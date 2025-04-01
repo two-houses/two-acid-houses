@@ -5,10 +5,8 @@
   <title>Minimal Transmission with LocalStorage + Reset</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
-    body {
-      margin: 0; font-family: sans-serif;
-    }
-    /* Minimal 2-page structure */
+    body { margin: 0; font-family: sans-serif; }
+    /* Two-page structure */
     #home-page, #gallery-page {
       width: 100%;
       height: 100vh;
@@ -17,7 +15,7 @@
     #home-page.active { display: block; }
     #gallery-page.active { display: block; }
 
-    /* HOME LAYOUT */
+    /* HOME PAGE LAYOUT */
     #home-content {
       display: flex; 
       flex-direction: column; 
@@ -26,8 +24,8 @@
       height: 100%;
     }
     #enter-code-btn {
-      padding: 14px 20px;
-      font-size: 18px;
+      padding: 14px 20px; 
+      font-size: 18px; 
       cursor: pointer;
     }
 
@@ -36,15 +34,15 @@
       display: none; 
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5); 
+      background: rgba(0,0,0,0.5);
       align-items: center; 
       justify-content: center;
     }
     #password-content {
       background: #fff; 
-      padding: 20px 30px;
-      border-radius: 4px; 
-      text-align: center;
+      padding: 20px 30px; 
+      border-radius: 4px;
+      text-align: center; 
       position: relative;
     }
     #modal-close {
@@ -58,9 +56,9 @@
       margin-top: 10px;
     }
     #modal-submit {
-      margin-top: 10px;
-      padding: 10px 16px;
-      font-size: 16px;
+      margin-top: 10px; 
+      padding: 10px 16px; 
+      font-size: 16px; 
       cursor: pointer;
     }
 
@@ -72,7 +70,7 @@
       padding: 20px;
     }
     #my-audio {
-      display: none; /* hidden but used for playback + timer */
+      display: none;
     }
 
     /* Media control bar at bottom */
@@ -86,24 +84,23 @@
       box-sizing: border-box;
     }
     #play-pause, #rewind-btn {
-      background: #fff; 
-      color: #000; 
+      background: #fff; color: #000; 
       border: 2px solid #000;
-      padding: 8px 14px;
+      padding: 8px 14px; 
       cursor: pointer;
     }
     #timerDisplay {
-      background: #fff;
-      color: #000;
-      padding: 5px 10px;
+      background: #fff; 
+      color: #000; 
+      padding: 5px 10px; 
       border: 2px solid #000;
-      min-width: 80px;
+      min-width: 80px; 
       text-align: center;
     }
 
     /* Settings menu */
     #settings-section {
-      margin-left: auto;
+      margin-left: auto; 
       position: relative;
     }
     #settings-btn {
@@ -127,12 +124,11 @@
       z-index: 9999;
     }
     #settings-dropdown button {
-      display: block;
-      width: 100%;
+      display: block; 
+      width: 100%; 
       text-align: left;
-      border: none; 
-      background: transparent;
-      padding: 5px 0;
+      border: none; background: transparent;
+      padding: 5px 0; 
       cursor: pointer; 
       font-size: 14px;
     }
@@ -140,7 +136,7 @@
       background: #eee;
     }
 
-    /* Download & Placeholder modals */
+    /* Extra modals for Download + Manual */
     .modal-bg {
       display: none; 
       position: fixed; 
@@ -154,14 +150,13 @@
       background: #fff; 
       color: #000; 
       padding: 20px 30px;
-      border-radius: 4px;
+      border-radius: 4px; 
       text-align: center; 
       position: relative;
     }
     .close-btn {
       position: absolute; 
-      top: 10px; 
-      right: 10px; 
+      top: 10px; right: 10px; 
       cursor: pointer; 
       font-size: 16px;
     }
@@ -191,7 +186,7 @@
   <div id="gallery-page">
     <div id="gallery-content">
       <h2>GALLERY PAGE</h2>
-      <!-- Hidden audio for playback -->
+      <!-- Hidden audio -->
       <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
     </div>
     <!-- Bottom bar -->
@@ -212,11 +207,12 @@
     </div>
   </div>
 
-  <!-- Download & Placeholder modals -->
+  <!-- Download & Manual modals -->
   <div id="download-modal" class="modal-bg">
     <div class="modal-box">
       <span class="close-btn" id="download-close">✖</span>
-      <p>This is your full audio manifest. Click the button below to download.</p>
+      <p>This is your full audio manifest.  
+         Click the button below to download.</p>
       <a href="assets/NMTAH_Side_A.wav" download="NMTAH_Side_A.wav">
         <button>Download manifest</button>
       </a>
@@ -231,44 +227,47 @@
   </div>
 
   <script>
-    // DOM elements
-    const homePage        = document.getElementById('home-page');
-    const galleryPage     = document.getElementById('gallery-page');
-    // Password modal
-    const passwordModal   = document.getElementById('password-modal');
-    const modalClose      = document.getElementById('modal-close');
-    const modalSubmit     = document.getElementById('modal-submit');
-    const modalPassword   = document.getElementById('modal-password');
-    const enterCodeBtn    = document.getElementById('enter-code-btn');
-    // Audio player
-    const audioEl         = document.getElementById('my-audio');
-    const playPauseBtn    = document.getElementById('play-pause');
-    const timerDisplay    = document.getElementById('timerDisplay');
-    const rewindBtn       = document.getElementById('rewind-btn');
-    // Settings
-    const settingsBtn     = document.getElementById('settings-btn');
-    const settingsDropdown= document.getElementById('settings-dropdown');
-    const downloadBtn     = document.getElementById('download-btn');
-    const manualBtn       = document.getElementById('manual-btn');
-    const resetCodeBtn    = document.getElementById('reset-code-btn');
-    const returnHomeBtn   = document.getElementById('return-home');
-    // Download & manual modals
-    const downloadModal   = document.getElementById('download-modal');
-    const downloadClose   = document.getElementById('download-close');
-    const manualModal     = document.getElementById('manual-modal');
-    const manualClose     = document.getElementById('manual-close');
+    // Simple references
+    const homePage     = document.getElementById('home-page');
+    const galleryPage  = document.getElementById('gallery-page');
 
-    // 1) On page load, if localStorage says password accepted, skip code
+    const enterCodeBtn = document.getElementById('enter-code-btn');
+    const passwordModal= document.getElementById('password-modal');
+    const modalClose   = document.getElementById('modal-close');
+    const modalSubmit  = document.getElementById('modal-submit');
+    const modalPassword= document.getElementById('modal-password');
+
+    // Audio
+    const audioEl      = document.getElementById('my-audio');
+    const playPauseBtn = document.getElementById('play-pause');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const rewindBtn    = document.getElementById('rewind-btn');
+
+    // Settings
+    const settingsBtn  = document.getElementById('settings-btn');
+    const settingsDropdown = document.getElementById('settings-dropdown');
+    const downloadBtn  = document.getElementById('download-btn');
+    const manualBtn    = document.getElementById('manual-btn');
+    const resetCodeBtn = document.getElementById('reset-code-btn');
+    const returnHomeBtn= document.getElementById('return-home');
+
+    // Download & Manual modals
+    const downloadModal= document.getElementById('download-modal');
+    const manualModal  = document.getElementById('manual-modal');
+    const downloadClose= document.getElementById('download-close');
+    const manualClose  = document.getElementById('manual-close');
+
+    // 1) On page load, check localStorage
     window.addEventListener('load', () => {
-      console.log("Page loaded");
+      console.log("Page loaded; checking localStorage passwordAccepted =", localStorage.getItem("passwordAccepted"));
       if (localStorage.getItem("passwordAccepted") === "true") {
-        console.log("Password previously accepted. Going to gallery...");
+        console.log("Password previously accepted. Skipping home page...");
         homePage.classList.remove('active');
         galleryPage.classList.add('active');
       }
     });
 
-    /* HOME PAGE: ENTER CODE */
+    // 2) Transmission Code (Home Page)
     enterCodeBtn.addEventListener('click', () => {
       console.log("Enter Transmission Code clicked");
       passwordModal.style.display = 'flex';
@@ -285,51 +284,59 @@
         checkPassword();
       }
     });
+
     function checkPassword() {
-      const code = modalPassword.value;
-      const correct = "qwerty";
+      const code   = modalPassword.value;
+      const correct= "qwerty";
+      console.log("User typed code =", code);
+
       if (code === correct) {
-        localStorage.setItem("passwordAccepted","true");
+        console.log("Correct password. Setting localStorage = true");
+        localStorage.setItem("passwordAccepted", "true");
         passwordModal.style.display = 'none';
+
         // Switch pages
         homePage.classList.remove('active');
         galleryPage.classList.add('active');
-        console.log("Transmission code accepted, going to gallery");
+        console.log("Transition code accepted => moving to gallery");
       } else {
         alert("ACCESS RESTRICTED: Launch code does not match records.");
       }
     }
 
-    /* AUDIO CONTROLS */
+    // 3) Audio Controls
     playPauseBtn.addEventListener('click', () => {
+      console.log("Play/Pause clicked. paused =", audioEl.paused);
       if (audioEl.paused) {
         audioEl.play().then(() => {
-          console.log("audio.play() resolved, currentTime =", audioEl.currentTime);
+          console.log("audio.play() resolved => currentTime =", audioEl.currentTime);
           playPauseBtn.textContent = "Connected...";
         }).catch(err => {
           console.warn("audio.play() failed:", err);
         });
       } else {
         audioEl.pause();
-        console.log("audio.pause() called, currentTime =", audioEl.currentTime);
+        console.log("audio.pause() => currentTime =", audioEl.currentTime);
         playPauseBtn.textContent = "Connect";
       }
     });
+
     rewindBtn.addEventListener('click', () => {
       audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
-      console.log("Rewound by 10. currentTime now =", audioEl.currentTime);
+      console.log("Rewind -10s => currentTime =", audioEl.currentTime);
       updateTimer();
     });
+
     function updateTimer() {
       let t = audioEl.currentTime;
       let m = Math.floor(t/60);
       let s = Math.floor(t%60);
-      if(s<10) s="0"+s;
+      if (s<10) s = "0"+s;
       timerDisplay.textContent = `${m}:${s}`;
     }
     setInterval(updateTimer, 500);
 
-    /* SETTINGS COG */
+    // 4) Settings Cog
     settingsBtn.addEventListener('click', () => {
       console.log("Settings cog clicked!");
       if (settingsDropdown.style.display === 'block') {
@@ -339,32 +346,32 @@
       }
     });
     window.addEventListener('click', (e) => {
+      // If the user clicks outside the cog & menu, close it
       if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target)) {
         settingsDropdown.style.display = 'none';
       }
     });
 
-    // Return Home
+    // 5) Return Home
     returnHomeBtn.addEventListener('click', () => {
-      console.log("Return Home clicked");
+      console.log("Return Home => switching pages");
       galleryPage.classList.remove('active');
       homePage.classList.add('active');
-      // Pause audio
       if (!audioEl.paused) {
         audioEl.pause();
         playPauseBtn.textContent = "Connect";
       }
     });
 
-    // RESET CODE Button: clears localStorage and returns home
+    // 6) Reset Transmission Code
     resetCodeBtn.addEventListener('click', () => {
-      if (confirm("Are you sure? This will require you to re-enter your transition code.")) {
+      const sure = confirm("Are you sure? This will require you to re-enter your transition code.");
+      if (sure) {
+        console.log("User confirmed reset => removing localStorage passwordAccepted");
         localStorage.removeItem("passwordAccepted");
-        console.log("Transmission code reset. Returning home.");
         // forcibly go home
         galleryPage.classList.remove('active');
         homePage.classList.add('active');
-        // pause audio if playing
         if (!audioEl.paused) {
           audioEl.pause();
           playPauseBtn.textContent = "Connect";
@@ -372,24 +379,24 @@
       }
     });
 
-    /* DOWNLOAD & MANUAL MODALS */
+    // 7) Download & Manual Modals
     downloadBtn.addEventListener('click', () => {
       downloadModal.style.display = 'flex';
     });
-    downloadClose.addEventListener('click', () => {
-      downloadModal.style.display = 'none';
-    });
     manualBtn.addEventListener('click', () => {
       manualModal.style.display = 'flex';
+    });
+    downloadClose.addEventListener('click', () => {
+      downloadModal.style.display = 'none';
     });
     manualClose.addEventListener('click', () => {
       manualModal.style.display = 'none';
     });
     window.addEventListener('click', (e) => {
-      if(e.target === downloadModal) {
+      if (e.target === downloadModal) {
         downloadModal.style.display = 'none';
       }
-      if(e.target === manualModal) {
+      if (e.target === manualModal) {
         manualModal.style.display = 'none';
       }
     });
