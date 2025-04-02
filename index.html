@@ -50,7 +50,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0,0,0,0.5);
       align-items: center;
       justify-content: center;
     }
@@ -158,22 +158,21 @@
     /* Container for the expanding menu items */
     #signal-menu {
       position: absolute;
-      bottom: 0; /* pivot from bottom left of the cog */
+      bottom: 0; /* Pivot from bottom-left of the cog */
       left: 0;
       width: 100%;
       height: 100%;
       transform-origin: bottom left;
-      /* Disable pointer events until active */
       pointer-events: none;
     }
+    /* Enable pointer events when active */
     #signal-menu.active .signal-item {
       pointer-events: auto;
       opacity: 1;
     }
     .signal-item {
       position: absolute;
-      /* Start at the pivot point (bottom left corner of #top-settings) */
-      transform: translate(0,0) scale(0.8);
+      transform: translate(0,0) scale(1);
       opacity: 0;
       width: 40px;
       height: 40px;
@@ -187,18 +186,18 @@
       transition: transform 0.3s ease, opacity 0.3s ease;
       cursor: pointer;
     }
-    /* When active, arrange menu items horizontally expanding leftwards */
+    /* Arrange 4 menu items in a horizontal row expanding leftwards */
     #signal-menu.active .signal-item:nth-child(1) {
       transform: translate(-50px, 0) scale(1);
     }
     #signal-menu.active .signal-item:nth-child(2) {
-      transform: translate(-110px, 0) scale(1.1);
+      transform: translate(-110px, 0) scale(1);
     }
     #signal-menu.active .signal-item:nth-child(3) {
-      transform: translate(-170px, 0) scale(1.2);
+      transform: translate(-170px, 0) scale(1);
     }
     #signal-menu.active .signal-item:nth-child(4) {
-      transform: translate(-230px, 0) scale(1.3);
+      transform: translate(-230px, 0) scale(1);
     }
 
     /* Download & Manual Modals */
@@ -307,7 +306,6 @@
     <div id="top-settings">
       <button id="settings-btn">⚙</button>
       <div id="signal-menu">
-        <!-- Using icons for each action -->
         <button class="signal-item" data-action="download">⬇</button>
         <button class="signal-item" data-action="manual">📝</button>
         <button class="signal-item" data-action="reset">↻</button>
@@ -372,9 +370,9 @@
     const signalItems = document.querySelectorAll('.signal-item');
 
     // Extra Modals
-    const downloadModal = document.getElementById('download-modal');
+    const downloadModalEl = document.getElementById('download-modal');
     const downloadClose = document.getElementById('download-close');
-    const manualModal = document.getElementById('manual-modal');
+    const manualModalEl = document.getElementById('manual-modal');
     const manualClose = document.getElementById('manual-close');
 
     // On Load: Always show home page
@@ -485,9 +483,9 @@
         // Hide the menu after selection
         signalMenu.classList.remove('active');
         if (action === "download") {
-          downloadModal.style.display = 'flex';
+          downloadModalEl.style.display = 'flex';
         } else if (action === "manual") {
-          manualModal.style.display = 'flex';
+          manualModalEl.style.display = 'flex';
         } else if (action === "reset") {
           if (confirm("Are you sure? This will require you to re-enter your transition code.")) {
             localStorage.removeItem("passwordAccepted");
@@ -509,27 +507,27 @@
       });
     });
 
-    // Download & Manual Modals
-    downloadBtn.addEventListener('click', () => {
-      downloadModal.style.display = 'flex';
-    });
-    manualBtn.addEventListener('click', () => {
-      manualModal.style.display = 'flex';
-    });
+    // Modal Close Handlers for Download & Manual Modals
     downloadClose.addEventListener('click', () => {
-      downloadModal.style.display = 'none';
+      downloadModalEl.style.display = 'none';
     });
     manualClose.addEventListener('click', () => {
-      manualModal.style.display = 'none';
+      manualModalEl.style.display = 'none';
     });
-    window.addEventListener('click', (e) => {
-      if (e.target === downloadModal) {
-        downloadModal.style.display = 'none';
-      }
-      if (e.target === manualModal) {
-        manualModal.style.display = 'none';
+    // Click-away close: add event listener directly to modal backgrounds
+    downloadModalEl.addEventListener('click', (e) => {
+      if (e.target === downloadModalEl) {
+        downloadModalEl.style.display = 'none';
       }
     });
+    manualModalEl.addEventListener('click', (e) => {
+      if (e.target === manualModalEl) {
+        manualModalEl.style.display = 'none';
+      }
+    });
+
+    // Also maintain existing settings dropdown (if any) for compatibility
+    // (Not used in the signal menu version, so this section is omitted)
   </script>
 </body>
 </html>
