@@ -50,7 +50,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0,0,0,0.5);
       align-items: center;
       justify-content: center;
     }
@@ -136,47 +136,68 @@
       justify-content: center;
     }
 
-    /* Top Settings Cog */
+    /* Top Settings – Expanding Signal Rings Menu */
     #top-settings {
       position: absolute;
       top: 10px;
       right: 10px;
       z-index: 1000;
-    }
-    #top-settings button {
       width: 40px;
       height: 40px;
+    }
+    /* The settings cog remains a square button */
+    #top-settings > #settings-btn {
+      width: 100%;
+      height: 100%;
       background: black;
       border: 2px solid white;
       color: white;
       font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
     }
-    #top-settings #settings-dropdown {
+    /* Container for the expanding menu items */
+    #signal-menu {
       position: absolute;
-      top: 50px;
-      right: 0;
-      background: #fff;
-      color: #000;
-      border: 1px solid #000;
-      padding: 10px;
-      display: none;
-      z-index: 1001;
-    }
-    #top-settings #settings-dropdown button {
+      bottom: 0; /* Pivot from bottom-left of the cog */
+      left: 0;
       width: 100%;
-      text-align: left;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-      padding: 5px 0;
+      height: 100%;
+      transform-origin: bottom left;
+      pointer-events: none;
     }
-    #top-settings #settings-dropdown button:hover {
-      background: #eee;
+    /* Enable pointer events when active */
+    #signal-menu.active .signal-item {
+      pointer-events: auto;
+      opacity: 1;
+    }
+    .signal-item {
+      position: absolute;
+      transform: translate(0,0) scale(1);
+      opacity: 0;
+      width: 40px;
+      height: 40px;
+      background: black;
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 18px;
+      line-height: 36px;
+      text-align: center;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      cursor: pointer;
+    }
+    /* Arrange 4 menu items in a horizontal row expanding leftwards */
+    #signal-menu.active .signal-item:nth-child(1) {
+      transform: translate(-50px, 0) scale(1);
+    }
+    #signal-menu.active .signal-item:nth-child(2) {
+      transform: translate(-110px, 0) scale(1);
+    }
+    #signal-menu.active .signal-item:nth-child(3) {
+      transform: translate(-170px, 0) scale(1);
+    }
+    #signal-menu.active .signal-item:nth-child(4) {
+      transform: translate(-230px, 0) scale(1);
     }
 
     /* Download & Manual Modals */
@@ -226,7 +247,7 @@
       50% { opacity: 0.85; transform: scale(1.02); }
     }
 
-    /* Mobile Styles: Keep Media Player Horizontal */
+    /* Mobile Styles */
     @media (max-width: 600px) {
       #player-bar {
          flex-direction: row;
@@ -244,10 +265,12 @@
       #top-settings {
          top: 5px;
          right: 5px;
-      }
-      #top-settings button {
          width: 35px;
          height: 35px;
+      }
+      #top-settings > #settings-btn {
+         width: 100%;
+         height: 100%;
          font-size: 18px;
       }
     }
@@ -279,14 +302,14 @@
 
   <!-- GALLERY PAGE -->
   <div id="gallery-page">
-    <!-- Top Settings Cog -->
+    <!-- Top Settings Cog with Expanding Signal Rings Menu -->
     <div id="top-settings">
       <button id="settings-btn">⚙</button>
-      <div id="settings-dropdown">
-        <button id="download-btn">Retrieve Audio Transition</button>
-        <button id="manual-btn">Consult Training Manual</button>
-        <button id="reset-code-btn">Reset Transmission Code</button>
-        <button id="return-home">Return Home</button>
+      <div id="signal-menu">
+        <button class="signal-item" data-action="download">⬇</button>
+        <button class="signal-item" data-action="manual">📝</button>
+        <button class="signal-item" data-action="reset">↻</button>
+        <button class="signal-item" data-action="home">⌂</button>
       </div>
     </div>
 
@@ -341,18 +364,15 @@
     const rewindBtn = document.getElementById('rewind-btn');
     const timerDisplay = document.getElementById('timerDisplay');
 
-    // Top Settings Elements
+    // Top Settings Elements (Signal Rings Menu)
     const settingsBtn = document.getElementById('settings-btn');
-    const settingsDropdown = document.getElementById('settings-dropdown');
-    const downloadBtn = document.getElementById('download-btn');
-    const manualBtn = document.getElementById('manual-btn');
-    const resetCodeBtn = document.getElementById('reset-code-btn');
-    const returnHomeBtn = document.getElementById('return-home');
+    const signalMenu = document.getElementById('signal-menu');
+    const signalItems = document.querySelectorAll('.signal-item');
 
     // Extra Modals
-    const downloadModal = document.getElementById('download-modal');
+    const downloadModalEl = document.getElementById('download-modal');
     const downloadClose = document.getElementById('download-close');
-    const manualModal = document.getElementById('manual-modal');
+    const manualModalEl = document.getElementById('manual-modal');
     const manualClose = document.getElementById('manual-close');
 
     // On Load: Always show home page
@@ -445,61 +465,69 @@
     }
     setInterval(updateTimer, 100);
 
-    // Top Settings Cog: Toggle Dropdown
+    // Top Settings: Toggle Expanding Signal Rings Menu
     settingsBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      settingsDropdown.style.display = (settingsDropdown.style.display === 'block') ? 'none' : 'block';
+      signalMenu.classList.toggle('active');
     });
     window.addEventListener('click', (e) => {
-      if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target)) {
-        settingsDropdown.style.display = 'none';
+      if (!document.getElementById('top-settings').contains(e.target)) {
+        signalMenu.classList.remove('active');
       }
     });
 
-    // Return Home (from Settings)
-    returnHomeBtn.addEventListener('click', () => {
-      galleryPage.classList.remove('active');
-      homePage.classList.add('active');
-      if (!audioEl.paused) {
-        audioEl.pause();
-        playPauseBtn.textContent = "Connect";
-      }
-    });
-
-    // Reset Transmission Code (from Settings)
-    resetCodeBtn.addEventListener('click', () => {
-      if (confirm("Are you sure? This will require you to re-enter your transition code.")) {
-        localStorage.removeItem("passwordAccepted");
-        galleryPage.classList.remove('active');
-        homePage.classList.add('active');
-        if (!audioEl.paused) {
-          audioEl.pause();
-          playPauseBtn.textContent = "Connect";
+    // Signal Menu Item Actions
+    signalItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const action = item.getAttribute('data-action');
+        // Hide the menu after selection
+        signalMenu.classList.remove('active');
+        if (action === "download") {
+          downloadModalEl.style.display = 'flex';
+        } else if (action === "manual") {
+          manualModalEl.style.display = 'flex';
+        } else if (action === "reset") {
+          if (confirm("Are you sure? This will require you to re-enter your transition code.")) {
+            localStorage.removeItem("passwordAccepted");
+            galleryPage.classList.remove('active');
+            homePage.classList.add('active');
+            if (!audioEl.paused) {
+              audioEl.pause();
+              playPauseBtn.textContent = "Connect";
+            }
+          }
+        } else if (action === "home") {
+          galleryPage.classList.remove('active');
+          homePage.classList.add('active');
+          if (!audioEl.paused) {
+            audioEl.pause();
+            playPauseBtn.textContent = "Connect";
+          }
         }
-      }
+      });
     });
 
-    // Download & Manual Modals
-    downloadBtn.addEventListener('click', () => {
-      downloadModal.style.display = 'flex';
-    });
-    manualBtn.addEventListener('click', () => {
-      manualModal.style.display = 'flex';
-    });
+    // Modal Close Handlers for Download & Manual Modals
     downloadClose.addEventListener('click', () => {
-      downloadModal.style.display = 'none';
+      downloadModalEl.style.display = 'none';
     });
     manualClose.addEventListener('click', () => {
-      manualModal.style.display = 'none';
+      manualModalEl.style.display = 'none';
     });
-    window.addEventListener('click', (e) => {
-      if (e.target === downloadModal) {
-        downloadModal.style.display = 'none';
-      }
-      if (e.target === manualModal) {
-        manualModal.style.display = 'none';
+    // Click-away close: add event listener directly to modal backgrounds
+    downloadModalEl.addEventListener('click', (e) => {
+      if (e.target === downloadModalEl) {
+        downloadModalEl.style.display = 'none';
       }
     });
+    manualModalEl.addEventListener('click', (e) => {
+      if (e.target === manualModalEl) {
+        manualModalEl.style.display = 'none';
+      }
+    });
+
+    // Also maintain existing settings dropdown (if any) for compatibility
+    // (Not used in the signal menu version, so this section is omitted)
   </script>
 </body>
 </html>
