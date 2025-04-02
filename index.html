@@ -31,7 +31,7 @@
       display: block;
     }
 
-    /* HOME PAGE CSS*/
+    /* HOME PAGE */
     #home-content {
       display: flex;
       flex-direction: column;
@@ -158,50 +158,47 @@
     /* Container for the expanding menu items */
     #signal-menu {
       position: absolute;
-      top: 0;
+      bottom: 0; /* pivot from bottom left of the cog */
       left: 0;
       width: 100%;
       height: 100%;
-      /* When not active, disable pointer events so clicks fall to the cog */
+      transform-origin: bottom left;
+      /* Disable pointer events until active */
       pointer-events: none;
     }
-    /* Enable pointer events only when active */
     #signal-menu.active .signal-item {
       pointer-events: auto;
+      opacity: 1;
     }
     .signal-item {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      /* Start at the pivot point (bottom left corner of #top-settings) */
+      transform: translate(0,0) scale(0.8);
+      opacity: 0;
       width: 40px;
       height: 40px;
       background: black;
       border: 2px solid white;
-      color: white;
       border-radius: 50%;
-      font-size: 12px;
-      text-align: center;
+      color: white;
+      font-size: 18px;
       line-height: 36px;
-      opacity: 0;
+      text-align: center;
       transition: transform 0.3s ease, opacity 0.3s ease;
       cursor: pointer;
     }
-    #signal-menu.active .signal-item {
-      opacity: 1;
-    }
-    /* Arrange 4 menu items in a circle (45°, 135°, 225°, 315°) */
+    /* When active, arrange menu items horizontally expanding leftwards */
     #signal-menu.active .signal-item:nth-child(1) {
-      transform: translate(-50%, -50%) translate(42px, 42px);
+      transform: translate(-50px, 0) scale(1);
     }
     #signal-menu.active .signal-item:nth-child(2) {
-      transform: translate(-50%, -50%) translate(-42px, 42px);
+      transform: translate(-110px, 0) scale(1.1);
     }
     #signal-menu.active .signal-item:nth-child(3) {
-      transform: translate(-50%, -50%) translate(-42px, -42px);
+      transform: translate(-170px, 0) scale(1.2);
     }
     #signal-menu.active .signal-item:nth-child(4) {
-      transform: translate(-50%, -50%) translate(42px, -42px);
+      transform: translate(-230px, 0) scale(1.3);
     }
 
     /* Download & Manual Modals */
@@ -310,10 +307,11 @@
     <div id="top-settings">
       <button id="settings-btn">⚙</button>
       <div id="signal-menu">
-        <button class="signal-item" data-action="download">Download</button>
-        <button class="signal-item" data-action="manual">Manual</button>
-        <button class="signal-item" data-action="reset">Reset</button>
-        <button class="signal-item" data-action="home">Home</button>
+        <!-- Using icons for each action -->
+        <button class="signal-item" data-action="download">⬇</button>
+        <button class="signal-item" data-action="manual">📝</button>
+        <button class="signal-item" data-action="reset">↻</button>
+        <button class="signal-item" data-action="home">⌂</button>
       </div>
     </div>
 
