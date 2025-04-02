@@ -89,7 +89,7 @@
       display: none;
     }
 
-    /* Media Player - Bottom Bar (without settings) */
+    /* Media Player - Bottom Bar */
     #player-bar {
       position: fixed;
       bottom: 0;
@@ -122,7 +122,7 @@
       justify-content: center;
     }
     #timerDisplay {
-      width: 130px;
+      width: 120px; /* Fixed to match other buttons */
       height: 44px;
       line-height: 44px;
       font-size: 14px;
@@ -136,7 +136,7 @@
       justify-content: center;
     }
 
-    /* New Top Settings Cog */
+    /* Top Settings Cog */
     #top-settings {
       position: absolute;
       top: 10px;
@@ -226,28 +226,29 @@
       50% { opacity: 0.85; transform: scale(1.02); }
     }
 
+    /* Mobile Styles: Keep media player horizontal */
     @media (max-width: 600px) {
       #player-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+         flex-direction: row;
+         align-items: center;
+         justify-content: space-around;
+         gap: 10px;
       }
       .player-left {
-        width: 100%;
-        flex-direction: column;
-        gap: 8px;
+         flex-direction: row;
+         gap: 8px;
       }
       #timerDisplay {
-        width: 100%;
+         width: 120px;
       }
       #top-settings {
-        top: 5px;
-        right: 5px;
+         top: 5px;
+         right: 5px;
       }
       #top-settings button {
-        width: 35px;
-        height: 35px;
-        font-size: 18px;
+         width: 35px;
+         height: 35px;
+         font-size: 18px;
       }
     }
   </style>
@@ -395,7 +396,7 @@
       }
     }
 
-    // Loading Sequence: Show Loading Messages, then Gallery
+    // Loading Sequence
     function showLoading(message) {
       loaderText.innerHTML = message;
       loader.style.display = "flex";
