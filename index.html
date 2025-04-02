@@ -122,7 +122,7 @@
       justify-content: center;
     }
     #timerDisplay {
-      width: 120px; /* Fixed to match other buttons */
+      width: 120px;
       height: 44px;
       line-height: 44px;
       font-size: 14px;
@@ -205,13 +205,13 @@
       font-size: 16px;
     }
 
-    /* Loader Overlay */
+    /* Loader Overlay with Solid White Background */
     #loader {
       display: none;
       position: fixed;
       z-index: 9999;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: #fff;
       align-items: center;
       justify-content: center;
       text-align: center;
@@ -226,7 +226,7 @@
       50% { opacity: 0.85; transform: scale(1.02); }
     }
 
-    /* Mobile Styles: Keep media player horizontal */
+    /* Mobile Styles: Keep Media Player Horizontal */
     @media (max-width: 600px) {
       #player-bar {
          flex-direction: row;
