@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Revised Ring Media Player</title>
+  <title>Quarter Circle Media Player Prototype</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-
-  <!-- Example Telecommunication-inspired Font -->
+  
+  <!-- Font Face Definition -->
   <style>
     @font-face {
       font-family: 'Wavehaus42Light';
@@ -18,260 +18,148 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
-      background: #f5f5f5;
       font-family: 'Wavehaus42Light', Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
+      background: #f5f5f5;
       height: 100vh;
-      justify-content: center;
-      align-items: center;
+      overflow: hidden;
     }
 
-    /* RING MEDIA PLAYER CONTAINER */
-    #ring-player {
-      position: relative;
-      /* Slightly smaller overall ring */
-      width: 240px;
-      height: 240px;
-      border-radius: 50%;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    /* Quarter Circle Container in Bottom Right */
+    #quarter-player {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 200px;
+      height: 200px;
+      /* Optional background for visual debugging:
+      background: rgba(0,0,0,0.1);
+      border-top-left-radius: 200px; */
+      pointer-events: none; /* Allow clicks only on child buttons */
     }
 
-    /* Outer ring (optional decorative ring) */
-    #outer-ring {
+    /* Common style for the quarter circle buttons */
+    .qbtn {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      border: 3px solid #999;
-      border-radius: 50%;
-    }
-
-    /* Center circle (optional decorative circle) */
-    #inner-circle {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: #222;
-      border: 2px solid #444;
-      z-index: 2;
-    }
-
-    /* Buttons/Elements arranged around the ring */
-    .ring-btn {
-      position: absolute;
-      /* Slightly smaller button size */
       width: 50px;
       height: 50px;
       background: #fff;
       color: #000;
       border: 2px solid #000;
       border-radius: 50%;
-      cursor: pointer;
       font-size: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 3;
+      pointer-events: auto;
+      cursor: pointer;
     }
 
-    /* LED is a ring-btn-sized circle, but styled differently */
-    #live-led {
-      width: 16px;
-      height: 16px;
-      background: #400;
-      border: 2px solid #900;
-      border-radius: 50%;
-      position: absolute;
-      z-index: 3;
-      cursor: default; /* It's not a button */
-    }
+    /* Positioning the buttons along a quarter circle arc 
+       using the bottom-right corner as the pivot.
+       We use a fixed radius (80px) from the pivot. */
 
-    /* Because each element is absolutely positioned at the center,
-       we shift them radially outward using rotate->translate->rotate. */
-
-    /* LED at top (0°). It’s small, so we place it near the ring’s edge. */
-    #live-led {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) 
-                 rotate(0deg) 
-                 translate(80px) 
-                 rotate(-0deg);
-    }
-    
-    /* Rewind (120°). */
+    /* Rewind: Place at 180° (directly left) */
     #rewind-btn {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%)
-                 rotate(120deg) 
-                 translate(80px) 
-                 rotate(-120deg);
+      bottom: 0;
+      right: 0;
+      transform: translate(50%, 50%) rotate(180deg) translate(80px) rotate(-180deg);
     }
 
-    /* Play/Pause (240°). */
+    /* Play/Pause: Place at 225° (diagonally up-left) */
     #play-pause {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%)
-                 rotate(240deg) 
-                 translate(80px) 
-                 rotate(-240deg);
+      bottom: 0;
+      right: 0;
+      transform: translate(50%, 50%) rotate(225deg) translate(80px) rotate(-225deg);
     }
 
-    /* Timer (as a ring-btn at 360° or 0°, but let's go with 300° or 360°).
-       We'll do 360°, effectively at bottom. */
+    /* Timer: Place at 270° (directly up) */
     #timerDisplay {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%)
-                 rotate(360deg)
-                 translate(80px)
-                 rotate(-360deg);
+      bottom: 0;
+      right: 0;
+      transform: translate(50%, 50%) rotate(270deg) translate(80px) rotate(-270deg);
+      font-size: 10px;
       text-align: center;
-      line-height: 14px; /* Enough space for the text inside */
-      padding: 4px;
+      padding: 2px;
     }
 
-    /* BLINKING LED: animate only when playing */
-    .blinking {
-      animation: blink 0.8s infinite alternate;
-    }
-    @keyframes blink {
-      0%   { background: #900; }
-      100% { background: #400; }
-    }
-
-    /* MOBILE: reduce ring to 200px, shift transforms accordingly */
-    @media(max-width: 600px) {
-      #ring-player {
-        width: 200px;
-        height: 200px;
+    /* Mobile adjustments: smaller overall quarter circle and buttons */
+    @media (max-width: 600px) {
+      #quarter-player {
+        width: 160px;
+        height: 160px;
       }
-      #outer-ring {
-        border: 2px solid #999;
-      }
-      #inner-circle {
-        width: 60px;
-        height: 60px;
-      }
-      .ring-btn {
+      .qbtn {
         width: 40px;
         height: 40px;
-        font-size: 11px;
+        font-size: 10px;
       }
-      #live-led {
-        width: 14px;
-        height: 14px;
-      }
-      /* Shorten the radius from 80px to ~60px */
-      #live-led {
-        transform: translate(-50%, -50%) 
-                   rotate(0deg) 
-                   translate(60px) 
-                   rotate(-0deg);
-      }
+      /* Reduce the radius from 80px to 60px for mobile */
       #rewind-btn {
-        transform: translate(-50%, -50%)
-                   rotate(120deg)
-                   translate(60px)
-                   rotate(-120deg);
+        transform: translate(50%, 50%) rotate(180deg) translate(60px) rotate(-180deg);
       }
       #play-pause {
-        transform: translate(-50%, -50%)
-                   rotate(240deg)
-                   translate(60px)
-                   rotate(-240deg);
+        transform: translate(50%, 50%) rotate(225deg) translate(60px) rotate(-225deg);
       }
       #timerDisplay {
-        transform: translate(-50%, -50%)
-                   rotate(360deg)
-                   translate(60px)
-                   rotate(-360deg);
+        transform: translate(50%, 50%) rotate(270deg) translate(60px) rotate(-270deg);
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- RING MEDIA PLAYER -->
-  <div id="ring-player">
-    <!-- Outer ring (optional) -->
-    <div id="outer-ring"></div>
-    <!-- Center circle (optional) -->
-    <div id="inner-circle"></div>
-
-    <!-- Blinking LED (top) -->
-    <div id="live-led"></div>
-
-    <!-- Rewind Button -->
-    <button class="ring-btn" id="rewind-btn">-10s</button>
-
-    <!-- Play/Pause -->
-    <button class="ring-btn" id="play-pause">Play</button>
-
-    <!-- Timer (no hours, only mm:ss:ms) -->
-    <div class="ring-btn" id="timerDisplay">00:00:000</div>
+  <!-- Quarter Circle Media Player Container -->
+  <div id="quarter-player">
+    <button id="rewind-btn" class="qbtn">-10s</button>
+    <button id="play-pause" class="qbtn">Play</button>
+    <div id="timerDisplay" class="qbtn">00:00:000</div>
   </div>
 
   <!-- Hidden Audio Element -->
   <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
 
   <script>
-    // Grab references
+    // Get element references
     const audioEl = document.getElementById('my-audio');
     const playPauseBtn = document.getElementById('play-pause');
     const rewindBtn = document.getElementById('rewind-btn');
     const timerDisplay = document.getElementById('timerDisplay');
-    const liveLed = document.getElementById('live-led');
 
-    // PLAY/PAUSE
+    // Play/Pause functionality
     playPauseBtn.addEventListener('click', () => {
       if (audioEl.paused) {
         audioEl.play().then(() => {
           playPauseBtn.textContent = "Pause";
-          liveLed.classList.add('blinking'); // LED on
         }).catch(err => console.warn("audio.play() failed:", err));
       } else {
         audioEl.pause();
         playPauseBtn.textContent = "Play";
-        liveLed.classList.remove('blinking'); // LED off
       }
     });
 
-    // REWIND -10s
+    // Rewind functionality: Go back 10 seconds
     rewindBtn.addEventListener('click', () => {
       audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
       updateTimer();
     });
 
-    // TIMER (only mm:ss:ms)
+    // Update timer (format mm:ss:ms)
     function updateTimer() {
       let t = audioEl.currentTime;
       let mins = Math.floor(t / 60);
       let secs = Math.floor(t % 60);
       let ms = Math.floor((t % 1) * 1000);
-
       const pad = (num, size) => String(num).padStart(size, '0');
-
       timerDisplay.textContent = `${pad(mins,2)}:${pad(secs,2)}:${pad(ms,3)}`;
     }
     setInterval(updateTimer, 100);
 
-    // If user ends or track completes => LED off + "Play" label
-    audioEl.addEventListener('ended', () => {
-      playPauseBtn.textContent = "Play";
-      liveLed.classList.remove('blinking');
-    });
-    // If the user scrubs or track is paused => LED off
+    // Ensure play button resets on pause or when audio ends
     audioEl.addEventListener('pause', () => {
       playPauseBtn.textContent = "Play";
-      liveLed.classList.remove('blinking');
+    });
+    audioEl.addEventListener('ended', () => {
+      playPauseBtn.textContent = "Play";
     });
   </script>
 
