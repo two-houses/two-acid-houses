@@ -85,7 +85,7 @@
     }
     #gallery-content {
       position: relative;
-      z-index: 1; /* Ensure content is above the background video */
+      z-index: 1; /* Ensure gallery content sits above the background video */
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -95,52 +95,20 @@
       display: none;
     }
 
-    /* Media Player - Bottom Bar */
-    #player-bar {
+    /* Background Video for Gallery Page */
+    #video-background {
       position: fixed;
-      bottom: 0;
+      top: 0;
       left: 0;
       width: 100%;
-      background: #000;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      padding: 10px 5vw;
-      box-sizing: border-box;
-      font-family: 'Wavehaus42Light', Arial, sans-serif;
-      z-index: 2;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
     }
-    .player-left {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    #play-pause,
-    #rewind-btn {
-      width: 120px;
-      height: 44px;
-      font-size: 14px;
-      background: #fff;
-      color: #000;
-      border: 2px solid #000;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #timerDisplay {
-      width: 120px;
-      height: 44px;
-      line-height: 44px;
-      font-size: 14px;
-      background: #fff;
-      color: #000;
-      border: 2px solid #000;
-      text-align: center;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    #video-background video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     /* Top Settings – Expanding Signal Rings Menu */
@@ -148,7 +116,7 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      z-index: 1000;
+      z-index: 1001; /* Increased to ensure it sits on top of the video */
       width: 40px;
       height: 40px;
     }
@@ -201,6 +169,54 @@
     }
     #signal-menu.active .signal-item:nth-child(4) {
       transform: translate(-230px, 0) scale(1);
+    }
+
+    /* Media Player - Bottom Bar */
+    #player-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #000;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 10px 5vw;
+      box-sizing: border-box;
+      font-family: 'Wavehaus42Light', Arial, sans-serif;
+      z-index: 2;
+    }
+    .player-left {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    #play-pause,
+    #rewind-btn {
+      width: 120px;
+      height: 44px;
+      font-size: 14px;
+      background: #fff;
+      color: #000;
+      border: 2px solid #000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #timerDisplay {
+      width: 120px;
+      height: 44px;
+      line-height: 44px;
+      font-size: 14px;
+      background: #fff;
+      color: #000;
+      border: 2px solid #000;
+      text-align: center;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* Download & Manual Modals */
@@ -277,22 +293,6 @@
          font-size: 18px;
       }
     }
-
-    /* Background Video for Gallery Page */
-    #video-background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      overflow: hidden;
-    }
-    #video-background video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
   </style>
 </head>
 <body>
@@ -327,6 +327,17 @@
         <source src="assets/sand_4_loop.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
+    </div>
+
+    <!-- Top Settings Cog Menu -->
+    <div id="top-settings">
+      <button id="settings-btn">⚙</button>
+      <div id="signal-menu">
+        <button class="signal-item" data-action="download">⬇</button>
+        <button class="signal-item" data-action="manual">📝</button>
+        <button class="signal-item" data-action="reset">↻</button>
+        <button class="signal-item" data-action="home">⌂</button>
+      </div>
     </div>
 
     <div id="gallery-content">
