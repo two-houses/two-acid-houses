@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Quarter Circle Media Player Prototype</title>
+  <title>Quarter Ring Media Player Prototype</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-
-  <!-- Font Face Definition -->
+  
+  <!-- Font Face -->
   <style>
     @font-face {
       font-family: 'Wavehaus42Light';
@@ -14,44 +14,51 @@
       font-style: normal;
     }
   </style>
-
+  
   <style>
     body {
       margin: 0;
       font-family: 'Wavehaus42Light', Arial, sans-serif;
       background: #f5f5f5;
-      height: 100vh;
       overflow: hidden;
       position: relative;
+      height: 100vh;
     }
-
-    /* Container for the Quarter Circle Player */
+    
+    /* Container for the Quarter Ring Media Player */
     #quarter-player {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 240px;
-      height: 240px;
-      pointer-events: none; /* allow clicks only on children */
+      width: 220px;
+      height: 220px;
     }
-
-    /* Outer Black Ring */
-    #outer-ring {
+    
+    /* The quarter ring is drawn with an inline SVG.
+       It covers the full 220x220 container. */
+    #quarter-ring {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 240px;
-      height: 240px;
-      border: 4px solid black;
-      border-radius: 50%;
-      pointer-events: none;
+      bottom: 0;
+      right: 0;
+      width: 220px;
+      height: 220px;
     }
-
-    /* Common style for all circular buttons */
-    .qbtn {
+    
+    /* Overlay container for the buttons (same dimensions) */
+    #ring-buttons {
       position: absolute;
-      width: 50px;
-      height: 50px;
+      bottom: 0;
+      right: 0;
+      width: 220px;
+      height: 220px;
+      pointer-events: none; /* buttons inside will have their own pointer events */
+    }
+    
+    /* Common style for the three buttons */
+    .ring-btn {
+      position: absolute;
+      width: 40px;
+      height: 40px;
       background: #fff;
       color: #000;
       border: 2px solid #000;
@@ -62,131 +69,166 @@
       justify-content: center;
       cursor: pointer;
       pointer-events: auto;
-    }
-
-    /* Arrange buttons using the bottom-right corner as the pivot.
-       All buttons are positioned at bottom:0; right:0; then shifted via transform.
-       The pivot is the container’s bottom-right corner. */
-    
-    /* Rewind Button: placed at 0° (directly left) */
-    #rewind-btn {
-      bottom: 0;
-      right: 0;
-      transform: translate(-80px, 0);
+      transition: transform 0.1s ease;
     }
     
-    /* Play/Pause Button: placed at 45° (diagonally up-left) */
-    #play-pause {
-      bottom: 0;
-      right: 0;
-      transform: translate(-56px, -56px);
+    /* Visual feedback on press */
+    .ring-btn:active {
+      transform: scale(0.9);
     }
     
-    /* Timer Display: placed at 90° (directly up) */
-    #timerDisplay {
-      bottom: 0;
-      right: 0;
-      transform: translate(0, -80px);
-      text-align: center;
-      line-height: 16px;
-      padding: 4px;
+    /* Calculate positions along the midline of the ring.
+       The SVG quarter ring is drawn with outer radius = 220 and inner radius = 220-40 = 180.
+       We'll place buttons at the mid radius = (220+180)/2 = 200.
+       Using polar coordinates with pivot at the bottom right (i.e. (220,220)),
+       the arc spans from angle 180° (pointing directly left) to 270° (pointing directly up).
+       We place three buttons at 210°, 225°, and 240°. */
+    
+    /* Helper: convert polar coordinates (r, theta) relative to pivot (220,220)
+       to absolute coordinates. (These values are pre–computed.) */
+    /* For angle = 210°: 
+         cos210 = -cos30 = -0.8660, sin210 = -sin30 = -0.5;
+         x = 220 + 200 * (-0.8660) ≈ 220 - 173.2 = 46.8, 
+         y = 220 + 200 * (-0.5) = 220 - 100 = 120.  */
+    #btn-rewind {
+      left: 47px;
+      top: 120px;
     }
-
-    /* Mobile adjustments: reduce overall size and radius */
+    
+    /* For angle = 225°: 
+         cos225 = -0.7071, sin225 = -0.7071;
+         x = 220 + 200 * (-0.7071) = 220 - 141.42 = 78.6, 
+         y = 220 - 141.42 = 78.6.  */
+    #btn-play {
+      left: 79px;
+      top: 79px;
+    }
+    
+    /* For angle = 240°: 
+         cos240 = -0.5, sin240 = -0.8660;
+         x = 220 + 200 * (-0.5) = 220 - 100 = 120, 
+         y = 220 + 200 * (-0.8660) = 220 - 173.2 = 46.8.  */
+    #btn-timer {
+      left: 120px;
+      top: 47px;
+    }
+    
+    /* Responsive adjustments for mobile */
     @media (max-width: 600px) {
       #quarter-player {
-        width: 200px;
-        height: 200px;
+        width: 180px;
+        height: 180px;
         bottom: 10px;
         right: 10px;
       }
-      #outer-ring {
-        width: 200px;
-        height: 200px;
-        border-width: 3px;
+      #quarter-ring, #ring-buttons {
+        width: 180px;
+        height: 180px;
       }
-      .qbtn {
-        width: 40px;
-        height: 40px;
-        font-size: 10px;
+      .ring-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 11px;
       }
-      /* Use a smaller radius for mobile (60px instead of 80px) */
-      #rewind-btn {
-        transform: translate(-60px, 0);
+      /* Recalculate positions for mid radius = (180 + (180-40))/2 = (180+140)/2 = 160 */
+      /* For angle 210°: x = 180 + 160*(-0.8660) = 180 - 138.56 = 41.44; y = 180 - 80 = 100 */
+      #btn-rewind {
+        left: 41px;
+        top: 100px;
       }
-      #play-pause {
-        transform: translate(-42px, -42px);
+      /* For angle 225°: x = 180 + 160*(-0.7071) = 180 - 113.14 = 66.86; y = 180 - 113.14 = 66.86 */
+      #btn-play {
+        left: 67px;
+        top: 67px;
       }
-      #timerDisplay {
-        transform: translate(0, -60px);
+      /* For angle 240°: x = 180 + 160*(-0.5) = 180 - 80 = 100; y = 180 + 160*(-0.8660) = 180 - 138.56 = 41.44 */
+      #btn-timer {
+        left: 100px;
+        top: 41px;
       }
+    }
+    
+    /* Style for the SVG quarter ring (thick black donut quarter) */
+    #quarter-ring svg {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
   </style>
 </head>
 <body>
 
-  <!-- Quarter Circle Media Player Container -->
+  <!-- Quarter Ring Media Player Container -->
   <div id="quarter-player">
-    <!-- Outer Ring -->
-    <div id="outer-ring"></div>
+    <!-- Inline SVG for the thick quarter ring -->
+    <div id="quarter-ring">
+      <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+        <path fill="black" fill-rule="evenodd" d="
+          M220,220
+          L220,0
+          A220,220 0 0,1 0,220
+          Z
+          M220,220
+          L220,40
+          A180,180 0 0,0 40,220
+          Z"/>
+      </svg>
+    </div>
     
-    <!-- Rewind Button -->
-    <button class="qbtn" id="rewind-btn">-10s</button>
-    
-    <!-- Play/Pause Button -->
-    <button class="qbtn" id="play-pause">Play</button>
-    
-    <!-- Timer Display -->
-    <div class="qbtn" id="timerDisplay">00:00:000</div>
+    <!-- Overlay container for buttons -->
+    <div id="ring-buttons">
+      <button id="btn-rewind" class="ring-btn" onclick="rewindAudio()">-10s</button>
+      <button id="btn-play" class="ring-btn" onclick="togglePlay()">Play</button>
+      <div id="btn-timer" class="ring-btn">00:00:000</div>
+    </div>
   </div>
-
+  
   <!-- Hidden Audio Element -->
   <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
-
+  
   <script>
-    // References to audio and controls
     const audioEl = document.getElementById('my-audio');
-    const playPauseBtn = document.getElementById('play-pause');
-    const rewindBtn = document.getElementById('rewind-btn');
-    const timerDisplay = document.getElementById('timerDisplay');
-
-    // Play/Pause functionality
-    playPauseBtn.addEventListener('click', () => {
+    const btnPlay = document.getElementById('btn-play');
+    const btnRewind = document.getElementById('btn-rewind');
+    const btnTimer = document.getElementById('btn-timer');
+    
+    // Play/Pause toggle functionality
+    function togglePlay() {
       if (audioEl.paused) {
         audioEl.play().then(() => {
-          playPauseBtn.textContent = "Pause";
+          btnPlay.textContent = "Pause";
         }).catch(err => console.warn("audio.play() failed:", err));
       } else {
         audioEl.pause();
-        playPauseBtn.textContent = "Play";
+        btnPlay.textContent = "Play";
       }
-    });
-
-    // Rewind 10 seconds
-    rewindBtn.addEventListener('click', () => {
+    }
+    
+    // Rewind functionality
+    function rewindAudio() {
       audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
       updateTimer();
-    });
-
-    // Update the timer (mm:ss:ms)
+    }
+    
+    // Update timer (mm:ss:ms)
     function updateTimer() {
       let t = audioEl.currentTime;
       let mins = Math.floor(t / 60);
       let secs = Math.floor(t % 60);
       let ms = Math.floor((t % 1) * 1000);
       const pad = (num, size) => String(num).padStart(size, '0');
-      timerDisplay.textContent = `${pad(mins,2)}:${pad(secs,2)}:${pad(ms,3)}`;
+      btnTimer.textContent = `${pad(mins,2)}:${pad(secs,2)}:${pad(ms,3)}`;
     }
     setInterval(updateTimer, 100);
-
-    // Reset Play/Pause label when audio ends or pauses
+    
+    // Reset play button when audio ends or pauses
     audioEl.addEventListener('pause', () => {
-      playPauseBtn.textContent = "Play";
+      btnPlay.textContent = "Play";
     });
     audioEl.addEventListener('ended', () => {
-      playPauseBtn.textContent = "Play";
+      btnPlay.textContent = "Play";
     });
   </script>
-
+  
 </body>
 </html>
