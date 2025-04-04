@@ -53,6 +53,7 @@
       background: rgba(0,0,0,0.5);
       align-items: center;
       justify-content: center;
+      z-index: 3000;
     }
     #password-content {
       background: #fff;
@@ -85,7 +86,7 @@
     }
     #gallery-content {
       position: relative;
-      z-index: 1; /* Ensure gallery content sits above the background video */
+      z-index: 1; /* Content sits above background video */
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -114,9 +115,9 @@
     /* Top Settings – Expanding Signal Rings Menu */
     #top-settings {
       position: absolute;
-      top: 20px; /* Increased padding at the top */
+      top: 20px;
       right: 10px;
-      z-index: 1001; /* Ensure it sits on top of the video */
+      z-index: 1001; /* Above video */
       width: 50px;
       height: 50px;
     }
@@ -124,11 +125,11 @@
       width: 100%;
       height: 100%;
       background: black;
-      border: none; /* Removed white outline border */
+      border: none;
       color: white;
       font-size: 24px;
       cursor: pointer;
-      border-radius: 50%; /* Make it a circle */
+      border-radius: 50%;
     }
     #signal-menu {
       position: absolute;
@@ -150,7 +151,7 @@
       width: 50px;
       height: 50px;
       background: black;
-      /* Removed white border */
+      border: none;
       border-radius: 50%;
       color: white;
       font-size: 20px;
@@ -159,7 +160,7 @@
       transition: transform 0.3s ease, opacity 0.3s ease;
       cursor: pointer;
     }
-    /* Adjust expanded positions proportionally */
+    /* Adjust expanded positions for larger menu */
     #signal-menu.active .signal-item:nth-child(1) {
       transform: translate(-60px, 0) scale(1);
     }
@@ -229,7 +230,7 @@
       background: rgba(0, 0, 0, 0.5);
       align-items: center;
       justify-content: center;
-      z-index: 2000;
+      z-index: 3000;  /* Ensure modals sit on top */
     }
     .modal-box {
       background: #fff;
@@ -247,7 +248,7 @@
       font-size: 16px;
     }
 
-    /* Loader Overlay with Solid White Background */
+    /* Loader Overlay */
     #loader {
       display: none;
       position: fixed;
@@ -361,7 +362,7 @@
     </div>
 
     <div id="gallery-content">
-      <h2>GALLERY PAGE</h2>
+      <!--<h2>GALLERY PAGE</h2>-->
       <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
     </div>
     <!-- Media Player Bottom Bar -->
@@ -371,6 +372,25 @@
         <button id="rewind-btn">Rewind -10s</button>
         <div id="timerDisplay">00:00:00:000</div>
       </div>
+    </div>
+  </div>
+
+  <!-- Download Modal -->
+  <div id="download-modal" class="modal-bg">
+    <div class="modal-box">
+      <span class="close-btn" id="download-close">✖</span>
+      <p>This is your full audio manifest.<br>Click the button below to download.</p>
+      <a href="assets/NMTAH_Side_A.wav" download="NMTAH_Side_A.wav">
+        <button>Download manifest</button>
+      </a>
+    </div>
+  </div>
+
+  <!-- Manual Modal -->
+  <div id="manual-modal" class="modal-bg">
+    <div class="modal-box">
+      <span class="close-btn" id="manual-close">✖</span>
+      <p>Placeholder text. Replace this with your training manual content.</p>
     </div>
   </div>
 
