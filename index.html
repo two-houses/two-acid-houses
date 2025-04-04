@@ -53,6 +53,7 @@
       background: rgba(0,0,0,0.5);
       align-items: center;
       justify-content: center;
+      z-index: 3000;
     }
     #password-content {
       background: #fff;
@@ -79,7 +80,13 @@
     }
 
     /* GALLERY PAGE */
+    #gallery-page {
+      position: relative;
+      overflow: hidden;
+    }
     #gallery-content {
+      position: relative;
+      z-index: 1; /* Content sits above background video */
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -87,6 +94,84 @@
     }
     #my-audio {
       display: none;
+    }
+
+    /* Background Video for Gallery Page */
+    #video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+    #video-background video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Top Settings – Expanding Signal Rings Menu */
+    #top-settings {
+      position: absolute;
+      top: 20px;
+      right: 10px;
+      z-index: 1001; /* Above video */
+      width: 50px;
+      height: 50px;
+    }
+    #top-settings > #settings-btn {
+      width: 100%;
+      height: 100%;
+      background: black;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+    #signal-menu {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
+    #signal-menu.active .signal-item {
+      pointer-events: auto;
+      opacity: 1;
+    }
+    .signal-item {
+      position: absolute;
+      transform: translate(0,0) scale(1);
+      opacity: 0;
+      width: 50px;
+      height: 50px;
+      background: black;
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 20px;
+      line-height: 50px;
+      text-align: center;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      cursor: pointer;
+    }
+    /* Adjust expanded positions for larger menu */
+    #signal-menu.active .signal-item:nth-child(1) {
+      transform: translate(-60px, 0) scale(1);
+    }
+    #signal-menu.active .signal-item:nth-child(2) {
+      transform: translate(-140px, 0) scale(1);
+    }
+    #signal-menu.active .signal-item:nth-child(3) {
+      transform: translate(-220px, 0) scale(1);
+    }
+    #signal-menu.active .signal-item:nth-child(4) {
+      transform: translate(-300px, 0) scale(1);
     }
 
     /* Media Player - Bottom Bar */
@@ -102,6 +187,7 @@
       padding: 10px 5vw;
       box-sizing: border-box;
       font-family: 'Wavehaus42Light', Arial, sans-serif;
+      z-index: 2;
     }
     .player-left {
       display: flex;
@@ -136,70 +222,6 @@
       justify-content: center;
     }
 
-    /* Top Settings – Expanding Signal Rings Menu */
-    #top-settings {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 1000;
-      width: 40px;
-      height: 40px;
-    }
-    /* The settings cog remains a square button */
-    #top-settings > #settings-btn {
-      width: 100%;
-      height: 100%;
-      background: black;
-      border: 2px solid white;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-    }
-    /* Container for the expanding menu items */
-    #signal-menu {
-      position: absolute;
-      bottom: 0; /* Pivot from bottom-left of the cog */
-      left: 0;
-      width: 100%;
-      height: 100%;
-      transform-origin: bottom left;
-      pointer-events: none;
-    }
-    /* Enable pointer events when active */
-    #signal-menu.active .signal-item {
-      pointer-events: auto;
-      opacity: 1;
-    }
-    .signal-item {
-      position: absolute;
-      transform: translate(0,0) scale(1);
-      opacity: 0;
-      width: 40px;
-      height: 40px;
-      background: black;
-      border: 2px solid white;
-      border-radius: 50%;
-      color: white;
-      font-size: 18px;
-      line-height: 36px;
-      text-align: center;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      cursor: pointer;
-    }
-    /* Arrange 4 menu items in a horizontal row expanding leftwards */
-    #signal-menu.active .signal-item:nth-child(1) {
-      transform: translate(-50px, 0) scale(1);
-    }
-    #signal-menu.active .signal-item:nth-child(2) {
-      transform: translate(-110px, 0) scale(1);
-    }
-    #signal-menu.active .signal-item:nth-child(3) {
-      transform: translate(-170px, 0) scale(1);
-    }
-    #signal-menu.active .signal-item:nth-child(4) {
-      transform: translate(-230px, 0) scale(1);
-    }
-
     /* Download & Manual Modals */
     .modal-bg {
       display: none;
@@ -208,7 +230,7 @@
       background: rgba(0, 0, 0, 0.5);
       align-items: center;
       justify-content: center;
-      z-index: 2000;
+      z-index: 3000;  /* Ensure modals sit on top */
     }
     .modal-box {
       background: #fff;
@@ -226,7 +248,7 @@
       font-size: 16px;
     }
 
-    /* Loader Overlay with Solid White Background */
+    /* Loader Overlay */
     #loader {
       display: none;
       position: fixed;
@@ -263,15 +285,33 @@
          width: 120px;
       }
       #top-settings {
-         top: 5px;
+         top: 10px;
          right: 5px;
-         width: 35px;
-         height: 35px;
+         width: 45px;
+         height: 45px;
       }
       #top-settings > #settings-btn {
          width: 100%;
          height: 100%;
+         font-size: 20px;
+      }
+      .signal-item {
+         width: 45px;
+         height: 45px;
          font-size: 18px;
+         line-height: 45px;
+      }
+      #signal-menu.active .signal-item:nth-child(1) {
+         transform: translate(-55px, 0) scale(1);
+      }
+      #signal-menu.active .signal-item:nth-child(2) {
+         transform: translate(-130px, 0) scale(1);
+      }
+      #signal-menu.active .signal-item:nth-child(3) {
+         transform: translate(-215px, 0) scale(1);
+      }
+      #signal-menu.active .signal-item:nth-child(4) {
+         transform: translate(-290px, 0) scale(1);
       }
     }
   </style>
@@ -302,19 +342,27 @@
 
   <!-- GALLERY PAGE -->
   <div id="gallery-page">
-    <!-- Top Settings Cog with Expanding Signal Rings Menu -->
+    <!-- Background Video -->
+    <div id="video-background">
+      <video autoplay loop muted playsinline>
+        <source src="assets/sand_4_loop.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <!-- Top Settings Cog Menu -->
     <div id="top-settings">
       <button id="settings-btn">⚙</button>
       <div id="signal-menu">
-        <button class="signal-item" data-action="download">⬇</button>
-        <button class="signal-item" data-action="manual">📝</button>
-        <button class="signal-item" data-action="reset">↻</button>
-        <button class="signal-item" data-action="home">⌂</button>
+        <button class="signal-item" data-action="download">D</button>
+        <button class="signal-item" data-action="manual">M</button>
+        <button class="signal-item" data-action="reset">R</button>
+        <button class="signal-item" data-action="home">H</button>
       </div>
     </div>
 
     <div id="gallery-content">
-      <h2>GALLERY PAGE</h2>
+      <!--<h2>GALLERY PAGE</h2>-->
       <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
     </div>
     <!-- Media Player Bottom Bar -->
@@ -327,7 +375,7 @@
     </div>
   </div>
 
-  <!-- Download & Manual Modals -->
+  <!-- Download Modal -->
   <div id="download-modal" class="modal-bg">
     <div class="modal-box">
       <span class="close-btn" id="download-close">✖</span>
@@ -337,6 +385,8 @@
       </a>
     </div>
   </div>
+
+  <!-- Manual Modal -->
   <div id="manual-modal" class="modal-bg">
     <div class="modal-box">
       <span class="close-btn" id="manual-close">✖</span>
@@ -480,7 +530,6 @@
     signalItems.forEach(item => {
       item.addEventListener('click', () => {
         const action = item.getAttribute('data-action');
-        // Hide the menu after selection
         signalMenu.classList.remove('active');
         if (action === "download") {
           downloadModalEl.style.display = 'flex';
@@ -514,7 +563,6 @@
     manualClose.addEventListener('click', () => {
       manualModalEl.style.display = 'none';
     });
-    // Click-away close: add event listener directly to modal backgrounds
     downloadModalEl.addEventListener('click', (e) => {
       if (e.target === downloadModalEl) {
         downloadModalEl.style.display = 'none';
@@ -525,9 +573,6 @@
         manualModalEl.style.display = 'none';
       }
     });
-
-    // Also maintain existing settings dropdown (if any) for compatibility
-    // (Not used in the signal menu version, so this section is omitted)
   </script>
 </body>
 </html>
