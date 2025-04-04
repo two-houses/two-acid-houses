@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Quarter Circle Media Player Prototype</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  
+
   <!-- Font Face Definition -->
   <style>
     @font-face {
@@ -22,22 +22,32 @@
       background: #f5f5f5;
       height: 100vh;
       overflow: hidden;
+      position: relative;
     }
 
-    /* Quarter Circle Container in Bottom Right */
+    /* Container for the Quarter Circle Player */
     #quarter-player {
       position: fixed;
-      bottom: 0;
-      right: 0;
-      width: 200px;
-      height: 200px;
-      /* Optional background for visual debugging:
-      background: rgba(0,0,0,0.1);
-      border-top-left-radius: 200px; */
-      pointer-events: none; /* Allow clicks only on child buttons */
+      bottom: 20px;
+      right: 20px;
+      width: 240px;
+      height: 240px;
+      pointer-events: none; /* allow clicks only on children */
     }
 
-    /* Common style for the quarter circle buttons */
+    /* Outer Black Ring */
+    #outer-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 240px;
+      border: 4px solid black;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Common style for all circular buttons */
     .qbtn {
       position: absolute;
       width: 50px;
@@ -50,58 +60,65 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      pointer-events: auto;
       cursor: pointer;
+      pointer-events: auto;
     }
 
-    /* Positioning the buttons along a quarter circle arc 
-       using the bottom-right corner as the pivot.
-       We use a fixed radius (80px) from the pivot. */
-
-    /* Rewind: Place at 180° (directly left) */
+    /* Arrange buttons using the bottom-right corner as the pivot.
+       All buttons are positioned at bottom:0; right:0; then shifted via transform.
+       The pivot is the container’s bottom-right corner. */
+    
+    /* Rewind Button: placed at 0° (directly left) */
     #rewind-btn {
       bottom: 0;
       right: 0;
-      transform: translate(50%, 50%) rotate(180deg) translate(80px) rotate(-180deg);
+      transform: translate(-80px, 0);
     }
-
-    /* Play/Pause: Place at 225° (diagonally up-left) */
+    
+    /* Play/Pause Button: placed at 45° (diagonally up-left) */
     #play-pause {
       bottom: 0;
       right: 0;
-      transform: translate(50%, 50%) rotate(225deg) translate(80px) rotate(-225deg);
+      transform: translate(-56px, -56px);
     }
-
-    /* Timer: Place at 270° (directly up) */
+    
+    /* Timer Display: placed at 90° (directly up) */
     #timerDisplay {
       bottom: 0;
       right: 0;
-      transform: translate(50%, 50%) rotate(270deg) translate(80px) rotate(-270deg);
-      font-size: 10px;
+      transform: translate(0, -80px);
       text-align: center;
-      padding: 2px;
+      line-height: 16px;
+      padding: 4px;
     }
 
-    /* Mobile adjustments: smaller overall quarter circle and buttons */
+    /* Mobile adjustments: reduce overall size and radius */
     @media (max-width: 600px) {
       #quarter-player {
-        width: 160px;
-        height: 160px;
+        width: 200px;
+        height: 200px;
+        bottom: 10px;
+        right: 10px;
+      }
+      #outer-ring {
+        width: 200px;
+        height: 200px;
+        border-width: 3px;
       }
       .qbtn {
         width: 40px;
         height: 40px;
         font-size: 10px;
       }
-      /* Reduce the radius from 80px to 60px for mobile */
+      /* Use a smaller radius for mobile (60px instead of 80px) */
       #rewind-btn {
-        transform: translate(50%, 50%) rotate(180deg) translate(60px) rotate(-180deg);
+        transform: translate(-60px, 0);
       }
       #play-pause {
-        transform: translate(50%, 50%) rotate(225deg) translate(60px) rotate(-225deg);
+        transform: translate(-42px, -42px);
       }
       #timerDisplay {
-        transform: translate(50%, 50%) rotate(270deg) translate(60px) rotate(-270deg);
+        transform: translate(0, -60px);
       }
     }
   </style>
@@ -110,16 +127,24 @@
 
   <!-- Quarter Circle Media Player Container -->
   <div id="quarter-player">
-    <button id="rewind-btn" class="qbtn">-10s</button>
-    <button id="play-pause" class="qbtn">Play</button>
-    <div id="timerDisplay" class="qbtn">00:00:000</div>
+    <!-- Outer Ring -->
+    <div id="outer-ring"></div>
+    
+    <!-- Rewind Button -->
+    <button class="qbtn" id="rewind-btn">-10s</button>
+    
+    <!-- Play/Pause Button -->
+    <button class="qbtn" id="play-pause">Play</button>
+    
+    <!-- Timer Display -->
+    <div class="qbtn" id="timerDisplay">00:00:000</div>
   </div>
 
   <!-- Hidden Audio Element -->
   <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
 
   <script>
-    // Get element references
+    // References to audio and controls
     const audioEl = document.getElementById('my-audio');
     const playPauseBtn = document.getElementById('play-pause');
     const rewindBtn = document.getElementById('rewind-btn');
@@ -137,13 +162,13 @@
       }
     });
 
-    // Rewind functionality: Go back 10 secnds
+    // Rewind 10 seconds
     rewindBtn.addEventListener('click', () => {
       audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
       updateTimer();
     });
 
-    // Update timer (format mm:ss:ms)
+    // Update the timer (mm:ss:ms)
     function updateTimer() {
       let t = audioEl.currentTime;
       let mins = Math.floor(t / 60);
@@ -154,7 +179,7 @@
     }
     setInterval(updateTimer, 100);
 
-    // Ensure play button resets on pause or when audio ends
+    // Reset Play/Pause label when audio ends or pauses
     audioEl.addEventListener('pause', () => {
       playPauseBtn.textContent = "Play";
     });
