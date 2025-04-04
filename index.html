@@ -190,10 +190,18 @@
       cursor: pointer;
     }
     /* Adjust expanded positions for larger menu */
-    $1-80px, 0$2
-    $1-160px, 0$2
-    $1-240px, 0$2
-    $1-320px, 0$2
+    #signal-menu.active .signal-item:nth-child(1) {
+      transform: translate(-80px, 0) scale(1);
+    }
+    #signal-menu.active .signal-item:nth-child(2) {
+      transform: translate(-140px, 0) scale(1);
+    }
+    #signal-menu.active .signal-item:nth-child(3) {
+      transform: translate(-220px, 0) scale(1);
+    }
+    #signal-menu.active .signal-item:nth-child(4) {
+      transform: translate(-300px, 0) scale(1);
+    }
 
     /* Media Player - Bottom Bar */
     #player-bar {
