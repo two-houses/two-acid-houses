@@ -332,7 +332,7 @@
     <div id="password-modal">
       <div id="password-content">
         <span id="modal-close">✖</span>
-        <h3>Enter Launch Code</h3>
+        <h3>Enter Transmission Code</h3>
         <input type="password" id="modal-password" />
         <br/>
         <button id="modal-submit">Activate Transmission Relay</button>
@@ -368,8 +368,8 @@
     <!-- Media Player Bottom Bar -->
     <div id="player-bar">
       <div class="player-left">
-        <button id="play-pause">Connect</button>
-        <button id="rewind-btn">Rewind -10s</button>
+        <button id="play-pause">Establish Link</button>
+        <button id="rewind-btn">Scrub Signal</button>
         <div id="timerDisplay">00:00:00:000</div>
       </div>
     </div>
@@ -379,7 +379,7 @@
   <div id="download-modal" class="modal-bg">
     <div class="modal-box">
       <span class="close-btn" id="download-close">✖</span>
-      <p>This is your full audio manifest.<br>Click the button below to download.</p>
+      <p>Download the full 16bit Audio Manifest.<br></p>
       <a href="assets/NMTAH_Side_A.wav" download="NMTAH_Side_A.wav">
         <button>Download manifest</button>
       </a>
@@ -462,7 +462,7 @@
         passwordModal.style.display = 'none';
         doLoadingToGallery();
       } else {
-        alert("ACCESS RESTRICTED: Launch code does not match records.");
+        alert("ACCESS RESTRICTED: Transmission Code does not match records. Please consult the training manual.");
       }
     }
 
@@ -493,11 +493,11 @@
     playPauseBtn.addEventListener('click', () => {
       if (audioEl.paused) {
         audioEl.play().then(() => {
-          playPauseBtn.textContent = "Connected...";
+          playPauseBtn.textContent = "Link Secured";
         }).catch(err => console.warn("audio.play() failed:", err));
       } else {
         audioEl.pause();
-        playPauseBtn.textContent = "Connect";
+        playPauseBtn.textContent = "Establish Link";
       }
     });
     rewindBtn.addEventListener('click', () => {
@@ -542,7 +542,7 @@
             homePage.classList.add('active');
             if (!audioEl.paused) {
               audioEl.pause();
-              playPauseBtn.textContent = "Connect";
+              playPauseBtn.textContent = "Establish Link";
             }
           }
         } else if (action === "home") {
@@ -550,7 +550,7 @@
           homePage.classList.add('active');
           if (!audioEl.paused) {
             audioEl.pause();
-            playPauseBtn.textContent = "Connect";
+            playPauseBtn.textContent = "Establish Link";
           }
         }
       });
