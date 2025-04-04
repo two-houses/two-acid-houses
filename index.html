@@ -13,6 +13,13 @@
       font-weight: 400;
       font-style: normal;
     }
+    /* Additional font for p5 sketch (optional) */
+    @font-face {
+      font-family: 'Wavehaus158ExtraBold';
+      src: url('fonts/Wavehaus-158ExtraBold.otf') format('opentype');
+      font-weight: 800;
+      font-style: normal;
+    }
   </style>
 
   <style>
@@ -28,7 +35,8 @@
     }
 
     /* Pages */
-    #home-page, #gallery-page {
+    #home-page,
+    #gallery-page {
       width: 100%;
       height: 100vh;
       display: none;
@@ -97,11 +105,21 @@
     }
     #gallery-content {
       position: relative;
-      z-index: 1; /* Content sits above background video */
+      z-index: 2; /* Raise content above p5 sketch container */
       display: flex;
       flex-direction: column;
       height: 100%;
       padding: 20px;
+    }
+    /* Container for p5 Sketch overlay, sits above video (z-index:1) but below main content (z-index:2) */
+    #acid-sketch {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none; /* so user can still click underlying elements, if desired */
     }
     #my-audio {
       display: none;
@@ -128,7 +146,7 @@
       position: absolute;
       top: 20px;
       right: 10px;
-      z-index: 1001; /* Above video */
+      z-index: 1001; /* Above nearly everything else */
       width: 50px;
       height: 50px;
     }
@@ -198,7 +216,7 @@
       padding: 10px 5vw;
       box-sizing: border-box;
       font-family: 'Wavehaus42Light', Arial, sans-serif;
-      z-index: 2;
+      z-index: 2; /* Above the p5 and video, matches gallery content */
     }
     .player-left {
       display: flex;
@@ -373,6 +391,9 @@
       </video>
     </div>
 
+    <!-- p5.js container overlay -->
+    <div id="acid-sketch"></div>
+
     <!-- Top Settings Cog Menu -->
     <div id="top-settings">
       <button id="settings-btn">⚙</button>
@@ -388,6 +409,7 @@
       <!--<h2>GALLERY PAGE</h2>-->
       <audio id="my-audio" src="assets/NMTAH_Side_A.m4a"></audio>
     </div>
+
     <!-- Media Player Bottom Bar -->
     <div id="player-bar">
       <div class="player-left">
@@ -417,6 +439,9 @@
     </div>
   </div>
 
+  <!-- p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+
   <script>
     // Block refresh via keyboard shortcuts
     window.addEventListener('keydown', function(e) {
@@ -424,7 +449,7 @@
         e.preventDefault();
       }
     });
-    
+
     // Prevent touchmove scrolling (disables pull-to-refresh and background movement)
     document.addEventListener('touchmove', function(e) {
       e.preventDefault();
@@ -571,7 +596,7 @@
         } else if (action === "manual") {
           manualModalEl.style.display = 'flex';
         } else if (action === "reset") {
-          if (confirm("Are you sure? This will require you to re-enter your transition code.")) {
+          if (confirm("Reset Transmition Code? This will require you to re-enter your transition code to regain access to the relay station.")) {
             localStorage.removeItem("passwordAccepted");
             galleryPage.classList.remove('active');
             homePage.classList.add('active');
@@ -608,6 +633,128 @@
         manualModalEl.style.display = 'none';
       }
     });
+  </script>
+
+  <!-- p5 Sketch logic (from acid_sketch) -->
+  <script>
+    let overlaySketch = function (p) {
+      let textInput = "ACID";
+      let letters = [];
+      let trails = [];
+      let maxTrailLength = 500;
+      let customFont;
+      let lastFrameRateCheck = 0;
+      let spacing = 120;
+
+      p.preload = function () {
+        /* Optionally load the extra bold font if it's available */
+        customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf", () => {
+          // success callback
+        }, () => {
+          // error callback if font not found, fallback
+          console.warn("Wavehaus-158ExtraBold.otf not found; fallback to system font.");
+        });
+      };
+
+      p.setup = function () {
+        let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+        canvas.parent("acid-sketch");
+        p.textSize(160);
+        p.textAlign(p.CENTER, p.CENTER);
+        initializeLetters();
+      };
+
+      p.draw = function () {
+        p.clear();
+        // Check framerate every second to adjust maxTrailLength for performance
+        if (p.millis() - lastFrameRateCheck > 1000) {
+          let fps = p.frameRate();
+          if (fps < 30) {
+            maxTrailLength = 300;
+          } else if (fps > 50) {
+            maxTrailLength = 600;
+          }
+          lastFrameRateCheck = p.millis();
+        }
+
+        if (customFont && p.textFont() !== customFont) {
+          p.textFont(customFont);
+        }
+
+        // Draw existing trails
+        for (let trail of trails) {
+          drawWavyText(
+            trail.x,
+            trail.y,
+            p.color(trail.color[0], trail.color[1], trail.color[2]),
+            trail.letter
+          );
+        }
+
+        // Update positions of letters, add new trails
+        for (let i = 0; i < letters.length; i++) {
+          let letter = textInput[i];
+          let letterPos = letters[i];
+          let distance = p.dist(p.mouseX, p.mouseY, letterPos.x, letterPos.y);
+          if (distance < 200) {
+            let angle = p.atan2(letterPos.y - p.mouseY, letterPos.x - p.mouseX);
+            let force = Math.pow(200 - distance, 1.8) * 0.003;
+            letterPos.x += p.cos(angle) * force;
+            letterPos.y += p.sin(angle) * force;
+          }
+
+          // Slowly move letters back towards original positions
+          letterPos.x += (letterPos.originalX - letterPos.x) * 0.02;
+          letterPos.y += (letterPos.originalY - letterPos.y) * 0.02;
+
+          trails.push({
+            x: letterPos.x - 10,
+            y: letterPos.y,
+            color: [0, 255, 0],
+            letter
+          });
+          trails.push({
+            x: letterPos.x + 10,
+            y: letterPos.y,
+            color: [0, 0, 255],
+            letter
+          });
+
+          // Trim old trails
+          if (trails.length > maxTrailLength) {
+            trails.splice(0, trails.length - maxTrailLength);
+          }
+
+          // Draw the letter itself in black on top
+          p.fill(0);
+          p.noStroke();
+          p.text(letter, letterPos.x, letterPos.y);
+        }
+      };
+
+      function drawWavyText(x, y, col, letter) {
+        p.fill(col);
+        p.noStroke();
+        p.text(letter, x, y);
+      }
+
+      function initializeLetters() {
+        letters = [];
+        let startX = p.windowWidth / 2 - ((textInput.length - 1) * spacing) / 2;
+        for (let i = 0; i < textInput.length; i++) {
+          let x = startX + i * spacing;
+          let y = p.windowHeight / 2;
+          letters.push({ x, y, originalX: x, originalY: y });
+        }
+      }
+
+      p.windowResized = function () {
+        p.resizeCanvas(p.windowWidth, p.windowHeight);
+        initializeLetters();
+      };
+    };
+
+    let overlayP5 = new p5(overlaySketch);
   </script>
 </body>
 </html>
