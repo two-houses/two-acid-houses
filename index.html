@@ -638,28 +638,15 @@
   <!-- p5 Sketch logic (from acid_sketch) -->
   <script>
     let overlaySketch = function (p) {
-      let textInput = "ACID";
-      let letters = [];
-      let trails = [];
-      let maxTrailLength = 500;
-      let customFont;
-      let lastFrameRateCheck = 0;
-      let spacing = 120;
+      $1( p.windowWidth < 600 ? 100 : 160 )$2
+    // For mobile, reduce text size
 
-      p.preload = function () {
-        /* Optionally load the extra bold font if it's available */
-        customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf", () => {
-          // success callback
-        }, () => {
-          // error callback if font not found, fallback
-          console.warn("Wavehaus-158ExtraBold.otf not found; fallback to system font.");
-        });
-      };
-
-      p.setup = function () {
-        let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-        canvas.parent("acid-sketch");
-        p.textSize(160);
+            // Also adjust spacing if on mobile
+            if (p.windowWidth < 600) {
+              spacing = 80;
+            } else {
+              spacing = 120;
+            }
         p.textAlign(p.CENTER, p.CENTER);
         initializeLetters();
       };
