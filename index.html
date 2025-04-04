@@ -16,7 +16,7 @@
     /* Additional font for p5 sketch (optional) */
     @font-face {
       font-family: 'Wavehaus158ExtraBold';
-      src: url('fonts/Wavehaus-95SemiBold.otf') format('opentype');
+      src: url('fonts/Wavehaus-158ExtraBold.otf') format('opentype');
       font-weight: 800;
       font-style: normal;
     }
@@ -648,11 +648,11 @@
 
       p.preload = function () {
         /* Optionally load the extra bold font if it's available */
-        customFont = p.loadFont("fonts/Wavehaus-95SemiBold.otf", () => {
+        customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf", () => {
           // success callback
         }, () => {
           // error callback if font not found, fallback
-          console.warn("Wavehaus-95SemiBold.otf not found; fallback to system font.");
+          console.warn("Wavehaus-158ExtraBold.otf not found; fallback to system font.");
         });
       };
 
