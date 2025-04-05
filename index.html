@@ -3,22 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <title>Home Page Always + One-Time Password + Loading Screens</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
 
   <!-- Uicons: Thin Straight -->
-  <link href="assets/uicons/css/uicons-thin-straight.css" rel="stylesheet">
+  <link href="assets/uicons/css/uicons-thin-straight.css" rel="stylesheet" />
+
   <!-- Font Face Definition -->
   <style>
     @font-face {
-      font-family: 'Wavehaus42Light';
-      src: url('fonts/Wavehaus-42Light.otf') format('opentype');
+      font-family: "Wavehaus42Light";
+      src: url("fonts/Wavehaus-42Light.otf") format("opentype");
       font-weight: 400;
       font-style: normal;
     }
     /* Additional font for p5 sketch (optional) */
     @font-face {
-      font-family: 'Wavehaus158ExtraBold';
-      src: url('fonts/Wavehaus-158ExtraBold.otf') format('opentype');
+      font-family: "Wavehaus158ExtraBold";
+      src: url("fonts/Wavehaus-158ExtraBold.otf") format("opentype");
       font-weight: 800;
       font-style: normal;
     }
@@ -26,14 +30,15 @@
 
   <style>
     /* Global styles to fix position, disable scroll/pull-to-refresh */
-    html, body {
+    html,
+    body {
       margin: 0;
       position: fixed;
       width: 100%;
       height: 100%;
       overscroll-behavior: none;
       overflow: hidden;
-      font-family: 'Wavehaus42Light', Arial, sans-serif;
+      font-family: "Wavehaus42Light", Arial, sans-serif;
     }
 
     /* Pages */
@@ -70,7 +75,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       align-items: center;
       justify-content: center;
       z-index: 3000;
@@ -186,7 +191,7 @@
     }
     .signal-item {
       position: absolute;
-      transform: translate(0,0) scale(1);
+      transform: translate(0, 0) scale(1);
       opacity: 0;
       width: 50px;
       height: 50px;
@@ -226,7 +231,7 @@
       align-items: center;
       padding: 10px 5vw;
       box-sizing: border-box;
-      font-family: 'Wavehaus42Light', Arial, sans-serif;
+      font-family: "Wavehaus42Light", Arial, sans-serif;
       z-index: 2; /* Above the p5 and video, matches gallery content */
     }
     .player-left {
@@ -248,15 +253,21 @@
       cursor: pointer;
       outline: none;
     }
-    /* Use an icon from Uicons: fi-ts-mushroom, in white */
+    /* We'll have different icons & colors for paused vs playing. */
     #play-pause i {
       font-size: 24px;
-      color: #fff;
       transition: all 0.3s ease;
     }
 
-    /* When playing, we pulse the icon through rainbow colors */
+    /* Paused (default) => black icon, fi-ts-mushroom */
+    #play-pause.paused i {
+      color: #000;
+      content: "\e060"; /* We'll switch class to fi-ts-mushroom in JS, but here's a fallback if needed. */
+    }
+
+    /* Playing => fi-ts-mushroom-alt + rainbow animation, white icon. */
     #play-pause.playing i {
+      color: #fff;
       animation: rainbowPulse 2s linear infinite;
     }
     @keyframes rainbowPulse {
@@ -308,7 +319,7 @@
       background: rgba(0, 0, 0, 0.5);
       align-items: center;
       justify-content: center;
-      z-index: 3000;  /* Ensure modals sit on top */
+      z-index: 3000; /* Ensure modals sit on top */
     }
     .modal-box {
       background: #fff;
@@ -342,11 +353,12 @@
     }
     .loading-text {
       font-size: 24px;
-      font-family: 'Wavehaus42Light', Arial, sans-serif;
+      font-family: "Wavehaus42Light", Arial, sans-serif;
       animation: gentlePulse 5s infinite ease-in-out;
     }
     @keyframes gentlePulse {
-      0%, 100% {
+      0%,
+      100% {
         opacity: 1;
         transform: scale(1);
       }
@@ -422,7 +434,7 @@
         <span id="modal-close">✖</span>
         <h3>Enter Transmission Code</h3>
         <input type="password" id="modal-password" />
-        <br/>
+        <br />
         <button id="modal-submit">Activate Transmission Relay</button>
       </div>
     </div>
@@ -433,7 +445,7 @@
     <!-- Background Video -->
     <div id="video-background">
       <video autoplay loop muted playsinline>
-        <source src="assets/sand_4_loop.mp4" type="video/mp4">
+        <source src="assets/sand_4_loop.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
     </div>
@@ -445,10 +457,18 @@
     <div id="top-settings">
       <button id="settings-btn">⚙</button>
       <div id="signal-menu">
-        <button class="signal-item" data-action="download"><i class="fi fi-ts-file-export"></i></button>
-        <button class="signal-item" data-action="manual"><i class="fi fi-ts-book-arrow-right"></i></button>
-        <button class="signal-item" data-action="reset"><i class="fi fi-ts-password-alt"></i></button>
-        <button class="signal-item" data-action="home"><i class="fi fi-ts-house-night"></i></button>
+        <button class="signal-item" data-action="download">
+          <i class="fi fi-ts-file-export"></i>
+        </button>
+        <button class="signal-item" data-action="manual">
+          <i class="fi fi-ts-book-arrow-right"></i>
+        </button>
+        <button class="signal-item" data-action="reset">
+          <i class="fi fi-ts-password-alt"></i>
+        </button>
+        <button class="signal-item" data-action="home">
+          <i class="fi fi-ts-house-night"></i>
+        </button>
       </div>
     </div>
 
@@ -460,8 +480,8 @@
     <!-- Media Player Bottom Bar -->
     <div id="player-bar">
       <div class="player-left">
-        <!-- Updated Play/Pause button with icon -->
-        <button id="play-pause">
+        <!-- Updated Play/Pause button with dynamic icons -->
+        <button id="play-pause" class="paused">
           <i class="fi fi-ts-mushroom"></i>
         </button>
         <button id="rewind-btn">Scrub Signal</button>
@@ -474,7 +494,10 @@
   <div id="download-modal" class="modal-bg">
     <div class="modal-box">
       <span class="close-btn" id="download-close">✖</span>
-      <p>Download the full 16bit Audio Manifest.<br></p>
+      <p>
+        Download the full 16bit Audio Manifest.
+        <br />
+      </p>
       <a href="assets/NMTAH_Side_A.wav" download="NMTAH_Side_A.wav">
         <button>Download manifest</button>
       </a>
@@ -490,75 +513,82 @@
   </div>
 
   <!-- p5.js library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"
+  ></script>
 
   <script>
     // Block refresh via keyboard shortcuts
-    window.addEventListener('keydown', function(e) {
-      if(e.keyCode === 116 || (e.ctrlKey && e.keyCode === 82)) {
+    window.addEventListener("keydown", function (e) {
+      if (e.keyCode === 116 || (e.ctrlKey && e.keyCode === 82)) {
         e.preventDefault();
       }
     });
 
     // Prevent touchmove scrolling (disables pull-to-refresh and background movement)
-    document.addEventListener('touchmove', function(e) {
-      e.preventDefault();
-    }, {passive: false});
+    document.addEventListener(
+      "touchmove",
+      function (e) {
+        e.preventDefault();
+      },
+      { passive: false }
+    );
 
     // Page Elements
-    const homePage = document.getElementById('home-page');
-    const galleryPage = document.getElementById('gallery-page');
-    const loader = document.getElementById('loader');
-    const loaderText = document.getElementById('loader-text');
+    const homePage = document.getElementById("home-page");
+    const galleryPage = document.getElementById("gallery-page");
+    const loader = document.getElementById("loader");
+    const loaderText = document.getElementById("loader-text");
 
     // Home & Password Elements
-    const enterCodeBtn = document.getElementById('enter-code-btn');
-    const passwordModal = document.getElementById('password-modal');
-    const modalClose = document.getElementById('modal-close');
-    const modalSubmit = document.getElementById('modal-submit');
-    const modalPassword = document.getElementById('modal-password');
+    const enterCodeBtn = document.getElementById("enter-code-btn");
+    const passwordModal = document.getElementById("password-modal");
+    const modalClose = document.getElementById("modal-close");
+    const modalSubmit = document.getElementById("modal-submit");
+    const modalPassword = document.getElementById("modal-password");
 
     // Audio & Media Controls
-    const audioEl = document.getElementById('my-audio');
-    const playPauseBtn = document.getElementById('play-pause');
-    const rewindBtn = document.getElementById('rewind-btn');
-    const timerDisplay = document.getElementById('timerDisplay');
+    const audioEl = document.getElementById("my-audio");
+    const playPauseBtn = document.getElementById("play-pause");
+    const rewindBtn = document.getElementById("rewind-btn");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const playPauseIcon = playPauseBtn.querySelector("i");
 
     // Top Settings Elements (Signal Rings Menu)
-    const settingsBtn = document.getElementById('settings-btn');
-    const signalMenu = document.getElementById('signal-menu');
-    const signalItems = document.querySelectorAll('.signal-item');
+    const settingsBtn = document.getElementById("settings-btn");
+    const signalMenu = document.getElementById("signal-menu");
+    const signalItems = document.querySelectorAll(".signal-item");
 
     // Extra Modals
-    const downloadModalEl = document.getElementById('download-modal');
-    const downloadClose = document.getElementById('download-close');
-    const manualModalEl = document.getElementById('manual-modal');
-    const manualClose = document.getElementById('manual-close');
+    const downloadModalEl = document.getElementById("download-modal");
+    const downloadClose = document.getElementById("download-close");
+    const manualModalEl = document.getElementById("manual-modal");
+    const manualClose = document.getElementById("manual-close");
 
     // On Load: Always show home page
-    window.addEventListener('load', () => {
-      homePage.classList.add('active');
-      galleryPage.classList.remove('active');
+    window.addEventListener("load", () => {
+      homePage.classList.add("active");
+      galleryPage.classList.remove("active");
     });
 
     // Home Page: Enter Transmission Code
-    enterCodeBtn.addEventListener('click', () => {
+    enterCodeBtn.addEventListener("click", () => {
       const passAccepted = localStorage.getItem("passwordAccepted") === "true";
       if (passAccepted) {
         doLoadingToGallery();
       } else {
-        passwordModal.style.display = 'flex';
-        modalPassword.value = '';
+        passwordModal.style.display = "flex";
+        modalPassword.value = "";
         modalPassword.focus();
       }
     });
 
-    modalClose.addEventListener('click', () => {
-      passwordModal.style.display = 'none';
+    modalClose.addEventListener("click", () => {
+      passwordModal.style.display = "none";
     });
-    modalSubmit.addEventListener('click', checkPassword);
-    modalPassword.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Enter') {
+    modalSubmit.addEventListener("click", checkPassword);
+    modalPassword.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
         ev.preventDefault();
         checkPassword();
       }
@@ -569,10 +599,12 @@
       const correct = "qwerty";
       if (code === correct) {
         localStorage.setItem("passwordAccepted", "true");
-        passwordModal.style.display = 'none';
+        passwordModal.style.display = "none";
         doLoadingToGallery();
       } else {
-        alert("ACCESS RESTRICTED: Transmission Code does not match records. Please consult the training manual.");
+        alert(
+          "ACCESS RESTRICTED: Transmission Code does not match records. Please consult the training manual."
+        );
       }
     }
 
@@ -585,7 +617,9 @@
       loader.style.display = "none";
     }
     function doLoadingToGallery() {
-      showLoading("TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY");
+      showLoading(
+        "TRANSMITTING ACTIVATION CODES TO NEAREST RELAY STATION....<br>PLEASE STAND BY"
+      );
       setTimeout(() => {
         showLoading("ACCESS GRANTED");
         setTimeout(() => {
@@ -595,24 +629,32 @@
       }, 3000);
     }
     function goToGallery() {
-      homePage.classList.remove('active');
-      galleryPage.classList.add('active');
+      homePage.classList.remove("active");
+      galleryPage.classList.add("active");
     }
 
     // Audio Controls
-    playPauseBtn.addEventListener('click', () => {
+    playPauseBtn.addEventListener("click", () => {
       if (audioEl.paused) {
-        audioEl.play().then(() => {
-          // Add playing class so we get rainbow effect
-          playPauseBtn.classList.add('playing');
-        }).catch(err => console.warn("audio.play() failed:", err));
+        // Switch icon to fi-ts-mushroom-alt, add .playing class, remove .paused
+        audioEl
+          .play()
+          .then(() => {
+            playPauseBtn.classList.remove("paused");
+            playPauseBtn.classList.add("playing");
+            playPauseIcon.className = "fi fi-ts-mushroom-alt";
+          })
+          .catch((err) => console.warn("audio.play() failed:", err));
       } else {
+        // Switch icon to fi-ts-mushroom, remove .playing class, add .paused
         audioEl.pause();
-        playPauseBtn.classList.remove('playing');
+        playPauseBtn.classList.remove("playing");
+        playPauseBtn.classList.add("paused");
+        playPauseIcon.className = "fi fi-ts-mushroom";
       }
     });
 
-    rewindBtn.addEventListener('click', () => {
+    rewindBtn.addEventListener("click", () => {
       audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
       updateTimer();
     });
@@ -623,67 +665,80 @@
       let mins = Math.floor((t % 3600) / 60);
       let secs = Math.floor(t % 60);
       let ms = Math.floor((t % 1) * 1000);
-      const pad = (num, size) => String(num).padStart(size, '0');
-      timerDisplay.textContent = `${pad(hrs,2)}:${pad(mins,2)}:${pad(secs,2)}:${pad(ms,3)}`;
+
+      const pad = (num, size) => String(num).padStart(size, "0");
+      timerDisplay.textContent = `${pad(hrs, 2)}:${pad(mins, 2)}:${pad(
+        secs,
+        2
+      )}:${pad(ms, 3)}`;
     }
     setInterval(updateTimer, 100);
 
     // Top Settings: Toggle Expanding Signal Rings Menu
-    settingsBtn.addEventListener('click', (e) => {
+    settingsBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      signalMenu.classList.toggle('active');
+      signalMenu.classList.toggle("active");
     });
-    window.addEventListener('click', (e) => {
-      if (!document.getElementById('top-settings').contains(e.target)) {
-        signalMenu.classList.remove('active');
+    window.addEventListener("click", (e) => {
+      if (!document.getElementById("top-settings").contains(e.target)) {
+        signalMenu.classList.remove("active");
       }
     });
 
     // Signal Menu Item Actions
-    signalItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const action = item.getAttribute('data-action');
-        signalMenu.classList.remove('active');
+    signalItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        const action = item.getAttribute("data-action");
+        signalMenu.classList.remove("active");
+
         if (action === "download") {
-          downloadModalEl.style.display = 'flex';
+          downloadModalEl.style.display = "flex";
         } else if (action === "manual") {
-          manualModalEl.style.display = 'flex';
+          manualModalEl.style.display = "flex";
         } else if (action === "reset") {
-          if (confirm("Reset Transmition Code? This will require you to re-enter your transition code to regain access to the relay station.")) {
+          if (
+            confirm(
+              "Reset Transmition Code? This will require you to re-enter your transition code to regain access to the relay station."
+            )
+          ) {
             localStorage.removeItem("passwordAccepted");
-            galleryPage.classList.remove('active');
-            homePage.classList.add('active');
+            galleryPage.classList.remove("active");
+            homePage.classList.add("active");
             if (!audioEl.paused) {
               audioEl.pause();
-              playPauseBtn.classList.remove('playing');
+              playPauseBtn.classList.remove("playing");
+              playPauseBtn.classList.add("paused");
+              playPauseIcon.className = "fi fi-ts-mushroom";
             }
           }
         } else if (action === "home") {
-          galleryPage.classList.remove('active');
-          homePage.classList.add('active');
+          galleryPage.classList.remove("active");
+          homePage.classList.add("active");
           if (!audioEl.paused) {
             audioEl.pause();
-            playPauseBtn.classList.remove('playing');
+            playPauseBtn.classList.remove("playing");
+            playPauseBtn.classList.add("paused");
+            playPauseIcon.className = "fi fi-ts-mushroom";
           }
         }
       });
     });
 
     // Modal Close Handlers for Download & Manual Modals
-    downloadClose.addEventListener('click', () => {
-      downloadModalEl.style.display = 'none';
+    downloadClose.addEventListener("click", () => {
+      downloadModalEl.style.display = "none";
     });
-    manualClose.addEventListener('click', () => {
-      manualModalEl.style.display = 'none';
+    manualClose.addEventListener("click", () => {
+      manualModalEl.style.display = "none";
     });
-    downloadModalEl.addEventListener('click', (e) => {
+    downloadModalEl.addEventListener("click", (e) => {
       if (e.target === downloadModalEl) {
-        downloadModalEl.style.display = 'none';
+        downloadModalEl.style.display = "none";
       }
     });
-    manualModalEl.addEventListener('click', (e) => {
+    manualModalEl.addEventListener("click", (e) => {
       if (e.target === manualModalEl) {
-        manualModalEl.style.display = 'none';
+        manualModalEl.style.display = "none";
       }
     });
   </script>
@@ -701,12 +756,18 @@
 
       p.preload = function () {
         /* Optionally load the extra bold font if it's available */
-        customFont = p.loadFont("fonts/Wavehaus-158ExtraBold.otf", () => {
-          // success callback
-        }, () => {
-          // error callback if font not found, fallback
-          console.warn("Wavehaus-158ExtraBold.otf not found; fallback to system font.");
-        });
+        customFont = p.loadFont(
+          "fonts/Wavehaus-158ExtraBold.otf",
+          () => {
+            // success callback
+          },
+          () => {
+            // error callback if font not found, fallback
+            console.warn(
+              "Wavehaus-158ExtraBold.otf not found; fallback to system font."
+            );
+          }
+        );
       };
 
       p.setup = function () {
@@ -749,6 +810,7 @@
           let letter = textInput[i];
           let letterPos = letters[i];
           let distance = p.dist(p.mouseX, p.mouseY, letterPos.x, letterPos.y);
+
           if (distance < 200) {
             let angle = p.atan2(letterPos.y - p.mouseY, letterPos.x - p.mouseX);
             let force = Math.pow(200 - distance, 1.8) * 0.003;
@@ -793,7 +855,9 @@
 
       function initializeLetters() {
         letters = [];
-        let startX = p.windowWidth / 2 - ((textInput.length - 1) * spacing) / 2;
+        let startX =
+          p.windowWidth / 2 - ((textInput.length - 1) * spacing) / 2;
+
         for (let i = 0; i < textInput.length; i++) {
           let x = startX + i * spacing;
           let y = p.windowHeight / 2;
