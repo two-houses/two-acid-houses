@@ -267,13 +267,36 @@
 
     /* Playing => fi-ts-mushroom-alt + rainbow animation, white icon. */
     #play-pause.playing i {
-      color: #fff;
-      animation: rainbowPulse 2s linear infinite;
+      animation: multiPulse 2.5s linear infinite;
+      /* remove color: #fff; use multi-step color cycle below */
     }
-    @keyframes rainbowPulse {
+
+    @keyframes multiPulse {
       0% {
-        filter: hue-rotate(0deg);
+        color: #FF0040;
+        text-shadow: 0 0 8px #FF0040;
       }
+      20% {
+        color: #FFD500;
+        text-shadow: 0 0 8px #FFD500;
+      }
+      40% {
+        color: #00FF00;
+        text-shadow: 0 0 8px #00FF00;
+      }
+      60% {
+        color: #00BFFF;
+        text-shadow: 0 0 8px #00BFFF;
+      }
+      80% {
+        color: #FF00FF;
+        text-shadow: 0 0 8px #FF00FF;
+      }
+      100% {
+        color: #FF0040;
+        text-shadow: 0 0 8px #FF0040;
+      }
+    }
       100% {
         filter: hue-rotate(360deg);
       }
