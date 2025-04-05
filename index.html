@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Home Page Always + One-Time Password + Loading Screens</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
   <!-- Uicons: Thin Straight -->
   <link href="assets/uicons/css/uicons-thin-straight.css" rel="stylesheet">
   <!-- Font Face Definition -->
@@ -233,7 +234,41 @@
       gap: 20px;
       align-items: center;
     }
-    #play-pause,
+
+    /* Replace the old textual button with an icon inside a circle for #play-pause */
+    #play-pause {
+      width: 44px;
+      height: 44px;
+      background: #f9f9f9; /* Very light grey circle */
+      border: 2px solid #ccc; /* Light grey border */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      outline: none;
+    }
+    /* Use an icon from Uicons: fi-ts-mushroom, in white */
+    #play-pause i {
+      font-size: 24px;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    /* When playing, we pulse the icon through rainbow colors */
+    #play-pause.playing i {
+      animation: rainbowPulse 2s linear infinite;
+    }
+    @keyframes rainbowPulse {
+      0% {
+        filter: hue-rotate(0deg);
+      }
+      100% {
+        filter: hue-rotate(360deg);
+      }
+    }
+
+    /* Rewind button remains textual for now */
     #rewind-btn {
       width: 120px;
       height: 44px;
@@ -246,6 +281,7 @@
       align-items: center;
       justify-content: center;
     }
+
     #timerDisplay {
       width: 120px;
       height: 44px;
@@ -354,16 +390,16 @@
       }
       /* Adjust expanded positions for smaller menu (mobile) */
       #signal-menu.active .signal-item:nth-child(1) {
-        transform: translate(-70px, 0) scale(1);
+        transform: translate(-55px, 0) scale(1);
       }
       #signal-menu.active .signal-item:nth-child(2) {
-        transform: translate(-145px, 0) scale(1);
+        transform: translate(-130px, 0) scale(1);
       }
       #signal-menu.active .signal-item:nth-child(3) {
-        transform: translate(-230px, 0) scale(1);
+        transform: translate(-215px, 0) scale(1);
       }
       #signal-menu.active .signal-item:nth-child(4) {
-        transform: translate(-305px, 0) scale(1);
+        transform: translate(-290px, 0) scale(1);
       }
     }
   </style>
@@ -407,7 +443,7 @@
 
     <!-- Top Settings Cog Menu -->
     <div id="top-settings">
-      <button id="settings-btn"><i class="fi fi-ts-constellation"></i></button> 
+      <button id="settings-btn">⚙</button>
       <div id="signal-menu">
         <button class="signal-item" data-action="download"><i class="fi fi-ts-file-export"></i></button>
         <button class="signal-item" data-action="manual"><i class="fi fi-ts-book-arrow-right"></i></button>
@@ -424,7 +460,10 @@
     <!-- Media Player Bottom Bar -->
     <div id="player-bar">
       <div class="player-left">
-        <button id="play-pause">Establish Link</button>
+        <!-- Updated Play/Pause button with icon -->
+        <button id="play-pause">
+          <i class="fi fi-ts-mushroom"></i>
+        </button>
         <button id="rewind-btn">Scrub Signal</button>
         <div id="timerDisplay">00:00:00:000</div>
       </div>
@@ -564,17 +603,20 @@
     playPauseBtn.addEventListener('click', () => {
       if (audioEl.paused) {
         audioEl.play().then(() => {
-          playPauseBtn.textContent = "Link Secured";
+          // Add playing class so we get rainbow effect
+          playPauseBtn.classList.add('playing');
         }).catch(err => console.warn("audio.play() failed:", err));
       } else {
         audioEl.pause();
-        playPauseBtn.textContent = "Establish Link";
+        playPauseBtn.classList.remove('playing');
       }
     });
+
     rewindBtn.addEventListener('click', () => {
       audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
       updateTimer();
     });
+
     function updateTimer() {
       let t = audioEl.currentTime;
       let hrs = Math.floor(t / 3600);
@@ -613,7 +655,7 @@
             homePage.classList.add('active');
             if (!audioEl.paused) {
               audioEl.pause();
-              playPauseBtn.textContent = "Establish Link";
+              playPauseBtn.classList.remove('playing');
             }
           }
         } else if (action === "home") {
@@ -621,7 +663,7 @@
           homePage.classList.add('active');
           if (!audioEl.paused) {
             audioEl.pause();
-            playPauseBtn.textContent = "Establish Link";
+            playPauseBtn.classList.remove('playing');
           }
         }
       });
