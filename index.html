@@ -265,10 +265,9 @@
       content: "\e060"; /* We'll switch class to fi-ts-mushroom in JS, but here's a fallback if needed. */
     }
 
-    /* Playing => fi-ts-mushroom-alt + rainbow animation, white icon. */
+    /* Playing => fi-ts-mushroom-alt + multiPulse animation */
     #play-pause.playing i {
       animation: multiPulse 2.5s linear infinite;
-      /* remove color: #fff; use multi-step color cycle below */
     }
 
     @keyframes multiPulse {
@@ -297,23 +296,24 @@
         text-shadow: 0 0 8px #FF0040;
       }
     }
-      100% {
-        filter: hue-rotate(360deg);
-      }
-    }
 
-    /* Rewind button remains textual for now */
+    /* Rewind button, same styling as the play button but different icon */
     #rewind-btn {
-      width: 120px;
+      width: 44px;
       height: 44px;
-      font-size: 14px;
-      background: #fff;
-      color: #000;
-      border: 2px solid #000;
-      cursor: pointer;
+      background: #f9f9f9;
+      border: 2px solid #ccc;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
+      outline: none;
+    }
+    #rewind-btn i {
+      color: #000;
+      font-size: 24px;
+      transition: all 0.3s ease;
     }
 
     #timerDisplay {
@@ -478,7 +478,9 @@
 
     <!-- Top Settings Cog Menu -->
     <div id="top-settings">
-      <button id="settings-btn">⚙</button>
+      <button id="settings-btn">
+        <i class="fi fi-ts-constellation"></i>
+      </button>
       <div id="signal-menu">
         <button class="signal-item" data-action="download">
           <i class="fi fi-ts-file-export"></i>
@@ -505,9 +507,12 @@
       <div class="player-left">
         <!-- Updated Play/Pause button with dynamic icons -->
         <button id="play-pause" class="paused">
-          <i class="fi fi-ts-mushroom"></i>
+          <i class="fi fi-ts-mushroom-alt"></i>
         </button>
-        <button id="rewind-btn">Scrub Signal</button>
+        <!-- Rewind Button -->
+        <button id="rewind-btn">
+          <i class="fi fi-ts-angle-double-left"></i>
+        </button>
         <div id="timerDisplay">00:00:00:000</div>
       </div>
     </div>
