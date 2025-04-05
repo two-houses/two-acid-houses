@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <title>Home Page Always + One-Time Password + Loading Screens</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <link href="/assets/css/uicons-thin-straight.css" rel="stylesheet">
-
+  <!-- Uicons: Thin Straight -->
+  <link href="assets/uicons/css/uicons-thin-straight.css" rel="stylesheet">
   <!-- Font Face Definition -->
   <style>
     @font-face {
@@ -120,7 +120,7 @@
       width: 100%;
       height: 100%;
       z-index: 1;
-      pointer-events: none; /* so user can still click underlying elements, if desired */
+      pointer-events: none;
     }
     #my-audio {
       display: none;
@@ -174,6 +174,15 @@
       pointer-events: auto;
       opacity: 1;
     }
+    .signal-item i {
+      color: #fff;
+      font-size: 22px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .signal-item {
       position: absolute;
       transform: translate(0,0) scale(1);
@@ -190,18 +199,18 @@
       transition: transform 0.3s ease, opacity 0.3s ease;
       cursor: pointer;
     }
-    /* Adjust expanded positions for larger menu */
+    /* Adjust expanded positions for larger menu (desktop) */
     #signal-menu.active .signal-item:nth-child(1) {
-      transform: translate(-80px, 0) scale(1);
+      transform: translate(-55px, 0) scale(1);
     }
     #signal-menu.active .signal-item:nth-child(2) {
-      transform: translate(-140px, 0) scale(1);
+      transform: translate(-130px, 0) scale(1);
     }
     #signal-menu.active .signal-item:nth-child(3) {
-      transform: translate(-220px, 0) scale(1);
+      transform: translate(-215px, 0) scale(1);
     }
     #signal-menu.active .signal-item:nth-child(4) {
-      transform: translate(-300px, 0) scale(1);
+      transform: translate(-290px, 0) scale(1);
     }
 
     /* Media Player - Bottom Bar */
@@ -343,6 +352,7 @@
         font-size: 18px;
         line-height: 45px;
       }
+      /* Adjust expanded positions for smaller menu (mobile) */
       #signal-menu.active .signal-item:nth-child(1) {
         transform: translate(-55px, 0) scale(1);
       }
@@ -399,10 +409,10 @@
     <div id="top-settings">
       <button id="settings-btn">⚙</button>
       <div id="signal-menu">
-        <button class="signal-item" data-action="download"><i class="fi fi-ts-camera"></button>
-        <button class="signal-item" data-action="manual"><span class="fi fi-ts-camera"></button>
-        <button class="signal-item" data-action="reset">R</button>
-        <button class="signal-item" data-action="home">H</button>
+        <button class="signal-item" data-action="download"><i class="fi fi-ts-file-export"></i></button>
+        <button class="signal-item" data-action="manual"><i class="fi fi-ts-book-arrow-right"></i></button>
+        <button class="signal-item" data-action="reset"><i class="fi fi-ts-password-alt"></i></button>
+        <button class="signal-item" data-action="home"><i class="fi fi-ts-house-night"></i></button>
       </div>
     </div>
 
