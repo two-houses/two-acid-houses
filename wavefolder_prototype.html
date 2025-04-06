@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>P5 Sine Waves with Folding</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- p5.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+
+  <style>
+    /* Reset basic styling */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* Keep the waves in view; no scrolling */
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffffff;
+      font-family: sans-serif;
+    }
+
+    /* The container in which we'll place the p5 canvas */
+    #wave-sketch {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Optional text overlay to label the demo */
+    #demo-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Container for the waves -->
+  <div id="wave-sketch">
+    <div id="demo-label">
+      <strong>p5 Sine Wave Demo</strong><br>
+      Waves fold randomly every few seconds.
+    </div>
+  </div>
+
+  <script>
+    let waveSketch = function (p) {
+      const waveCount = 4; // number of waves
+      let waves = [];
+  
+      p.setup = function() {
+        let c = p.createCanvas(p.windowWidth, p.windowHeight);
+        c.parent("acid-sketch");
+  
+        // Initialize wave lines
+        for (let i = 0; i < waveCount; i++) {
+          waves.push({
+            freq: p.random(0.001, 0.003), // wave frequency
+            amp: p.random(30, 80),        // wave amplitude
+            speed: p.random(0.5, 1.5),    // wave horizontal scroll speed
+            phase: p.random(p.TWO_PI),    // initial phase offset
+            yOffset: (p.height / (waveCount + 1)) * (i + 1)
+          });
+        }
+      };
+  
+      p.draw = function() {
+        p.background(255);
+        p.noFill();
+        p.stroke(0);
+  
+        // Draw each wave
+        for (let w of waves) {
+          p.beginShape();
+          for (let x = 0; x < p.width; x++) {
+            let angle = w.freq * x + w.phase;
+            let y = w.yOffset + w.amp * p.sin(angle);
+            p.vertex(x, y);
+          }
+          p.endShape();
+  
+          // shift phase so wave scrolls horizontally
+          w.phase += 0.01 * w.speed;
+        }
+      };
+  
+      p.windowResized = function() {
+        p.resizeCanvas(p.windowWidth, p.windowHeight);
+        // Recompute wave offsets
+        for (let i = 0; i < waveCount; i++) {
+          waves[i].yOffset = (p.height / (waveCount + 1)) * (i + 1);
+        }
+      };
+    };
+  
+    // Create the new wave sketch
+    let overlayP5 = new p5(waveSketch);
+  </script>
+</body>
+</html>

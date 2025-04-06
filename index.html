@@ -54,7 +54,24 @@
     }
 
     /* HOME PAGE */
+    /* We'll place the wave container behind #home-content */
+    #home-page {
+      position: relative;
+      overflow: hidden;
+    }
+    #wave-sketch-home {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0; /* behind the content */
+    }
+
     #home-content {
+      /* Raise content above wave */
+      position: relative;
+      z-index: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -262,7 +279,7 @@
     /* Paused (default) => black icon, fi-ts-mushroom */
     #play-pause.paused i {
       color: #000;
-      content: "\e060"; /* We'll switch class to fi-ts-mushroom in JS, but here's a fallback if needed. */
+      content: "\e060"; /* We'll switch class to fi-ts-mushroom in JS, fallback if needed. */
     }
 
     /* Playing => fi-ts-mushroom-alt + multiPulse animation */
@@ -273,27 +290,21 @@
     @keyframes multiPulse {
       0% {
         color: #FF0040;
-        
       }
       20% {
         color: #FFD500;
-        
       }
       40% {
         color: #00FF00;
-        
       }
       60% {
         color: #00BFFF;
-        
       }
       80% {
         color: #FF00FF;
-        
       }
       100% {
         color: #FF0040;
-        
       }
     }
 
@@ -447,6 +458,9 @@
 
   <!-- HOME PAGE -->
   <div id="home-page" class="active">
+    <!-- Wave container behind content -->
+    <div id="wave-sketch-home"></div>
+
     <div id="home-content">
       <h2>Imagined Future Listeners</h2>
       <button id="enter-code-btn">Enter Transmission Code</button>
@@ -473,7 +487,7 @@
       </video>
     </div>
 
-    <!-- p5.js container overlay -->
+    <!-- p5.js container overlay for GALLERY only -->
     <div id="acid-sketch"></div>
 
     <!-- Top Settings Cog Menu -->
@@ -771,135 +785,92 @@
     });
   </script>
 
-  <!-- p5 Sketch logic (from acid_sketch) -->
+  <!-- p5 wave folding for HOME PAGE ONLY -->
   <script>
-    let overlaySketch = function (p) {
-      let textInput = "ACID";
-      let letters = [];
-      let trails = [];
-      let maxTrailLength = 500;
-      let customFont;
-      let lastFrameRateCheck = 0;
-      let spacing = 120;
+    let waveSketch = function (p) {
+      // Number of wave lines
+      const waveCount = 4;
 
-      p.preload = function () {
-        /* Optionally load the extra bold font if it's available */
-        customFont = p.loadFont(
-          "fonts/Wavehaus-158ExtraBold.otf",
-          () => {
-            // success callback
-          },
-          () => {
-            // error callback if font not found, fallback
-            console.warn(
-              "Wavehaus-158ExtraBold.otf not found; fallback to system font."
-            );
-          }
-        );
-      };
+      // Each wave line: frequency, amplitude, speed, phase offset, vertical offset
+      let waves = [];
+      // For wave folding: track which wave is folded, plus time remaining
+      let folds = []; // folds[i] = { folded: boolean, timer: number }
 
-      p.setup = function () {
-        let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-        canvas.parent("acid-sketch");
-        p.textSize(160);
-        p.textAlign(p.CENTER, p.CENTER);
-        initializeLetters();
-      };
+      p.setup = function() {
+        let c = p.createCanvas(p.windowWidth, p.windowHeight);
+        c.parent("wave-sketch-home");
 
-      p.draw = function () {
-        p.clear();
-        // Check framerate every second to adjust maxTrailLength for performance
-        if (p.millis() - lastFrameRateCheck > 1000) {
-          let fps = p.frameRate();
-          if (fps < 30) {
-            maxTrailLength = 300;
-          } else if (fps > 50) {
-            maxTrailLength = 600;
-          }
-          lastFrameRateCheck = p.millis();
-        }
-
-        if (customFont && p.textFont() !== customFont) {
-          p.textFont(customFont);
-        }
-
-        // Draw existing trails
-        for (let trail of trails) {
-          drawWavyText(
-            trail.x,
-            trail.y,
-            p.color(trail.color[0], trail.color[1], trail.color[2]),
-            trail.letter
-          );
-        }
-
-        // Update positions of letters, add new trails
-        for (let i = 0; i < letters.length; i++) {
-          let letter = textInput[i];
-          let letterPos = letters[i];
-          let distance = p.dist(p.mouseX, p.mouseY, letterPos.x, letterPos.y);
-
-          if (distance < 200) {
-            let angle = p.atan2(letterPos.y - p.mouseY, letterPos.x - p.mouseX);
-            let force = Math.pow(200 - distance, 1.8) * 0.003;
-            letterPos.x += p.cos(angle) * force;
-            letterPos.y += p.sin(angle) * force;
-          }
-
-          // Slowly move letters back towards original positions
-          letterPos.x += (letterPos.originalX - letterPos.x) * 0.02;
-          letterPos.y += (letterPos.originalY - letterPos.y) * 0.02;
-
-          trails.push({
-            x: letterPos.x - 10,
-            y: letterPos.y,
-            color: [0, 255, 0],
-            letter
+        // Initialize wave lines
+        for (let i = 0; i < waveCount; i++) {
+          waves.push({
+            freq: p.random(0.001, 0.003),    // wave frequency
+            amp: p.random(30, 80),          // wave amplitude
+            speed: p.random(0.5, 1.5),      // wave horizontal scroll speed
+            phase: p.random(p.TWO_PI),      // initial phase offset
+            yOffset: (p.height / (waveCount + 1)) * (i + 1) // vertical spacing
           });
-          trails.push({
-            x: letterPos.x + 10,
-            y: letterPos.y,
-            color: [0, 0, 255],
-            letter
+          folds.push({
+            folded: false,
+            timer: 0
           });
-
-          // Trim old trails
-          if (trails.length > maxTrailLength) {
-            trails.splice(0, trails.length - maxTrailLength);
-          }
-
-          // Draw the letter itself in black on top
-          p.fill(0);
-          p.noStroke();
-          p.text(letter, letterPos.x, letterPos.y);
         }
       };
 
-      function drawWavyText(x, y, col, letter) {
-        p.fill(col);
-        p.noStroke();
-        p.text(letter, x, y);
-      }
+      p.draw = function() {
+        // Clear with a white background
+        p.background(255);
 
-      function initializeLetters() {
-        letters = [];
-        let startX =
-          p.windowWidth / 2 - ((textInput.length - 1) * spacing) / 2;
-
-        for (let i = 0; i < textInput.length; i++) {
-          let x = startX + i * spacing;
-          let y = p.windowHeight / 2;
-          letters.push({ x, y, originalX: x, originalY: y });
+        // Occasionally pick a wave to fold
+        if (p.frameCount % 240 === 0) {
+          // 1/3 chance to pick a random wave to fold
+          if (p.random() < 0.33) {
+            let i = p.floor(p.random(waveCount));
+            folds[i].folded = true;
+            // fold lasts 1-2 seconds
+            folds[i].timer = p.int(p.random(60, 120));
+          }
         }
-      }
 
-      p.windowResized = function () {
+        p.noFill();
+        p.stroke(0);
+
+        // Draw each wave
+        for (let i = 0; i < waveCount; i++) {
+          let w = waves[i];
+          let f = folds[i];
+
+          // If wave is folded, count down
+          if (f.folded) {
+            f.timer--;
+            if (f.timer <= 0) {
+              f.folded = false;
+            }
+          }
+
+          p.beginShape();
+          for (let x = 0; x < p.width; x++) {
+            let angle = w.freq * x + w.phase;
+            let invert = f.folded ? -1 : 1;
+            let y = w.yOffset + invert * w.amp * p.sin(angle);
+            p.vertex(x, y);
+          }
+          p.endShape();
+
+          // Shift phase for horizontal scroll
+          w.phase += 0.01 * w.speed;
+        }
+      };
+
+      p.windowResized = function() {
         p.resizeCanvas(p.windowWidth, p.windowHeight);
-        initializeLetters();
+        // Recompute vertical offsets
+        for (let i = 0; i < waveCount; i++) {
+          waves[i].yOffset = (p.height / (waveCount + 1)) * (i + 1);
+        }
       };
     };
 
-    let overlayP5 = new p5(overlaySketch);
+    let landingWaves = new p5(waveSketch);
   </script>
 </body>
 </html>
