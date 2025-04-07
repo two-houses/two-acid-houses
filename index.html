@@ -995,6 +995,96 @@
 
     // Start the ACID text overlay on the gallery page
     let overlayP5 = new p5(overlaySketch);
+
+    
   </script>
+  <!-- Add this right before your closing </body> tag -->
+<script>
+  // Delay showing the button until p5 sketch is initialized
+  const enterCodeBtn = document.getElementById("enter-code-btn");
+  enterCodeBtn.style.opacity = "0"; // hide initially
+  enterCodeBtn.style.transition = "opacity 1s ease";
+
+  // Monitor p5 sketch readiness
+  let sketchInitialized = false;
+
+  function revealEnterButton() {
+    if (!sketchInitialized) {
+      sketchInitialized = true;
+      setTimeout(() => {
+        enterCodeBtn.style.opacity = "1";
+      }, 500); // slight delay after sketch setup
+    }
+  }
+</script>
+
+<script>
+  let waveSketch = function (p) {
+    const waveCount = 4;
+    let waves = [];
+    let folds = [];
+
+    p.setup = function () {
+      let c = p.createCanvas(p.windowWidth, p.windowHeight);
+      c.parent("wave-sketch-home");
+
+      for (let i = 0; i < waveCount; i++) {
+        waves.push({
+          freq: p.random(0.001, 0.003),
+          amp: p.random(30, 80),
+          speed: p.random(0.5, 1.5),
+          phase: p.random(p.TWO_PI),
+          yOffset: (p.height / (waveCount + 1)) * (i + 1),
+        });
+        folds.push({ folded: false, timer: 0 });
+      }
+
+      revealEnterButton(); // <-- Reveal the button once canvas is ready
+    };
+
+    p.draw = function () {
+      p.background(255);
+
+      if (p.frameCount % 240 === 0 && p.random() < 0.33) {
+        let idx = p.floor(p.random(waveCount));
+        folds[idx].folded = true;
+        folds[idx].timer = p.int(p.random(60, 120));
+      }
+
+      p.noFill();
+      p.stroke(0);
+
+      for (let i = 0; i < waveCount; i++) {
+        let w = waves[i];
+        let f = folds[i];
+        if (f.folded) {
+          f.timer--;
+          if (f.timer <= 0) f.folded = false;
+        }
+
+        p.beginShape();
+        for (let x = 0; x < p.width; x++) {
+          let angle = w.freq * x + w.phase;
+          let invert = f.folded ? -1 : 1;
+          let y = w.yOffset + invert * w.amp * p.sin(angle);
+          p.vertex(x, y);
+        }
+        p.endShape();
+
+        w.phase += 0.01 * w.speed;
+      }
+    };
+
+    p.windowResized = function () {
+      p.resizeCanvas(p.windowWidth, p.windowHeight);
+      for (let i = 0; i < waveCount; i++) {
+        waves[i].yOffset = (p.height / (waveCount + 1)) * (i + 1);
+      }
+    };
+  };
+
+  let landingWaves = new p5(waveSketch);
+</script>
+
 </body>
 </html>
